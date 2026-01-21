@@ -26,24 +26,12 @@ async function getLessons() {
 }
 
 async function getCourse() {
-  try {
-    return await prisma.course.findUnique({
-      where: { id: 'main-course' },
-      select: {
-        title: true,
-        description: true,
-        price: true,
-      },
-    })
-  } catch (error) {
-    return {
-      title: 'Algorithms of Thinking and Cognition',
-      description: 'A Philosophical Course for the Development of Critical Thinking',
-      price: 30,
-    }
+  return {
+    title: 'Algorithms of Thinking and Cognition',
+    description: 'A Philosophical Course for the Development of Critical Thinking',
+    price: 30,
   }
 }
-
 export default async function HomePage() {
   const [lessons, course] = await Promise.all([getLessons(), getCourse()])
 
