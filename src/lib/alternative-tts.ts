@@ -3,7 +3,7 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 
-class TTSService {
+export class TTSService {
   private services = {
     // Google Translate TTS (free, no API key needed)
     google: {
