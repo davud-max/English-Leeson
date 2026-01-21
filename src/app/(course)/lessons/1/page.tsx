@@ -156,6 +156,13 @@ export default function Lesson1Page() {
       clearTimeout(slideTimerRef.current);
     }
 
+    // Load and play audio for current slide
+    const audioFile = `/audio/lesson1/slide${currentSlide + 1}.mp3`;
+    if (audioRef.current) {
+      audioRef.current.src = audioFile;
+      audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
+
     // Set timer for current slide
     slideTimerRef.current = setTimeout(() => {
       if (currentSlide < LESSON_1_SLIDES.length - 1) {
@@ -229,12 +236,7 @@ export default function Lesson1Page() {
       setIsPlaying(false);
       totalTimeRef.current += LESSON_1_SLIDES[currentSlide].duration * progress;
     } else {
-      // Play
-      const audioFile = `/audio/lesson1/slide${currentSlide + 1}.mp3`;
-      if (audioRef.current) {
-        audioRef.current.src = audioFile;
-        audioRef.current.play().catch(e => console.log("Audio play failed:", e));
-      }
+      // Play - audio will be loaded in useEffect
       setIsPlaying(true);
     }
   };
@@ -246,12 +248,9 @@ export default function Lesson1Page() {
     setCurrentSlide(index);
     totalTimeRef.current = LESSON_1_SLIDES.slice(0, index).reduce((sum, slide) => sum + slide.duration, 0);
     
+    // Audio will be loaded automatically in useEffect when currentSlide changes
     if (isPlaying) {
-      const audioFile = `/audio/lesson1/slide${index + 1}.mp3`;
-      if (audioRef.current) {
-        audioRef.current.src = audioFile;
-        audioRef.current.play().catch(e => console.log("Audio play failed:", e));
-      }
+      // Let useEffect handle audio loading and playing
     }
   };
 
