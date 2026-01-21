@@ -30,7 +30,7 @@ export async function generateLesson2Audio() {
   
   try {
     for (let i = 0; i < LESSON_2_TEXTS.length; i++) {
-      await ttsService.generateWithGoogleTTS(LESSON_2_TEXTS[i], `slide${i + 1}.mp3`, 'lesson2');
+      await ttsService.generateWithGoogleTTS(LESSON_2_TEXTS[i], `slide${i + 1}.mp3`);
       console.log(`✅ Generated slide ${i + 1}/${LESSON_2_TEXTS.length}`);
     }
     
