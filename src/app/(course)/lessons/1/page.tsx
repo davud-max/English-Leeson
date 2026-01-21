@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 const LESSON_1_SLIDES = [
   {
@@ -120,21 +120,98 @@ const LESSON_1_SLIDES = [
 export default function Lesson1Page() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Аудио файлы для каждого слайда (пока демо)
+  const slideAudios = [
+    "/audio/lesson1/slide1.mp3",
+    "/audio/lesson1/slide2.mp3", 
+    "/audio/lesson1/slide3.mp3",
+    "/audio/lesson1/slide4.mp3",
+    "/audio/lesson1/slide5.mp3",
+    "/audio/lesson1/slide6.mp3",
+    "/audio/lesson1/slide7.mp3",
+    "/audio/lesson1/slide8.mp3",
+    "/audio/lesson1/slide9.mp3",
+    "/audio/lesson1/slide10.mp3",
+    "/audio/lesson1/slide11.mp3",
+    "/audio/lesson1/slide12.mp3",
+    "/audio/lesson1/slide13.mp3",
+    "/audio/lesson1/slide14.mp3",
+    "/audio/lesson1/slide15.mp3",
+    "/audio/lesson1/slide16.mp3"
+  ];
 
   const nextSlide = () => {
     if (currentSlide < LESSON_1_SLIDES.length - 1) {
       setCurrentSlide(currentSlide + 1);
+      if (isPlaying) {
+        // Автоматически проигрывать следующий аудио
+        playCurrentSlideAudio();
+      }
     }
   };
 
   const prevSlide = () => {
     if (currentSlide > 0) {
       setCurrentSlide(currentSlide - 1);
+      if (isPlaying) {
+        playCurrentSlideAudio();
+      }
     }
   };
 
+  const playCurrentSlideAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.src = slideAudios[currentSlide];
+      audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
+  };
+
+  const togglePlay = () => {
+    if (isPlaying) {
+      audioRef.current?.pause();
+      setIsPlaying(false);
+    } else {
+      playCurrentSlideAudio();
+      setIsPlaying(true);
+    }
+  };
+
+  // Обработка окончания аудио
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleEnded = () => {
+      if (currentSlide < LESSON_1_SLIDES.length - 1) {
+        nextSlide();
+      } else {
+        setIsPlaying(false);
+      }
+    };
+
+    const handleTimeUpdate = () => {
+      if (audio.duration) {
+        setProgress((audio.currentTime / audio.duration) * 100);
+      }
+    };
+
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+
+    return () => {
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, [currentSlide, isPlaying]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      {/* Hidden Audio Element */}
+      <audio ref={audioRef} className="hidden" />
+
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3">
@@ -147,7 +224,7 @@ export default function Lesson1Page() {
                 Slide {currentSlide + 1} of {LESSON_1_SLIDES.length}
               </span>
               <button 
-                onClick={() => setIsPlaying(!isPlaying)}
+                onClick={togglePlay}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
               >
                 {isPlaying ? '⏸️ Pause' : '▶️ Play'} Audio
@@ -175,6 +252,18 @@ export default function Lesson1Page() {
                 style={{ width: `${((currentSlide + 1) / LESSON_1_SLIDES.length) * 100}%` }}
               ></div>
             </div>
+            
+            {/* Audio Progress */}
+            {isPlaying && (
+              <div className="mt-3">
+                <div className="w-full bg-gray-200 rounded-full h-1">
+                  <div 
+                    className="bg-red-500 h-1 rounded-full transition-all duration-300"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Slide Container */}
@@ -234,7 +323,10 @@ export default function Lesson1Page() {
                   {LESSON_1_SLIDES.map((_, index) => (
                     <button
                       key={index}
-                      onClick={() => setCurrentSlide(index)}
+                      onClick={() => {
+                        setCurrentSlide(index);
+                        if (isPlaying) playCurrentSlideAudio();
+                      }}
                       className={`w-3 h-3 rounded-full transition-all ${
                         index === currentSlide
                           ? 'bg-blue-500 scale-125'
@@ -259,15 +351,23 @@ export default function Lesson1Page() {
             </div>
           </div>
 
-          {/* Audio Player */}
+          {/* Audio Player Status */}
           {isPlaying && (
             <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <div className="flex items-center justify-center gap-4">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-gray-600">Audio playing...</span>
+                  <span className="text-sm text-gray-600">
+                    Playing Slide {currentSlide + 1} Audio
+                  </span>
                 </div>
                 <div className="text-2xl">🔊</div>
+                <button 
+                  onClick={() => setIsPlaying(false)}
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  Stop
+                </button>
               </div>
             </div>
           )}
@@ -286,10 +386,10 @@ export default function Lesson1Page() {
                 Enroll Now - $30
               </Link>
               <button 
-                onClick={() => setIsPlaying(true)}
-                className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 px-8 py-4 rounded-xl font-bold transition-all border border-white/30"
+                onClick={togglePlay}
+                className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 px-8 py-4 rounded-xl font-bold transition-all border border-white/30 flex items-center gap-2"
               >
-                ▶️ Listen to Sample
+                {isPlaying ? '⏸️ Pause Demo' : '▶️ Listen to Sample'}
               </button>
             </div>
           </div>
