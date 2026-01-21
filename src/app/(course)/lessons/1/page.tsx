@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { useState, useRef, useEffect } from 'react'
@@ -186,7 +188,7 @@ export default function Lesson1Page() {
 
     const handleEnded = () => {
       if (currentSlide < LESSON_1_SLIDES.length - 1) {
-        nextSlide();
+        setCurrentSlide(prev => prev + 1);
       } else {
         setIsPlaying(false);
       }
@@ -205,7 +207,7 @@ export default function Lesson1Page() {
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
     };
-  }, [currentSlide, isPlaying]);
+  }, [currentSlide, isPlaying, LESSON_1_SLIDES.length]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">

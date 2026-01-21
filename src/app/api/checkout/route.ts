@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+
+// Lazy load stripe to avoid build errors
+const getStripe = async () => {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY environment variable is required')
+  }
+  const { stripe } = await import('@/lib/stripe')
+  return stripe
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -61,6 +69,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create Stripe checkout session
+    const stripe = await getStripe()
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
