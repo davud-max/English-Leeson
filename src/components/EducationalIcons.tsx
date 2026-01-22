@@ -1,5 +1,6 @@
 // SVG Icon Generator for Educational Concepts
 // Generates scalable vector graphics for lesson concepts
+import React from 'react';
 
 const EDUCATIONAL_ICONS = {
   // Core Concepts
@@ -144,20 +145,20 @@ const EDUCATIONAL_ICONS = {
 };
 
 // Function to get SVG icon by name
-export function getEducationalIcon(iconName) {
-  return EDUCATIONAL_ICONS[iconName] || EDUCATIONAL_ICONS.thinking;
+export function getEducationalIcon(iconName: string) {
+  return EDUCATIONAL_ICONS[iconName as keyof typeof EDUCATIONAL_ICONS] || EDUCATIONAL_ICONS.thinking;
 }
 
 // Function to generate all icons as React components
 export function getAllIconsAsComponents() {
-  const components = {};
+  const components: { [key: string]: React.FC<{ size?: number; className?: string }> } = {};
   
   Object.keys(EDUCATIONAL_ICONS).forEach(key => {
-    components[key] = ({ size = 64, className = "" }) => (
+    components[key] = ({ size = 64, className = "" }: { size?: number; className?: string }) => (
       <div 
         className={className}
         style={{ width: size, height: size }}
-        dangerouslySetInnerHTML={{ __html: EDUCATIONAL_ICONS[key] }}
+        dangerouslySetInnerHTML={{ __html: EDUCATIONAL_ICONS[key as keyof typeof EDUCATIONAL_ICONS] }}
       />
     );
   });

@@ -259,8 +259,8 @@ export default function Lesson2Page() {
   const currentSlideData = LESSON_2_SLIDES[currentSlide];
 
   // Render visual illustration based on type
-  const renderIllustration = (illustrationType) => {
-    const illustrationMap = {
+  const renderIllustration = (illustrationType: string) => {
+    const illustrationMap: { [key: string]: JSX.Element } = {
       'counting-intro': (
         <div className="flex flex-col items-center space-y-4 animate-float">
           <div className="flex space-x-3">
