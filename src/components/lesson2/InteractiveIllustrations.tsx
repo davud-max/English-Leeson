@@ -37,7 +37,7 @@ export function FingerCountingIllustration() {
         ✋ Interactive: Counting on Fingers
       </h3>
       <p className="text-gray-600 text-center mb-6">
-        Click "Count +1" to bend fingers one by one
+        Click &quot;Count +1&quot; to bend fingers one by one
       </p>
       
       {/* Hand SVG */}
