@@ -39,7 +39,7 @@ const LESSON_2_SLIDES = [
   },
   {
     id: 5,
-    title: "🔢 What is a Number?",
+    title: "📘 What is a Number?",
     content: "> 📘 **NUMBER**\n> The name of an etalon group\n> Used for comparison with other groups\n\n**Examples:**\n- Finger group = Five\n- Hand group = Five\n- Foot group = Ten (fingers + toes)",
     emoji: "📘",
     illustration: "number-definition",
@@ -99,7 +99,7 @@ export default function Lesson2Page() {
   // Calculate total lesson duration
   const totalDuration = LESSON_2_SLIDES.reduce((sum, slide) => sum + slide.duration, 0);
 
-  // Auto-advance slides
+  // Handle slide progression based on AUDIO (audio has priority)
   useEffect(() => {
     if (!isPlaying) return;
 
@@ -115,28 +115,18 @@ export default function Lesson2Page() {
       audioRef.current.play().catch(e => console.log("Audio play failed:", e));
     }
 
-    // Set timer for current slide
-    slideTimerRef.current = setTimeout(() => {
-      if (currentSlide < LESSON_2_SLIDES.length - 1) {
-        setCurrentSlide(prev => prev + 1);
-      } else {
-        // Lesson completed
-        setIsPlaying(false);
-      }
-    }, LESSON_2_SLIDES[currentSlide].duration);
+    // Audio duration controls slide timing - no fixed timer needed
+    // Slide advances when audio ends (handled in separate audio event listener)
 
-    // Update progress
-    const startTime = Date.now();
-    const slideDuration = LESSON_2_SLIDES[currentSlide].duration;
-    
+    // Update progress based on actual audio playback
     const updateProgress = () => {
-      const elapsed = Date.now() - startTime;
-      const slideProgress = Math.min(elapsed / slideDuration, 1);
-      setProgress(slideProgress);
-      
-      // Total progress
-      const totalElapsed = totalTimeRef.current + elapsed;
-      setTotalProgress(totalElapsed / totalDuration);
+      if (audioRef.current && audioRef.current.duration) {
+        setProgress(audioRef.current.currentTime / audioRef.current.duration);
+        
+        // Update total progress based on actual playback time
+        const totalElapsed = totalTimeRef.current + (audioRef.current.currentTime * 1000);
+        setTotalProgress(totalElapsed / totalDuration);
+      }
     };
 
     const progressInterval = setInterval(updateProgress, 100);
@@ -147,18 +137,21 @@ export default function Lesson2Page() {
         clearTimeout(slideTimerRef.current);
       }
     };
-  }, [currentSlide, isPlaying]);
+  }, [currentSlide, isPlaying, totalDuration]);
 
-  // Handle audio playback
+  // Handle audio playback events (AUDIO CONTROLS TIMING)
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const handleEnded = () => {
-      // Audio ended naturally, advance to next slide
+      // Audio ended naturally - advance to next slide
+      console.log(`🎵 Audio ended for slide ${currentSlide + 1}, advancing...`);
       if (currentSlide < LESSON_2_SLIDES.length - 1) {
         setCurrentSlide(prev => prev + 1);
       } else {
+        // Lesson completed
+        console.log("🎓 Lesson 2 completed!");
         setIsPlaying(false);
       }
     };
@@ -169,6 +162,7 @@ export default function Lesson2Page() {
       }
     };
 
+    // Add event listeners
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('timeupdate', handleTimeUpdate);
 
@@ -176,7 +170,7 @@ export default function Lesson2Page() {
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
     };
-  }, [currentSlide]);
+  }, [currentSlide, isPlaying]);
 
   const togglePlay = () => {
     if (isPlaying) {
@@ -198,52 +192,39 @@ export default function Lesson2Page() {
       clearTimeout(slideTimerRef.current);
     }
     setCurrentSlide(index);
-    totalTimeRef.current = LESSON_2_SLIDES.slice(0, index).reduce((sum, slide) => sum + slide.duration, 0);
-    
-    // Audio will be loaded automatically in useEffect when currentSlide changes
-    if (isPlaying) {
-      // Let useEffect handle audio loading and playing
+    setProgress(0);
+    totalTimeRef.current = 0;
+    LESSON_2_SLIDES.slice(0, index).forEach(slide => {
+      totalTimeRef.current += slide.duration;
+    });
+  };
+
+  const nextSlide = () => {
+    if (currentSlide < LESSON_2_SLIDES.length - 1) {
+      goToSlide(currentSlide + 1);
     }
   };
 
-  const restartLesson = () => {
-    if (slideTimerRef.current) {
-      clearTimeout(slideTimerRef.current);
-    }
-    setCurrentSlide(0);
-    setProgress(0);
-    setTotalProgress(0);
-    totalTimeRef.current = 0;
-    setIsPlaying(false);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+  const prevSlide = () => {
+    if (currentSlide > 0) {
+      goToSlide(currentSlide - 1);
     }
   };
+
+  const currentSlideData = LESSON_2_SLIDES[currentSlide];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
-      {/* Hidden Audio Element */}
-      <audio ref={audioRef} className="hidden" />
-
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-amber-100">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3">
+      <header className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-orange-600 hover:text-orange-700 font-medium flex items-center gap-2">
-              ← Back to Home
+            <Link href="/lessons" className="text-yellow-600 hover:text-yellow-700 font-medium">
+              ← All Lessons
             </Link>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                Lesson 2 • Slide {currentSlide + 1} of {LESSON_2_SLIDES.length}
-              </span>
-              <button 
-                onClick={togglePlay}
-                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-              >
-                {isPlaying ? '⏸️ Pause' : '▶️ Play'} Lecture
-              </button>
-              <Link href="/checkout" className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
+              <span className="text-sm text-gray-600">Lesson 2 of 17</span>
+              <Link href="/checkout" className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 Enroll Now - $30
               </Link>
             </div>
@@ -254,150 +235,135 @@ export default function Lesson2Page() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          {/* Progress Bars */}
-          <div className="mb-8 space-y-3">
-            {/* Current Slide Progress */}
-            <div>
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Current Slide Progress</span>
-                <span>{Math.round(progress * 100)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-orange-500 to-amber-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${progress * 100}%` }}
-                ></div>
-              </div>
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-700">
+                Lesson Progress
+              </span>
+              <span className="text-sm text-gray-500">
+                {Math.round(totalProgress * 100)}%
+              </span>
             </div>
-
-            {/* Total Lesson Progress */}
-            <div>
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Total Progress</span>
-                <span>{Math.round(totalProgress * 100)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
-                  className="bg-gradient-to-r from-yellow-500 to-orange-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${totalProgress * 100}%` }}
-                ></div>
-              </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-yellow-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${totalProgress * 100}%` }}
+              ></div>
             </div>
           </div>
 
-          {/* Slide Container */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/20">
-            <div className="p-8 md:p-12">
-              {/* Slide Header */}
-              <div className="text-center mb-8">
-                <div className="text-6xl mb-4 animate-pulse">{LESSON_2_SLIDES[currentSlide].emoji}</div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                  {LESSON_2_SLIDES[currentSlide].title}
-                </h1>
-                <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-amber-500 mx-auto rounded-full"></div>
-              </div>
-
-              {/* Slide Content */}
-              <div className="text-center mb-8">
-                <div className="prose prose-lg max-w-2xl mx-auto
-                  prose-headings:text-gray-900
-                  prose-p:text-gray-700 prose-p:leading-relaxed
-                  prose-strong:text-orange-700 prose-strong:font-semibold
-                  prose-blockquote:border-l-4 prose-blockquote:border-orange-500 
-                  prose-blockquote:bg-orange-50 prose-blockquote:py-3 prose-blockquote:px-6
-                  prose-blockquote:not-italic prose-blockquote:font-medium">
-                  <ReactMarkdown>{LESSON_2_SLIDES[currentSlide].content}</ReactMarkdown>
+          {/* Slide Content */}
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            {/* Slide Header */}
+            <div className="bg-gradient-to-r from-yellow-500 to-amber-600 p-6 text-white">
+              <div className="flex items-center gap-4">
+                <span className="text-3xl">{currentSlideData.emoji}</span>
+                <div>
+                  <h1 className="text-2xl font-bold">{currentSlideData.title}</h1>
+                  <p className="text-yellow-100">Slide {currentSlide + 1} of {LESSON_2_SLIDES.length}</p>
                 </div>
               </div>
+            </div>
 
-              {/* Illustration Area */}
-              <div className="flex justify-center mb-8">
-                <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-8 w-full max-w-md border border-orange-100 animate-pulse">
-                  <div className="text-center">
-                    <div className="text-8xl mb-4 opacity-80">
-                      {LESSON_2_SLIDES[currentSlide].emoji}
-                    </div>
-                    <p className="text-gray-600 font-medium">
-                      {LESSON_2_SLIDES[currentSlide].illustration.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </p>
-                  </div>
+            {/* Slide Body */}
+            <div className="p-8">
+              <div className="prose prose-lg max-w-none">
+                <ReactMarkdown>{currentSlideData.content}</ReactMarkdown>
+              </div>
+
+              {/* Slide Progress */}
+              <div className="mt-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-600">Slide Progress</span>
+                  <span className="text-sm text-gray-500">
+                    {Math.round(progress * 100)}%
+                  </span>
                 </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-yellow-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${progress * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="bg-gray-50 px-8 py-6 border-t">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={prevSlide}
+                  disabled={currentSlide === 0}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                >
+                  ← Previous
+                </button>
+
+                <button
+                  onClick={togglePlay}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                    isPlaying 
+                      ? 'bg-red-500 hover:bg-red-600 text-white' 
+                      : 'bg-green-500 hover:bg-green-600 text-white'
+                  }`}
+                >
+                  {isPlaying ? '⏸️ Pause' : '▶️ Play'}
+                </button>
+
+                <button
+                  onClick={nextSlide}
+                  disabled={currentSlide === LESSON_2_SLIDES.length - 1}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                >
+                  Next →
+                </button>
               </div>
 
               {/* Slide Navigation */}
-              <div className="flex justify-center gap-2 mb-6">
+              <div className="mt-4 flex flex-wrap gap-2 justify-center">
                 {LESSON_2_SLIDES.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => goToSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-all ${
-                      index === currentSlide
-                        ? 'bg-orange-500 scale-125'
-                        : index < currentSlide
-                          ? 'bg-yellow-500'
-                          : 'bg-gray-300 hover:bg-gray-400'
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      index === currentSlide 
+                        ? 'bg-yellow-600' 
+                        : 'bg-gray-300 hover:bg-gray-400'
                     }`}
                   />
                 ))}
               </div>
-
-              {/* Controls */}
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={restartLesson}
-                  className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-medium transition-colors"
-                >
-                  🔄 Restart
-                </button>
-                <button
-                  onClick={togglePlay}
-                  className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${
-                    isPlaying
-                      ? 'bg-red-500 hover:bg-red-600 text-white'
-                      : 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white'
-                  }`}
-                >
-                  {isPlaying ? '⏸️ Pause' : '▶️ Continue'} Lecture
-                </button>
-              </div>
             </div>
           </div>
 
-          {/* Audio Status */}
-          {isPlaying && (
-            <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <div className="flex items-center justify-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-gray-600">
-                    🎵 Playing Slide {currentSlide + 1} • Total Time: {Math.floor(totalProgress * totalDuration / 1000)}s
-                  </span>
-                </div>
-                <div className="text-2xl">🔊</div>
-              </div>
+          {/* Audio Element */}
+          <audio ref={audioRef} />
+
+          {/* Navigation */}
+          <div className="mt-8 flex justify-between items-center">
+            <Link href="/lessons/1" className="text-gray-600 hover:text-gray-900 font-medium">
+              ← Lesson 1
+            </Link>
+            <div className="flex gap-3">
+              <Link href="/checkout" className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-lg">
+                Enroll to Continue
+              </Link>
             </div>
-          )}
+            <Link href="/lessons/3" className="text-gray-600 hover:text-gray-900 font-medium">
+              Lesson 3 →
+            </Link>
+          </div>
 
           {/* CTA Section */}
-          <div className="mt-12 bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 rounded-3xl p-8 text-white text-center shadow-2xl">
-            <h2 className="text-3xl font-bold mb-4">🚀 Ready to Master Mathematical Thinking?</h2>
-            <p className="text-orange-100 mb-6 text-lg max-w-2xl mx-auto">
-              Get lifetime access to all 17 interactive lectures with seamless audio synchronization
+          <div className="mt-12 bg-gradient-to-r from-yellow-500 to-amber-700 rounded-2xl p-8 text-white text-center">
+            <h2 className="text-2xl font-bold mb-3">Master Mathematical Thinking!</h2>
+            <p className="text-yellow-100 mb-6 text-lg">
+              Continue learning with all 17 interactive lessons for just $30
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/checkout" 
-                className="bg-white text-orange-600 hover:bg-orange-50 px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:scale-105"
-              >
-                Enroll Now - $30
-              </Link>
-              <button 
-                onClick={togglePlay}
-                className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 px-8 py-4 rounded-xl font-bold transition-all border border-white/30 flex items-center gap-2"
-              >
-                {isPlaying ? '⏸️ Pause Demo' : '▶️ Start Lecture'}
-              </button>
-            </div>
+            <Link href="/checkout" className="inline-block bg-white text-yellow-600 hover:bg-yellow-50 px-8 py-3 rounded-lg font-bold transition-colors shadow-lg">
+              Enroll Now - $30
+            </Link>
           </div>
         </div>
       </main>

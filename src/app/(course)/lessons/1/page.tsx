@@ -11,127 +11,127 @@ const LESSON_1_SLIDES = [
     content: "🧠 **How precise knowledge is born**\n\nHow observation transforms into words,\nand words into instruments of thought.",
     emoji: "🎯",
     illustration: "mind-mapping",
-    duration: 8000 // 8 seconds
+    duration: 8000
   },
   {
     id: 2,
-    title: "🔍 From Observation to Term",
-    content: "👁️ **Everything begins with observation**\n\nWhat we observe must be described clearly\nso others can understand exactly what we see.",
-    emoji: "🔍",
-    illustration: "eye-observation",
-    duration: 10000 // 10 seconds
+    title: "👁️ From Observation to Term",
+    content: "🔍 **Everything begins with observation**\n\nClear description is the foundation of understanding.\nFrom seeing to knowing.",
+    emoji: "👁️",
+    illustration: "observation",
+    duration: 7000
   },
   {
     id: 3,
-    title: "📝 What is a Definition?",
-    content: "> 📘 **DEFINITION**\n> The shortest description that helps\n> someone else understand what you observed",
+    title: "📘 What is a Definition?",
+    content: "📝 **The shortest description**\n\nThat helps others understand what you observed.\nPrecision in communication.",
     emoji: "📘",
-    illustration: "dictionary",
+    illustration: "definition",
     duration: 8000
   },
   {
     id: 4,
     title: "🏷️ What is a Term?",
-    content: "> 🏷️ **TERM**\n> A word linked to a definition\n> for easier use and communication",
+    content: "🔗 **A word linked to a definition**\n\nFor easier communication.\nBuilding blocks of thought.",
     emoji: "🏷️",
-    illustration: "tag-label",
+    illustration: "term",
     duration: 7000
   },
   {
     id: 5,
-    title: "📍 The Point Concept",
-    content: "📍 **POINT** - Fundamental term\n0️⃣ Zero dimensions\n👻 Cannot be observed\n\nJust an idea in our minds!",
-    emoji: "📍",
-    illustration: "geometric-point",
+    title: "⚫ The Point Concept",
+    content: "🎯 **A fundamental term**\n\nWith zero dimensions, just an idea in our minds.\nAbstract thinking begins.",
+    emoji: "⚫",
+    illustration: "point",
     duration: 9000
   },
   {
     id: 6,
     title: "📏 The Line Concept",
-    content: "📏 **LINE** - First-level term\n1️⃣ One dimension\n➡️ A point that extends\n\nMade of infinite unobservable points!",
+    content: "📏 **A first-level term**\n\nWith one dimension, extending infinitely.\nFirst step into geometry.",
     emoji: "📏",
-    illustration: "straight-line",
-    duration: 10000
+    illustration: "line",
+    duration: 8000
   },
   {
     id: 7,
-    title: "📐 The Plane Concept",
-    content: "📐 **PLANE** - Second-level term\n2️⃣ Two dimensions\n↔️ Lines extending sideways\n\nLike an infinite flat surface!",
-    emoji: "📐",
-    illustration: "geometric-plane",
+    title: "⬜ The Plane Concept",
+    content: "⬜ **A second-level term**\n\nWith two dimensions, like an infinite flat surface.\nExpanding our thinking space.",
+    emoji: "⬜",
+    illustration: "plane",
     duration: 9000
   },
   {
     id: 8,
-    title: "🌌 The Space Concept",
-    content: "🌌 **SPACE** - Third-level term\n3️⃣ Three dimensions\n↕️ Planes extending in all directions\n\nThe vast container of everything!",
-    emoji: "🌌",
-    illustration: "three-dimensional-space",
-    duration: 10000
+    title: "🧊 The Space Concept",
+    content: "🧊 **A third-level term**\n\nWith three dimensions, containing everything.\nThe world we live in.",
+    emoji: "🧊",
+    illustration: "space",
+    duration: 8000
   },
   {
     id: 9,
-    title: "🔑 Four Fundamental Terms",
-    content: "📍 POINT (0D)\n📏 LINE (1D)\n📐 PLANE (2D)\n🌌 SPACE (3D)\n\nThese building blocks create all abstract ideas!",
-    emoji: "🔑",
-    illustration: "four-elements",
-    duration: 12000
+    title: "⚛️ Four Fundamental Terms",
+    content: "⚛️ **Point, Line, Plane, Space**\n\nBuilding blocks of abstract ideas.\nFoundation of mathematical thinking.",
+    emoji: "⚛️",
+    illustration: "fundamental-terms",
+    duration: 10000
   },
   {
     id: 10,
-    title: "⚖️ Key Distinction",
-    content: "🎨 Abstract objects:\n✅ Can be fully described and defined\n\n🌍 Real objects:\n❌ Cannot be completely described\n\nReality is infinitely complex!",
-    emoji: "⚖️",
-    illustration: "balance-scale",
-    duration: 11000
+    title: "🔑 Key Distinction",
+    content: "🔑 **Abstract objects**\n\nCan be fully described.\n**Real objects** cannot.",
+    emoji: "🔑",
+    illustration: "distinction",
+    duration: 8000
   },
   {
     id: 11,
-    title: "🏷️ vs 📘 Name vs Term",
-    content: "> 🏷️ **NAME**\n> 👉 Points to real things\n> ❌ Cannot be fully described\n\n> 📘 **TERM**\n> ❌ Cannot point to anything\n> ✅ Can be fully described",
-    emoji: "🆚",
+    title: "🏷️ Name vs Term",
+    content: "🏷️ **Names** point to real things.\n**Terms** can be fully described but not pointed to.\nUnderstanding the difference.",
+    emoji: "🏷️",
     illustration: "name-vs-term",
-    duration: 12000
+    duration: 9000
   },
   {
     id: 12,
-    title: "🔄 Two Directions of Thinking",
-    content: "**🌍 Reality → Abstraction**\n👁️ Observe → 📝 Describe → 📘 Define → 🏷️ Term\n\n**🧠 Abstraction → Reality**\n🏷️ Term → 🔍 Find matching objects",
+    title: "🔄 Two Directions",
+    content: "🔄 **Reality to Abstraction**\nand back again.\nMovement between worlds.",
     emoji: "🔄",
     illustration: "two-directions",
-    duration: 13000
+    duration: 7000
   },
   {
     id: 13,
-    title: "👶 Learning Process Example",
-    content: "🍎 Child sees red apple\n\"This is apple\"\n\n🍏 Show green apple\nChild: \"Not apple!\"\n\n⏳ Later understands\n\"Apple\" = general concept",
-    emoji: "👶",
-    illustration: "child-learning",
-    duration: 12000
+    title: "🧒 Learning Process",
+    content: "🧒 **Child learns**\n\nThat apple means general concept,\nnot just one fruit.",
+    emoji: "🧒",
+    illustration: "learning-process",
+    duration: 8000
   },
   {
     id: 14,
-    title: "🌱 Birth of Abstraction",
-    content: "🧠 Child forms \"🍎 apple in general\"\n\nThis mental image becomes an abstraction\n\nNow recognizes any apple instantly!\n\nThe word transforms from name to term",
-    emoji: "🌱",
-    illustration: "brain-connection",
-    duration: 13000
+    title: "🧠 Birth of Abstraction",
+    content: "🧠 **Mental image forms**\n\nNow any apple is recognized instantly.\nPower of abstract thinking.",
+    emoji: "🧠",
+    illustration: "abstraction",
+    duration: 9000
   },
   {
     id: 15,
-    title: "🎓 Essence of Education",
-    content: "> 🎓 **THE ESSENCE OF EDUCATION**\n>\n> Teaching free movement in both directions:\n> 🌍 Reality ⇄ 🧠 Abstraction\n>\n> Developing ability to translate between worlds",
-    emoji: "🎓",
-    illustration: "education-flow",
-    duration: 14000
+    title: "🎯 Essence of Education",
+    content: "🎯 **Teaching movement**\n\nBetween reality and abstraction.\nDeveloping thinking capacity.",
+    emoji: "🎯",
+    illustration: "education",
+    duration: 10000
   },
   {
     id: 16,
-    title: "💭 Foundation of Thinking",
-    content: "✨ See invisible behind visible\n\n🎯 Find visible forms of invisible ideas\n\n🚀 This dual translation ability\nis the foundation of human thinking!",
-    emoji: "💭",
-    illustration: "invisible-visible",
-    duration: 12000
+    title: "🔮 Foundation of Thinking",
+    content: "🔮 **Seeing invisible behind visible**\n\nFinding forms of invisible ideas.\nTrue wisdom begins.",
+    emoji: "🔮",
+    illustration: "foundation",
+    duration: 9000
   }
 ];
 
@@ -147,7 +147,7 @@ export default function Lesson1Page() {
   // Calculate total lesson duration
   const totalDuration = LESSON_1_SLIDES.reduce((sum, slide) => sum + slide.duration, 0);
 
-  // Auto-advance slides
+  // Handle slide progression based on AUDIO (audio has priority)
   useEffect(() => {
     if (!isPlaying) return;
 
@@ -163,28 +163,18 @@ export default function Lesson1Page() {
       audioRef.current.play().catch(e => console.log("Audio play failed:", e));
     }
 
-    // Set timer for current slide
-    slideTimerRef.current = setTimeout(() => {
-      if (currentSlide < LESSON_1_SLIDES.length - 1) {
-        setCurrentSlide(prev => prev + 1);
-      } else {
-        // Lesson completed
-        setIsPlaying(false);
-      }
-    }, LESSON_1_SLIDES[currentSlide].duration);
+    // Audio duration controls slide timing - no fixed timer needed
+    // Slide advances when audio ends (handled in separate audio event listener)
 
-    // Update progress
-    const startTime = Date.now();
-    const slideDuration = LESSON_1_SLIDES[currentSlide].duration;
-    
+    // Update progress based on actual audio playback
     const updateProgress = () => {
-      const elapsed = Date.now() - startTime;
-      const slideProgress = Math.min(elapsed / slideDuration, 1);
-      setProgress(slideProgress);
-      
-      // Total progress
-      const totalElapsed = totalTimeRef.current + elapsed;
-      setTotalProgress(totalElapsed / totalDuration);
+      if (audioRef.current && audioRef.current.duration) {
+        setProgress(audioRef.current.currentTime / audioRef.current.duration);
+        
+        // Update total progress based on actual playback time
+        const totalElapsed = totalTimeRef.current + (audioRef.current.currentTime * 1000);
+        setTotalProgress(totalElapsed / totalDuration);
+      }
     };
 
     const progressInterval = setInterval(updateProgress, 100);
@@ -195,18 +185,21 @@ export default function Lesson1Page() {
         clearTimeout(slideTimerRef.current);
       }
     };
-  }, [currentSlide, isPlaying]);
+  }, [currentSlide, isPlaying, totalDuration]);
 
-  // Handle audio playback
+  // Handle audio playback events (AUDIO CONTROLS TIMING)
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const handleEnded = () => {
-      // Audio ended naturally, advance to next slide
+      // Audio ended naturally - advance to next slide
+      console.log(`🎵 Audio ended for slide ${currentSlide + 1}, advancing...`);
       if (currentSlide < LESSON_1_SLIDES.length - 1) {
         setCurrentSlide(prev => prev + 1);
       } else {
+        // Lesson completed
+        console.log("🎓 Lesson 1 completed!");
         setIsPlaying(false);
       }
     };
@@ -217,6 +210,7 @@ export default function Lesson1Page() {
       }
     };
 
+    // Add event listeners
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('timeupdate', handleTimeUpdate);
 
@@ -224,7 +218,7 @@ export default function Lesson1Page() {
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
     };
-  }, [currentSlide]);
+  }, [currentSlide, isPlaying]);
 
   const togglePlay = () => {
     if (isPlaying) {
@@ -246,52 +240,39 @@ export default function Lesson1Page() {
       clearTimeout(slideTimerRef.current);
     }
     setCurrentSlide(index);
-    totalTimeRef.current = LESSON_1_SLIDES.slice(0, index).reduce((sum, slide) => sum + slide.duration, 0);
-    
-    // Audio will be loaded automatically in useEffect when currentSlide changes
-    if (isPlaying) {
-      // Let useEffect handle audio loading and playing
+    setProgress(0);
+    totalTimeRef.current = 0;
+    LESSON_1_SLIDES.slice(0, index).forEach(slide => {
+      totalTimeRef.current += slide.duration;
+    });
+  };
+
+  const nextSlide = () => {
+    if (currentSlide < LESSON_1_SLIDES.length - 1) {
+      goToSlide(currentSlide + 1);
     }
   };
 
-  const restartLesson = () => {
-    if (slideTimerRef.current) {
-      clearTimeout(slideTimerRef.current);
-    }
-    setCurrentSlide(0);
-    setProgress(0);
-    setTotalProgress(0);
-    totalTimeRef.current = 0;
-    setIsPlaying(false);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+  const prevSlide = () => {
+    if (currentSlide > 0) {
+      goToSlide(currentSlide - 1);
     }
   };
+
+  const currentSlideData = LESSON_1_SLIDES[currentSlide];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      {/* Hidden Audio Element */}
-      <audio ref={audioRef} className="hidden" />
-
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-100">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3">
+      <header className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2">
-              ← Back to Home
+            <Link href="/lessons" className="text-orange-600 hover:text-orange-700 font-medium">
+              ← All Lessons
             </Link>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                Slide {currentSlide + 1} of {LESSON_1_SLIDES.length}
-              </span>
-              <button 
-                onClick={togglePlay}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-              >
-                {isPlaying ? '⏸️ Pause' : '▶️ Play'} Lecture
-              </button>
-              <Link href="/checkout" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
+              <span className="text-sm text-gray-600">Lesson 1 of 17</span>
+              <Link href="/checkout" className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 Enroll Now - $30
               </Link>
             </div>
@@ -302,150 +283,135 @@ export default function Lesson1Page() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          {/* Progress Bars */}
-          <div className="mb-8 space-y-3">
-            {/* Current Slide Progress */}
-            <div>
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Current Slide Progress</span>
-                <span>{Math.round(progress * 100)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${progress * 100}%` }}
-                ></div>
-              </div>
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-700">
+                Lesson Progress
+              </span>
+              <span className="text-sm text-gray-500">
+                {Math.round(totalProgress * 100)}%
+              </span>
             </div>
-
-            {/* Total Lesson Progress */}
-            <div>
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Total Progress</span>
-                <span>{Math.round(totalProgress * 100)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
-                  className="bg-gradient-to-r from-green-500 to-teal-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${totalProgress * 100}%` }}
-                ></div>
-              </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-orange-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${totalProgress * 100}%` }}
+              ></div>
             </div>
           </div>
 
-          {/* Slide Container */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/20">
-            <div className="p-8 md:p-12">
-              {/* Slide Header */}
-              <div className="text-center mb-8">
-                <div className="text-6xl mb-4 animate-pulse">{LESSON_1_SLIDES[currentSlide].emoji}</div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                  {LESSON_1_SLIDES[currentSlide].title}
-                </h1>
-                <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
-              </div>
-
-              {/* Slide Content */}
-              <div className="text-center mb-8">
-                <div className="prose prose-lg max-w-2xl mx-auto
-                  prose-headings:text-gray-900
-                  prose-p:text-gray-700 prose-p:leading-relaxed
-                  prose-strong:text-blue-700 prose-strong:font-semibold
-                  prose-blockquote:border-l-4 prose-blockquote:border-blue-500 
-                  prose-blockquote:bg-blue-50 prose-blockquote:py-3 prose-blockquote:px-6
-                  prose-blockquote:not-italic prose-blockquote:font-medium">
-                  <ReactMarkdown>{LESSON_1_SLIDES[currentSlide].content}</ReactMarkdown>
+          {/* Slide Content */}
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            {/* Slide Header */}
+            <div className="bg-gradient-to-r from-orange-500 to-amber-600 p-6 text-white">
+              <div className="flex items-center gap-4">
+                <span className="text-3xl">{currentSlideData.emoji}</span>
+                <div>
+                  <h1 className="text-2xl font-bold">{currentSlideData.title}</h1>
+                  <p className="text-orange-100">Slide {currentSlide + 1} of {LESSON_1_SLIDES.length}</p>
                 </div>
               </div>
+            </div>
 
-              {/* Illustration Area */}
-              <div className="flex justify-center mb-8">
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 w-full max-w-md border border-blue-100 animate-pulse">
-                  <div className="text-center">
-                    <div className="text-8xl mb-4 opacity-80">
-                      {LESSON_1_SLIDES[currentSlide].emoji}
-                    </div>
-                    <p className="text-gray-600 font-medium">
-                      {LESSON_1_SLIDES[currentSlide].illustration.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </p>
-                  </div>
+            {/* Slide Body */}
+            <div className="p-8">
+              <div className="prose prose-lg max-w-none">
+                <ReactMarkdown>{currentSlideData.content}</ReactMarkdown>
+              </div>
+
+              {/* Slide Progress */}
+              <div className="mt-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-600">Slide Progress</span>
+                  <span className="text-sm text-gray-500">
+                    {Math.round(progress * 100)}%
+                  </span>
                 </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${progress * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="bg-gray-50 px-8 py-6 border-t">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={prevSlide}
+                  disabled={currentSlide === 0}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                >
+                  ← Previous
+                </button>
+
+                <button
+                  onClick={togglePlay}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                    isPlaying 
+                      ? 'bg-red-500 hover:bg-red-600 text-white' 
+                      : 'bg-green-500 hover:bg-green-600 text-white'
+                  }`}
+                >
+                  {isPlaying ? '⏸️ Pause' : '▶️ Play'}
+                </button>
+
+                <button
+                  onClick={nextSlide}
+                  disabled={currentSlide === LESSON_1_SLIDES.length - 1}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                >
+                  Next →
+                </button>
               </div>
 
               {/* Slide Navigation */}
-              <div className="flex justify-center gap-2 mb-6">
+              <div className="mt-4 flex flex-wrap gap-2 justify-center">
                 {LESSON_1_SLIDES.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => goToSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-all ${
-                      index === currentSlide
-                        ? 'bg-blue-500 scale-125'
-                        : index < currentSlide
-                          ? 'bg-green-500'
-                          : 'bg-gray-300 hover:bg-gray-400'
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      index === currentSlide 
+                        ? 'bg-orange-600' 
+                        : 'bg-gray-300 hover:bg-gray-400'
                     }`}
                   />
                 ))}
               </div>
-
-              {/* Controls */}
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={restartLesson}
-                  className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-medium transition-colors"
-                >
-                  🔄 Restart
-                </button>
-                <button
-                  onClick={togglePlay}
-                  className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${
-                    isPlaying
-                      ? 'bg-red-500 hover:bg-red-600 text-white'
-                      : 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white'
-                  }`}
-                >
-                  {isPlaying ? '⏸️ Pause' : '▶️ Continue'} Lecture
-                </button>
-              </div>
             </div>
           </div>
 
-          {/* Audio Status */}
-          {isPlaying && (
-            <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-              <div className="flex items-center justify-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-gray-600">
-                    🎵 Playing Slide {currentSlide + 1} • Total Time: {Math.floor(totalProgress * totalDuration / 1000)}s
-                  </span>
-                </div>
-                <div className="text-2xl">🔊</div>
-              </div>
+          {/* Audio Element */}
+          <audio ref={audioRef} />
+
+          {/* Navigation */}
+          <div className="mt-8 flex justify-between items-center">
+            <Link href="/lessons" className="text-gray-600 hover:text-gray-900 font-medium">
+              ← All Lessons
+            </Link>
+            <div className="flex gap-3">
+              <Link href="/checkout" className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-lg">
+                Enroll to Continue
+              </Link>
             </div>
-          )}
+            <Link href="/lessons/2" className="text-gray-600 hover:text-gray-900 font-medium">
+              Lesson 2 →
+            </Link>
+          </div>
 
           {/* CTA Section */}
-          <div className="mt-12 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-3xl p-8 text-white text-center shadow-2xl">
-            <h2 className="text-3xl font-bold mb-4">🚀 Ready to Master Critical Thinking?</h2>
-            <p className="text-blue-100 mb-6 text-lg max-w-2xl mx-auto">
-              Get lifetime access to all 17 interactive lectures with seamless audio synchronization
+          <div className="mt-12 bg-gradient-to-r from-orange-500 to-amber-700 rounded-2xl p-8 text-white text-center">
+            <h2 className="text-2xl font-bold mb-3">Master Critical Thinking!</h2>
+            <p className="text-orange-100 mb-6 text-lg">
+              Continue learning with all 17 interactive lessons for just $30
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/checkout" 
-                className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:scale-105"
-              >
-                Enroll Now - $30
-              </Link>
-              <button 
-                onClick={togglePlay}
-                className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 px-8 py-4 rounded-xl font-bold transition-all border border-white/30 flex items-center gap-2"
-              >
-                {isPlaying ? '⏸️ Pause Demo' : '▶️ Start Lecture'}
-              </button>
-            </div>
+            <Link href="/checkout" className="inline-block bg-white text-orange-600 hover:bg-orange-50 px-8 py-3 rounded-lg font-bold transition-colors shadow-lg">
+              Enroll Now - $30
+            </Link>
           </div>
         </div>
       </main>
