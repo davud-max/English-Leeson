@@ -40,7 +40,7 @@ const LESSONS = [
     title: '🎭 Human Activity: Praxeology', 
     description: 'What kind of activity is worthy of a human being? How can creation be distinguished from imitation?',
     duration: 25,
-    available: false,
+    available: true,
     color: 'from-orange-500 to-red-600'
   },
   { 
@@ -48,7 +48,7 @@ const LESSONS = [
     title: '💼 Human Activity and Economics', 
     description: 'From communication to law. Levels of civilization. Goals and goods. Ethics and experience.',
     duration: 25,
-    available: false,
+    available: true,
     color: 'from-teal-500 to-cyan-600'
   },
   { 
@@ -56,7 +56,7 @@ const LESSONS = [
     title: '💰 The Fair and the Coin', 
     description: 'How money, markets, and banks emerged from the exchange of gifts between tribes.',
     duration: 25,
-    available: false,
+    available: true,
     color: 'from-yellow-500 to-amber-600'
   },
   { 
@@ -168,22 +168,22 @@ export default function LessonsPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Your Progress</h2>
-              <p className="text-gray-600">4 of 17 lessons available • Complete all lessons to earn your certificate</p>
+              <p className="text-gray-600">7 of 17 lessons available • Complete all lessons to earn your certificate</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">4</div>
+                <div className="text-3xl font-bold text-blue-600">7</div>
                 <div className="text-sm text-gray-500">Available</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-400">13</div>
+                <div className="text-3xl font-bold text-gray-400">10</div>
                 <div className="text-sm text-gray-500">Locked</div>
               </div>
             </div>
           </div>
           <div className="mt-4">
             <div className="w-full bg-gray-200 rounded-full h-3">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style={{ width: '23.5%' }}></div>
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style={{ width: '41%' }}></div>
             </div>
           </div>
         </div>
