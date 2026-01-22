@@ -115,7 +115,7 @@ export default function Lesson3Page() {
   // Calculate total lesson duration
   const totalDuration = LESSON_3_SLIDES.reduce((sum, slide) => sum + slide.duration, 0);
 
-  // Handle slide progression based on AUDIO (audio has priority)
+  // Auto-advance slides
   useEffect(() => {
     if (!isPlaying) return;
 
@@ -131,18 +131,28 @@ export default function Lesson3Page() {
       audioRef.current.play().catch(e => console.log("Audio play failed:", e));
     }
 
-    // Audio duration controls slide timing - no fixed timer needed
-    // Slide advances when audio ends (handled in separate audio event listener)
-
-    // Update progress based on actual audio playback
-    const updateProgress = () => {
-      if (audioRef.current && audioRef.current.duration) {
-        setProgress(audioRef.current.currentTime / audioRef.current.duration);
-        
-        // Update total progress based on actual playback time
-        const totalElapsed = totalTimeRef.current + (audioRef.current.currentTime * 1000);
-        setTotalProgress(totalElapsed / totalDuration);
+    // Set timer for current slide
+    slideTimerRef.current = setTimeout(() => {
+      if (currentSlide < LESSON_3_SLIDES.length - 1) {
+        setCurrentSlide(prev => prev + 1);
+      } else {
+        // Lesson completed
+        setIsPlaying(false);
       }
+    }, LESSON_3_SLIDES[currentSlide].duration);
+
+    // Update progress
+    const startTime = Date.now();
+    const slideDuration = LESSON_3_SLIDES[currentSlide].duration;
+    
+    const updateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      const slideProgress = Math.min(elapsed / slideDuration, 1);
+      setProgress(slideProgress);
+      
+      // Total progress
+      const totalElapsed = totalTimeRef.current + elapsed;
+      setTotalProgress(totalElapsed / totalDuration);
     };
 
     const progressInterval = setInterval(updateProgress, 100);
@@ -153,21 +163,18 @@ export default function Lesson3Page() {
         clearTimeout(slideTimerRef.current);
       }
     };
-  }, [currentSlide, isPlaying, totalDuration]);
+  }, [currentSlide, isPlaying]);
 
-  // Handle audio playback events (AUDIO CONTROLS TIMING)
+  // Handle audio playback
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const handleEnded = () => {
-      // Audio ended naturally - advance to next slide
-      console.log(`🎵 Audio ended for slide ${currentSlide + 1}, advancing...`);
+      // Audio ended naturally, advance to next slide
       if (currentSlide < LESSON_3_SLIDES.length - 1) {
         setCurrentSlide(prev => prev + 1);
       } else {
-        // Lesson completed
-        console.log("🎓 Lesson completed!");
         setIsPlaying(false);
       }
     };
@@ -178,7 +185,6 @@ export default function Lesson3Page() {
       }
     };
 
-    // Add event listeners
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('timeupdate', handleTimeUpdate);
 
@@ -186,7 +192,7 @@ export default function Lesson3Page() {
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
     };
-  }, [currentSlide, isPlaying]);
+  }, [currentSlide]);
 
   const togglePlay = () => {
     if (isPlaying) {
