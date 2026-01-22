@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 // 🖐️ Интерактивная иллюстрация: Счет на пальцах
 export function FingerCountingIllustration() {
