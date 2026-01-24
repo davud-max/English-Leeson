@@ -1,103 +1,175 @@
-import { getServerSession } from 'next-auth'
-import { redirect } from 'next/navigation'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
-async function getStats() {
-  const [totalUsers, totalPurchases, totalRevenue, activeUsers] = await Promise.all([
-    prisma.user.count({ where: { role: 'USER' } }),
-    prisma.purchase.count({ where: { status: 'COMPLETED' } }),
-    prisma.purchase.aggregate({
-      where: { status: 'COMPLETED' },
-      _sum: { amount: true },
-    }),
-    prisma.user.count({
-      where: {
-        events: {
-          some: {
-            timestamp: {
-              gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
-            },
-          },
-        },
-      },
-    }),
-  ])
-
-  return {
-    totalUsers,
-    totalPurchases,
-    totalRevenue: totalRevenue._sum.amount || 0,
-    activeUsers,
-  }
+interface Stats {
+  totalUsers: number
+  totalPurchases: number
+  totalRevenue: number
+  activeUsers: number
+  totalLessons: number
+  publishedLessons: number
 }
 
-export default async function AdminDashboard() {
-  const session = await getServerSession(authOptions)
-  
-  if (!session || session.user.role !== 'ADMIN') {
-    redirect('/login')
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchStats()
+  }, [])
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch('/api/admin/stats')
+      if (res.ok) {
+        const data = await res.json()
+        setStats(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch stats:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const stats = await getStats()
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-white shadow">
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-            <Link href="/" className="text-blue-600 hover:text-blue-800">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
+              <p className="text-gray-600">Algorithms of Thinking and Cognition</p>
+            </div>
+            <Link 
+              href="/" 
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+            >
               ← Back to Site
             </Link>
           </div>
         </div>
-      </nav>
+      </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-gray-500 text-sm font-medium mb-2">Total Users</h3>
-            <p className="text-3xl font-bold text-gray-900">{stats.totalUsers}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+          <div className="bg-white rounded-xl shadow p-6">
+            <div className="text-3xl mb-2">👥</div>
+            <p className="text-gray-500 text-sm">Total Users</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {loading ? '...' : stats?.totalUsers || 0}
+            </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-gray-500 text-sm font-medium mb-2">Total Purchases</h3>
-            <p className="text-3xl font-bold text-gray-900">{stats.totalPurchases}</p>
+          <div className="bg-white rounded-xl shadow p-6">
+            <div className="text-3xl mb-2">🟢</div>
+            <p className="text-gray-500 text-sm">Active (7d)</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {loading ? '...' : stats?.activeUsers || 0}
+            </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-gray-500 text-sm font-medium mb-2">Total Revenue</h3>
-            <p className="text-3xl font-bold text-gray-900">${stats.totalRevenue.toFixed(2)}</p>
+          <div className="bg-white rounded-xl shadow p-6">
+            <div className="text-3xl mb-2">💳</div>
+            <p className="text-gray-500 text-sm">Purchases</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {loading ? '...' : stats?.totalPurchases || 0}
+            </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-gray-500 text-sm font-medium mb-2">Active Users (7d)</h3>
-            <p className="text-3xl font-bold text-gray-900">{stats.activeUsers}</p>
+          <div className="bg-white rounded-xl shadow p-6">
+            <div className="text-3xl mb-2">💰</div>
+            <p className="text-gray-500 text-sm">Revenue</p>
+            <p className="text-2xl font-bold text-green-600">
+              ${loading ? '...' : (stats?.totalRevenue || 0).toFixed(2)}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow p-6">
+            <div className="text-3xl mb-2">📚</div>
+            <p className="text-gray-500 text-sm">Total Lessons</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {loading ? '...' : stats?.totalLessons || 0}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow p-6">
+            <div className="text-3xl mb-2">✅</div>
+            <p className="text-gray-500 text-sm">Published</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {loading ? '...' : stats?.publishedLessons || 0}
+            </p>
           </div>
         </div>
 
-        {/* Navigation Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Quick Actions */}
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Link href="/admin/lessons" className="block">
+            <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition border-l-4 border-blue-500">
+              <div className="text-4xl mb-3">📝</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Manage Lessons</h3>
+              <p className="text-gray-600 text-sm">Add, edit, delete lessons. Manage content and slides.</p>
+            </div>
+          </Link>
+          
           <Link href="/admin/users" className="block">
-            <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-bold mb-2">Users & Sales</h3>
-              <p className="text-gray-600">Manage users, view purchases, and track enrollments</p>
+            <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition border-l-4 border-green-500">
+              <div className="text-4xl mb-3">👥</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Users & Sales</h3>
+              <p className="text-gray-600 text-sm">View users, purchases, and enrollment status.</p>
             </div>
           </Link>
-          <Link href="/admin/content" className="block">
-            <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-bold mb-2">Content Management</h3>
-              <p className="text-gray-600">Create and edit lessons, manage course content</p>
+          
+          <Link href="/admin/slides" className="block">
+            <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition border-l-4 border-purple-500">
+              <div className="text-4xl mb-3">🎬</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Slide Editor</h3>
+              <p className="text-gray-600 text-sm">Edit interactive lesson slides and audio.</p>
             </div>
           </Link>
-          <Link href="/admin/analytics" className="block">
-            <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-bold mb-2">Analytics</h3>
-              <p className="text-gray-600">View detailed analytics and reports</p>
+          
+          <Link href="/admin/settings" className="block">
+            <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition border-l-4 border-orange-500">
+              <div className="text-4xl mb-3">⚙️</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Settings</h3>
+              <p className="text-gray-600 text-sm">Course settings, pricing, and configuration.</p>
             </div>
           </Link>
         </div>
-      </div>
+
+        {/* Quick Links */}
+        <div className="bg-white rounded-xl shadow p-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Links</h2>
+          <div className="flex flex-wrap gap-3">
+            <Link 
+              href="/lessons" 
+              target="_blank"
+              className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition text-sm"
+            >
+              👁️ View Lessons Page
+            </Link>
+            <Link 
+              href="/admin/audio-generator" 
+              className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition text-sm"
+            >
+              🔊 Audio Generator
+            </Link>
+            <Link 
+              href="/api/health" 
+              target="_blank"
+              className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition text-sm"
+            >
+              🩺 Health Check
+            </Link>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition text-sm"
+            >
+              🔄 Refresh Stats
+            </button>
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
