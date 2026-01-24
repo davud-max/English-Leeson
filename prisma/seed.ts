@@ -221,7 +221,7 @@ async function main() {
         description: lessonData.description,
         content: lessonData.order === 1 ? LESSON_1_CONTENT : `# ${lessonData.title}\n\nContent coming soon...`,
         duration: lessonData.duration,
-        published: lessonData.order === 1, // Only lesson 1 is published initially
+        published: lessonData.order <= 8, // Lessons 1-8 are published
       },
     })
 

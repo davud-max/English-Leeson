@@ -61,11 +61,11 @@ const LESSONS = [
   },
   { 
     order: 8, 
-    title: '🔮 Cognitive Resonance I', 
+    title: '🧠 Theory of Cognitive Resonance', 
     description: 'How does thought arise? Two circuits of consciousness and the mechanism of resonance.',
     duration: 25,
-    available: false,
-    color: 'from-pink-500 to-rose-600'
+    available: true,
+    color: 'from-emerald-500 to-teal-600'
   },
   { 
     order: 9, 
@@ -168,22 +168,22 @@ export default function LessonsPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Your Progress</h2>
-              <p className="text-gray-600">7 of 17 lessons available • Complete all lessons to earn your certificate</p>
+              <p className="text-gray-600">8 of 17 lessons available • Complete all lessons to earn your certificate</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">7</div>
+                <div className="text-3xl font-bold text-blue-600">8</div>
                 <div className="text-sm text-gray-500">Available</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-400">10</div>
+                <div className="text-3xl font-bold text-gray-400">9</div>
                 <div className="text-sm text-gray-500">Locked</div>
               </div>
             </div>
           </div>
           <div className="mt-4">
             <div className="w-full bg-gray-200 rounded-full h-3">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style={{ width: '41%' }}></div>
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style={{ width: '47%' }}></div>
             </div>
           </div>
         </div>
