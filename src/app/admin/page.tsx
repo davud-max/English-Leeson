@@ -15,6 +15,8 @@ interface Stats {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [seeding, setSeeding] = useState(false)
+  const [seedMessage, setSeedMessage] = useState('')
 
   useEffect(() => {
     fetchStats()
@@ -31,6 +33,25 @@ export default function AdminDashboard() {
       console.error('Failed to fetch stats:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const seedDatabase = async () => {
+    setSeeding(true)
+    setSeedMessage('')
+    try {
+      const res = await fetch('/api/admin/seed', { method: 'POST' })
+      const data = await res.json()
+      if (res.ok) {
+        setSeedMessage(`✅ ${data.message}`)
+        fetchStats() // Refresh stats
+      } else {
+        setSeedMessage(`❌ Error: ${data.error}`)
+      }
+    } catch (error) {
+      setSeedMessage('❌ Failed to seed database')
+    } finally {
+      setSeeding(false)
     }
   }
 
@@ -101,6 +122,26 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Seed Database Section */}
+        {stats && stats.totalLessons === 0 && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
+            <h2 className="text-lg font-bold text-yellow-800 mb-2">⚠️ Database Empty</h2>
+            <p className="text-yellow-700 mb-4">
+              No lessons found in the database. Click the button below to seed the database with all 17 lessons.
+            </p>
+            <button
+              onClick={seedDatabase}
+              disabled={seeding}
+              className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 font-medium"
+            >
+              {seeding ? '⏳ Seeding...' : '🌱 Seed Database'}
+            </button>
+            {seedMessage && (
+              <p className="mt-3 text-sm">{seedMessage}</p>
+            )}
+          </div>
+        )}
+
         {/* Quick Actions */}
         <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -162,12 +203,25 @@ export default function AdminDashboard() {
               🩺 Health Check
             </Link>
             <button 
-              onClick={() => window.location.reload()}
+              onClick={seedDatabase}
+              disabled={seeding}
+              className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition text-sm disabled:opacity-50"
+            >
+              🌱 {seeding ? 'Seeding...' : 'Seed Database'}
+            </button>
+            <button 
+              onClick={() => {
+                fetchStats()
+                setSeedMessage('')
+              }}
               className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition text-sm"
             >
               🔄 Refresh Stats
             </button>
           </div>
+          {seedMessage && (
+            <p className="mt-3 text-sm">{seedMessage}</p>
+          )}
         </div>
       </main>
     </div>

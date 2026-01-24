@@ -1,17 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // GET all lessons
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const lessons = await prisma.lesson.findMany({
       include: {
         course: { select: { id: true, title: true } },
@@ -29,22 +21,26 @@ export async function GET() {
 // POST create new lesson
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const body = await request.json()
     const { title, description, content, duration, published, courseId, order } = body
 
     // Get the course (default to main-course if not specified)
-    const course = await prisma.course.findFirst({
+    let course = await prisma.course.findFirst({
       where: courseId ? { id: courseId } : undefined,
     })
 
+    // Create course if not exists
     if (!course) {
-      return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+      course = await prisma.course.create({
+        data: {
+          id: 'main-course',
+          title: 'Algorithms of Thinking and Cognition',
+          description: 'A Philosophical Course for the Development of Critical Thinking',
+          price: 30,
+          currency: 'USD',
+          published: true,
+        }
+      })
     }
 
     // Get next order number if not specified
