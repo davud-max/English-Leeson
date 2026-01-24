@@ -596,7 +596,7 @@ main().catch(console.error);`
                     <li>Вставьте page.tsx код в файл</li>
                     <li>Сохраните аудио скрипт: <code className="bg-purple-100 px-1 rounded">scripts/generate-lesson{lessonNumber}-audio.js</code></li>
                     <li>Запустите: <code className="bg-purple-100 px-1 rounded">node scripts/generate-lesson{lessonNumber}-audio.js</code></li>
-                    <li>Деплой: <code className="bg-purple-100 px-1 rounded">git add . && git commit -m "Add lesson {lessonNumber}" && git push</code></li>
+                    <li>Деплой: <code className="bg-purple-100 px-1 rounded">git add . &amp;&amp; git commit -m &apos;Add lesson {lessonNumber}&apos; &amp;&amp; git push</code></li>
                   </ol>
                 </div>
               </>
