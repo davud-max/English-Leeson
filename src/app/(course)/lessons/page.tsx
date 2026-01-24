@@ -69,18 +69,18 @@ const LESSONS = [
   },
   { 
     order: 9, 
-    title: '🌍 The Creation of the World', 
+    title: '📖 Sacred Text and Reality', 
     description: 'Heaven and earth, water and light — a philosophical analysis of the first chapter of Genesis.',
-    duration: 20,
-    available: false,
+    duration: 25,
+    available: true,
     color: 'from-sky-500 to-blue-600'
   },
   { 
     order: 10, 
-    title: '🔮 Cognitive Resonance II', 
-    description: 'How we think. Continuation of the topic.',
-    duration: 25,
-    available: false,
+    title: '📻 How Thought Finds Us', 
+    description: 'The radio receiver model of consciousness. How we catch thoughts through cognitive resonance.',
+    duration: 30,
+    available: true,
     color: 'from-fuchsia-500 to-pink-600'
   },
   { 
@@ -168,22 +168,22 @@ export default function LessonsPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Your Progress</h2>
-              <p className="text-gray-600">8 of 17 lessons available • Complete all lessons to earn your certificate</p>
+              <p className="text-gray-600">10 of 17 lessons available • Complete all lessons to earn your certificate</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">8</div>
+                <div className="text-3xl font-bold text-blue-600">10</div>
                 <div className="text-sm text-gray-500">Available</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-400">9</div>
+                <div className="text-3xl font-bold text-gray-400">7</div>
                 <div className="text-sm text-gray-500">Locked</div>
               </div>
             </div>
           </div>
           <div className="mt-4">
             <div className="w-full bg-gray-200 rounded-full h-3">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style={{ width: '47%' }}></div>
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style={{ width: '59%' }}></div>
             </div>
           </div>
         </div>
