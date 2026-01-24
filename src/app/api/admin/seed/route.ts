@@ -23,10 +23,18 @@ const LESSON_DESCRIPTIONS = [
 
 export async function POST() {
   try {
-    // Create or get course
+    // Step 1: Test database connection
+    console.log('Testing database connection...')
+    await prisma.$connect()
+    console.log('Database connected!')
+
+    // Step 2: Create or get course
+    console.log('Looking for existing course...')
     let course = await prisma.course.findFirst()
+    console.log('Existing course:', course)
     
     if (!course) {
+      console.log('Creating new course...')
       course = await prisma.course.create({
         data: {
           id: 'main-course',
@@ -37,37 +45,46 @@ export async function POST() {
           published: true,
         }
       })
+      console.log('Course created:', course)
     }
 
-    // Create lessons
+    // Step 3: Create lessons
     let created = 0
     let skipped = 0
+    const errors: string[] = []
 
     for (const lessonData of LESSON_DESCRIPTIONS) {
-      const existing = await prisma.lesson.findFirst({
-        where: {
-          courseId: course.id,
-          order: lessonData.order,
-        }
-      })
+      try {
+        const existing = await prisma.lesson.findFirst({
+          where: {
+            courseId: course.id,
+            order: lessonData.order,
+          }
+        })
 
-      if (existing) {
-        skipped++
-        continue
+        if (existing) {
+          skipped++
+          continue
+        }
+
+        await prisma.lesson.create({
+          data: {
+            courseId: course.id,
+            order: lessonData.order,
+            title: lessonData.title,
+            description: lessonData.description,
+            content: `# ${lessonData.title}\n\n${lessonData.description}\n\nContent coming soon...`,
+            duration: lessonData.duration,
+            published: lessonData.order <= 8,
+          }
+        })
+        created++
+        console.log(`Created lesson ${lessonData.order}: ${lessonData.title}`)
+      } catch (lessonError) {
+        const errMsg = `Lesson ${lessonData.order}: ${String(lessonError)}`
+        errors.push(errMsg)
+        console.error(errMsg)
       }
-
-      await prisma.lesson.create({
-        data: {
-          courseId: course.id,
-          order: lessonData.order,
-          title: lessonData.title,
-          description: lessonData.description,
-          content: `# ${lessonData.title}\n\n${lessonData.description}\n\nContent coming soon...`,
-          duration: lessonData.duration,
-          published: lessonData.order <= 8,
-        }
-      })
-      created++
     }
 
     return NextResponse.json({
@@ -76,16 +93,42 @@ export async function POST() {
       courseId: course.id,
       created,
       skipped,
+      errors: errors.length > 0 ? errors : undefined,
     })
   } catch (error) {
     console.error('Seed error:', error)
-    return NextResponse.json({ error: 'Seed failed', details: String(error) }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorStack = error instanceof Error ? error.stack : undefined
+    
+    return NextResponse.json({ 
+      error: 'Seed failed', 
+      message: errorMessage,
+      stack: errorStack,
+      type: error instanceof Error ? error.constructor.name : typeof error,
+    }, { status: 500 })
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ 
-    message: 'POST to this endpoint to seed the database',
-    lessons: LESSON_DESCRIPTIONS.length 
-  })
+  try {
+    // Test connection and show database status
+    await prisma.$connect()
+    
+    const courseCount = await prisma.course.count()
+    const lessonCount = await prisma.lesson.count()
+    
+    return NextResponse.json({ 
+      message: 'POST to this endpoint to seed the database',
+      lessons: LESSON_DESCRIPTIONS.length,
+      currentCourses: courseCount,
+      currentLessons: lessonCount,
+      databaseConnected: true,
+    })
+  } catch (error) {
+    return NextResponse.json({ 
+      message: 'Database connection failed',
+      error: error instanceof Error ? error.message : String(error),
+      databaseConnected: false,
+    }, { status: 500 })
+  }
 }

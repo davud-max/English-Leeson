@@ -17,6 +17,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [seeding, setSeeding] = useState(false)
   const [seedMessage, setSeedMessage] = useState('')
+  const [seedError, setSeedError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchStats()
@@ -39,19 +40,37 @@ export default function AdminDashboard() {
   const seedDatabase = async () => {
     setSeeding(true)
     setSeedMessage('')
+    setSeedError(null)
     try {
       const res = await fetch('/api/admin/seed', { method: 'POST' })
       const data = await res.json()
+      console.log('Seed response:', data)
+      
       if (res.ok) {
         setSeedMessage(`✅ ${data.message}`)
+        if (data.errors && data.errors.length > 0) {
+          setSeedError(`Warnings: ${data.errors.join(', ')}`)
+        }
         fetchStats() // Refresh stats
       } else {
         setSeedMessage(`❌ Error: ${data.error}`)
+        setSeedError(`Details: ${data.message || 'Unknown error'}\n${data.stack || ''}`)
       }
     } catch (error) {
       setSeedMessage('❌ Failed to seed database')
+      setSeedError(error instanceof Error ? error.message : String(error))
     } finally {
       setSeeding(false)
+    }
+  }
+
+  const checkDatabase = async () => {
+    try {
+      const res = await fetch('/api/admin/seed')
+      const data = await res.json()
+      alert(JSON.stringify(data, null, 2))
+    } catch (error) {
+      alert('Error: ' + String(error))
     }
   }
 
@@ -129,15 +148,28 @@ export default function AdminDashboard() {
             <p className="text-yellow-700 mb-4">
               No lessons found in the database. Click the button below to seed the database with all 17 lessons.
             </p>
-            <button
-              onClick={seedDatabase}
-              disabled={seeding}
-              className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 font-medium"
-            >
-              {seeding ? '⏳ Seeding...' : '🌱 Seed Database'}
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={seedDatabase}
+                disabled={seeding}
+                className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 font-medium"
+              >
+                {seeding ? '⏳ Seeding...' : '🌱 Seed Database'}
+              </button>
+              <button
+                onClick={checkDatabase}
+                className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
+              >
+                🔍 Check DB Status
+              </button>
+            </div>
             {seedMessage && (
-              <p className="mt-3 text-sm">{seedMessage}</p>
+              <p className="mt-3 text-sm font-medium">{seedMessage}</p>
+            )}
+            {seedError && (
+              <pre className="mt-2 p-3 bg-red-100 text-red-800 text-xs rounded overflow-auto max-h-40">
+                {seedError}
+              </pre>
             )}
           </div>
         )}
@@ -210,9 +242,16 @@ export default function AdminDashboard() {
               🌱 {seeding ? 'Seeding...' : 'Seed Database'}
             </button>
             <button 
+              onClick={checkDatabase}
+              className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition text-sm"
+            >
+              🔍 Check DB
+            </button>
+            <button 
               onClick={() => {
                 fetchStats()
                 setSeedMessage('')
+                setSeedError(null)
               }}
               className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition text-sm"
             >
@@ -220,7 +259,12 @@ export default function AdminDashboard() {
             </button>
           </div>
           {seedMessage && (
-            <p className="mt-3 text-sm">{seedMessage}</p>
+            <p className="mt-3 text-sm font-medium">{seedMessage}</p>
+          )}
+          {seedError && (
+            <pre className="mt-2 p-3 bg-red-100 text-red-800 text-xs rounded overflow-auto max-h-40">
+              {seedError}
+            </pre>
           )}
         </div>
       </main>
