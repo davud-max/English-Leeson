@@ -208,7 +208,7 @@ main().catch(console.error);`
               </pre>
             ) : (
               <div className="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
-                <p>Enter slide texts and click "Generate Script"</p>
+                <p>Enter slide texts and click Generate Script</p>
               </div>
             )}
 
@@ -220,7 +220,7 @@ main().catch(console.error);`
                   <li>Save it to <code className="bg-blue-100 px-1 rounded">scripts/generate-lesson{lessonNumber}-audio.js</code></li>
                   <li>Make sure edge-tts is installed: <code className="bg-blue-100 px-1 rounded">pip3 install edge-tts</code></li>
                   <li>Run: <code className="bg-blue-100 px-1 rounded">node scripts/generate-lesson{lessonNumber}-audio.js</code></li>
-                  <li>Push to git: <code className="bg-blue-100 px-1 rounded">git add . && git commit -m "Add audio" && git push</code></li>
+                  <li>Push to git: <code className="bg-blue-100 px-1 rounded">git add . &amp;&amp; git commit -m Add_audio &amp;&amp; git push</code></li>
                 </ol>
               </div>
             )}

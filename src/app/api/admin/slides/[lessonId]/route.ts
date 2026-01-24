@@ -20,8 +20,8 @@ function parseSlides(content: string): Slide[] {
   
   const slidesContent = slidesMatch[1]
   
-  // Parse each slide object
-  const slideRegex = /{\s*id:\s*(\d+),\s*title:\s*["']([^"']+)["'],\s*content:\s*[`"']([^`"']*(?:[`"'][^`"']*)*)[`"'],\s*emoji:\s*["']([^"']+)["'],\s*duration:\s*(\d+)\s*}/gs
+  // Parse each slide object - removed 's' flag for ES2017 compatibility
+  const slideRegex = /{\s*id:\s*(\d+),\s*title:\s*["']([^"']+)["'],\s*content:\s*[`"']([^`"']*)[`"'],\s*emoji:\s*["']([^"']+)["'],\s*duration:\s*(\d+)\s*}/g
   
   let match
   while ((match = slideRegex.exec(slidesContent)) !== null) {
