@@ -133,9 +133,9 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-4">
               <div className="text-5xl">🎓</div>
               <div>
-                <h2 className="text-2xl font-bold mb-1">Создать новый урок</h2>
+                <h2 className="text-2xl font-bold mb-1">🚀 Universal Lesson Creator</h2>
                 <p className="text-indigo-100">
-                  Введите текст на русском → Переведите на английский → Получите готовый page.tsx + аудио скрипт
+                  Введите текст на русском → Автоперевод → page.tsx + аудио скрипт + вопросы для теста + обновление списка уроков
                 </p>
               </div>
               <div className="ml-auto text-4xl">→</div>
@@ -167,9 +167,9 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           <Link href="/admin/create-lesson" className="block">
             <div className="bg-white rounded-xl shadow p-5 hover:shadow-lg transition border-l-4 border-indigo-500 h-full">
-              <div className="text-3xl mb-2">🎓</div>
-              <h3 className="font-bold text-gray-900 mb-1">Создать урок</h3>
-              <p className="text-gray-600 text-xs">RU → EN + page.tsx + audio</p>
+              <div className="text-3xl mb-2">🚀</div>
+              <h3 className="font-bold text-gray-900 mb-1">Lesson Creator</h3>
+              <p className="text-gray-600 text-xs">Full: page + audio + quiz</p>
             </div>
           </Link>
           

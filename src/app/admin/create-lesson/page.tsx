@@ -13,150 +13,95 @@ interface Slide {
   audioText: string
 }
 
+interface Question {
+  id: number
+  question: string
+  correct_answer: string
+  difficulty: 'easy' | 'hard'
+  points: number
+}
+
+interface GeneratedFiles {
+  pageTsx: string
+  audioScript: string
+  questionsJson: string
+  lessonsPageUpdate: string
+}
+
 export default function LessonCreatorPage() {
-  const [lessonNumber, setLessonNumber] = useState(9)
+  // Basic info
+  const [lessonNumber, setLessonNumber] = useState(22)
   const [lessonTitle, setLessonTitle] = useState('')
   const [lessonTitleEn, setLessonTitleEn] = useState('')
+  const [lessonDescription, setLessonDescription] = useState('')
+  const [lessonDuration, setLessonDuration] = useState(25)
+  const [lessonEmoji, setLessonEmoji] = useState('📖')
+  const [lessonColor, setLessonColor] = useState('from-blue-500 to-indigo-600')
+  
+  // Content
   const [slides, setSlides] = useState<Slide[]>([])
-  const [generatedCode, setGeneratedCode] = useState('')
-  const [audioScript, setAudioScript] = useState('')
-  const [activeTab, setActiveTab] = useState<'slides' | 'code' | 'audio'>('slides')
+  const [questions, setQuestions] = useState<Question[]>([])
+  
+  // Generated files
+  const [generatedFiles, setGeneratedFiles] = useState<GeneratedFiles | null>(null)
+  
+  // UI state
+  const [activeTab, setActiveTab] = useState<'input' | 'slides' | 'questions' | 'files'>('input')
   const [adminKey, setAdminKey] = useState('')
   const [isTranslating, setIsTranslating] = useState(false)
+  const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false)
   const [translatingSlide, setTranslatingSlide] = useState<number | null>(null)
+  const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
 
-  // Translate text using API
-  const translateText = async (text: string, type: 'title' | 'content' | 'audio'): Promise<string> => {
-    if (!adminKey) {
-      alert('Введите Admin Key')
-      return ''
-    }
+  // Color options
+  const colorOptions = [
+    { value: 'from-blue-500 to-indigo-600', label: '🔵 Blue' },
+    { value: 'from-green-500 to-emerald-600', label: '🟢 Green' },
+    { value: 'from-purple-500 to-violet-600', label: '🟣 Purple' },
+    { value: 'from-orange-500 to-red-600', label: '🟠 Orange' },
+    { value: 'from-teal-500 to-cyan-600', label: '🩵 Teal' },
+    { value: 'from-amber-500 to-yellow-600', label: '🟡 Amber' },
+    { value: 'from-rose-500 to-pink-600', label: '🩷 Rose' },
+    { value: 'from-emerald-500 to-green-600', label: '💚 Emerald' },
+    { value: 'from-indigo-500 to-blue-600', label: '💙 Indigo' },
+    { value: 'from-fuchsia-500 to-pink-600', label: '💜 Fuchsia' },
+  ]
+
+  // Emoji options
+  const emojiOptions = ['📖', '🔍', '💡', '📊', '🎯', '🧠', '✨', '📝', '🌟', '🔮', '🌐', '⚡', '🔄', '🌊', '👁️', '🎭', '💼', '💰', '📐', '🔢', '➖']
+
+  // ===== TRANSLATION API =====
+  const translateText = async (text: string, type: 'title' | 'content' | 'audio' | 'description'): Promise<string> => {
+    if (!adminKey) throw new Error('Admin Key required')
     if (!text.trim()) return ''
 
     const response = await fetch('/api/admin/translate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, type, adminKey }),
+      body: JSON.stringify({ text, type: type === 'description' ? 'content' : type, adminKey }),
     })
 
     const data = await response.json()
-    if (data.success) {
-      return data.result
-    } else {
-      throw new Error(data.error || 'Translation failed')
-    }
+    if (data.success) return data.result
+    throw new Error(data.error || 'Translation failed')
   }
 
-  // Translate lesson title
-  const translateTitle = async () => {
-    if (!lessonTitle.trim()) return
-    setIsTranslating(true)
-    try {
-      const translated = await translateText(lessonTitle, 'title')
-      if (translated) setLessonTitleEn(translated)
-    } catch (error) {
-      alert('Ошибка перевода: ' + (error instanceof Error ? error.message : 'Unknown'))
-    } finally {
-      setIsTranslating(false)
-    }
-  }
-
-  // Translate single slide
-  const translateSlide = async (slideId: number) => {
-    const slide = slides.find(s => s.id === slideId)
-    if (!slide) return
-
-    setTranslatingSlide(slideId)
-    try {
-      // Translate title
-      if (slide.title && !slide.titleEn) {
-        const titleEn = await translateText(slide.title, 'title')
-        updateSlide(slideId, 'titleEn', titleEn)
-      }
-
-      // Translate content
-      if (slide.content) {
-        const contentEn = await translateText(slide.content, 'content')
-        updateSlide(slideId, 'contentEn', contentEn)
-
-        // Generate audio text
-        const audioText = await translateText(slide.content, 'audio')
-        updateSlide(slideId, 'audioText', audioText)
-      }
-    } catch (error) {
-      alert('Ошибка перевода слайда: ' + (error instanceof Error ? error.message : 'Unknown'))
-    } finally {
-      setTranslatingSlide(null)
-    }
-  }
-
-  // Translate all slides
-  const translateAllSlides = async () => {
-    if (!adminKey) {
-      alert('Введите Admin Key')
-      return
-    }
-    
-    setIsTranslating(true)
-    try {
-      // First translate lesson title
-      if (lessonTitle && !lessonTitleEn) {
-        const titleEn = await translateText(lessonTitle, 'title')
-        setLessonTitleEn(titleEn)
-      }
-
-      // Then translate each slide
-      for (const slide of slides) {
-        setTranslatingSlide(slide.id)
-        
-        // Translate slide title
-        if (slide.title && !slide.titleEn) {
-          const titleEn = await translateText(slide.title, 'title')
-          updateSlide(slide.id, 'titleEn', titleEn)
-        }
-
-        // Translate content
-        if (slide.content && !slide.contentEn) {
-          const contentEn = await translateText(slide.content, 'content')
-          updateSlide(slide.id, 'contentEn', contentEn)
-        }
-
-        // Generate audio text
-        if (slide.content && !slide.audioText) {
-          const audioText = await translateText(slide.content, 'audio')
-          updateSlide(slide.id, 'audioText', audioText)
-        }
-
-        // Small delay between API calls
-        await new Promise(resolve => setTimeout(resolve, 500))
-      }
-    } catch (error) {
-      alert('Ошибка перевода: ' + (error instanceof Error ? error.message : 'Unknown'))
-    } finally {
-      setIsTranslating(false)
-      setTranslatingSlide(null)
-    }
-  }
-
-  // Parse Russian text into slides automatically
+  // ===== PARSE RUSSIAN TEXT INTO SLIDES =====
   const parseRussianText = (fullText: string) => {
-    // Split by double newlines or numbered sections
     const sections = fullText.split(/\n\n+/).filter(s => s.trim())
     
     const newSlides: Slide[] = sections.map((section, idx) => {
-      // Try to extract title from first line if it looks like a header
       const lines = section.trim().split('\n')
       let title = ''
       let content = section
 
-      // Check if first line is a title (short, no period at end, or starts with number/marker)
       const firstLine = lines[0].trim()
       if (
-        (firstLine.length < 80 && !firstLine.endsWith('.')) ||
+        (firstLine.length < 100 && !firstLine.endsWith('.')) ||
         /^[\d\.\)\-\*]+\s/.test(firstLine) ||
-        /^(Часть|Глава|Раздел|Введение|Заключение)/i.test(firstLine)
+        /^(Часть|Глава|Раздел|Введение|Заключение|Слайд)/i.test(firstLine)
       ) {
-        title = firstLine.replace(/^[\d\.\)\-\*]+\s*/, '')
+        title = firstLine.replace(/^[\d\.\)\-\*]+\s*/, '').replace(/^(Часть|Глава|Раздел|Слайд)\s*[\d:.\s]*/i, '')
         content = lines.slice(1).join('\n').trim()
       }
 
@@ -172,9 +117,10 @@ export default function LessonCreatorPage() {
     })
 
     setSlides(newSlides)
+    setStatus({ type: 'success', message: `Parsed ${newSlides.length} slides from Russian text` })
+    setActiveTab('slides')
   }
 
-  // Get appropriate emoji based on content
   const getEmojiForSection = (index: number, title: string): string => {
     const lowerTitle = title.toLowerCase()
     if (lowerTitle.includes('введен') || index === 0) return '📖'
@@ -182,13 +128,113 @@ export default function LessonCreatorPage() {
     if (lowerTitle.includes('пример')) return '💡'
     if (lowerTitle.includes('вывод') || lowerTitle.includes('заключ')) return '🎯'
     if (lowerTitle.includes('вопрос')) return '❓'
-    if (lowerTitle.includes('практик')) return '🛠️'
     
     const emojis = ['📖', '🔍', '💡', '📊', '🎯', '🧠', '✨', '📝', '🌟', '🔮']
     return emojis[index % emojis.length]
   }
 
-  // Add new slide
+  // ===== TRANSLATE ALL =====
+  const translateAll = async () => {
+    if (!adminKey) {
+      setStatus({ type: 'error', message: 'Enter Admin Key first' })
+      return
+    }
+    
+    setIsTranslating(true)
+    setStatus({ type: 'info', message: 'Translating...' })
+
+    try {
+      // Translate title
+      if (lessonTitle && !lessonTitleEn) {
+        const titleEn = await translateText(lessonTitle, 'title')
+        setLessonTitleEn(titleEn)
+      }
+
+      // Translate description
+      if (lessonDescription && !lessonDescription.includes('English')) {
+        const descEn = await translateText(lessonDescription, 'description')
+        setLessonDescription(descEn)
+      }
+
+      // Translate slides
+      for (let i = 0; i < slides.length; i++) {
+        const slide = slides[i]
+        setTranslatingSlide(slide.id)
+        
+        if (slide.title && !slide.titleEn) {
+          const titleEn = await translateText(slide.title, 'title')
+          updateSlide(slide.id, 'titleEn', titleEn)
+        }
+
+        if (slide.content && !slide.contentEn) {
+          const contentEn = await translateText(slide.content, 'content')
+          updateSlide(slide.id, 'contentEn', contentEn)
+        }
+
+        if (slide.content && !slide.audioText) {
+          const audioText = await translateText(slide.content, 'audio')
+          updateSlide(slide.id, 'audioText', audioText)
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 300))
+      }
+
+      setStatus({ type: 'success', message: 'Translation complete!' })
+    } catch (error) {
+      setStatus({ type: 'error', message: 'Translation error: ' + (error instanceof Error ? error.message : 'Unknown') })
+    } finally {
+      setIsTranslating(false)
+      setTranslatingSlide(null)
+    }
+  }
+
+  // ===== GENERATE QUESTIONS =====
+  const generateQuestions = async () => {
+    if (!adminKey) {
+      setStatus({ type: 'error', message: 'Enter Admin Key first' })
+      return
+    }
+
+    const lessonContent = slides.map(s => s.contentEn || s.content).join('\n\n')
+    if (!lessonContent.trim()) {
+      setStatus({ type: 'error', message: 'No content to generate questions from' })
+      return
+    }
+
+    setIsGeneratingQuestions(true)
+    setStatus({ type: 'info', message: 'Generating questions with Claude AI...' })
+
+    try {
+      const response = await fetch('/api/admin/generate-questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lessonId: lessonNumber,
+          lessonTitle: lessonTitleEn || lessonTitle,
+          lessonContent,
+          count: 5,
+          difficulty: 'mixed',
+          adminKey,
+        }),
+      })
+
+      const data = await response.json()
+      
+      if (data.success && data.questions) {
+        setQuestions(data.questions)
+        setStatus({ type: 'success', message: `Generated ${data.questions.length} questions` })
+        setActiveTab('questions')
+      } else {
+        throw new Error(data.error || 'Failed to generate questions')
+      }
+    } catch (error) {
+      setStatus({ type: 'error', message: 'Error: ' + (error instanceof Error ? error.message : 'Unknown') })
+    } finally {
+      setIsGeneratingQuestions(false)
+    }
+  }
+
+  // ===== SLIDE MANAGEMENT =====
   const addSlide = () => {
     const newId = slides.length > 0 ? Math.max(...slides.map(s => s.id)) + 1 : 1
     setSlides([...slides, {
@@ -202,17 +248,14 @@ export default function LessonCreatorPage() {
     }])
   }
 
-  // Update slide
   const updateSlide = (id: number, field: keyof Slide, value: string) => {
     setSlides(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s))
   }
 
-  // Remove slide
   const removeSlide = (id: number) => {
     setSlides(slides.filter(s => s.id !== id))
   }
 
-  // Move slide
   const moveSlide = (index: number, direction: 'up' | 'down') => {
     const newSlides = [...slides]
     const newIndex = direction === 'up' ? index - 1 : index + 1
@@ -221,17 +264,34 @@ export default function LessonCreatorPage() {
     setSlides(newSlides)
   }
 
-  // Generate page.tsx code
-  const generatePageCode = () => {
+  // ===== GENERATE ALL FILES =====
+  const generateAllFiles = () => {
+    if (slides.length === 0) {
+      setStatus({ type: 'error', message: 'Add slides first' })
+      return
+    }
+
+    const pageTsx = generatePageTsx()
+    const audioScript = generateAudioScript()
+    const questionsJson = generateQuestionsJson()
+    const lessonsPageUpdate = generateLessonsPageUpdate()
+
+    setGeneratedFiles({ pageTsx, audioScript, questionsJson, lessonsPageUpdate })
+    setActiveTab('files')
+    setStatus({ type: 'success', message: 'All files generated! Copy them to create the lesson.' })
+  }
+
+  // ===== FILE GENERATORS =====
+  const generatePageTsx = (): string => {
     const slidesCode = slides.map((slide, idx) => `  {
     id: ${idx + 1},
-    title: "${slide.titleEn.replace(/"/g, '\\"')}",
-    content: \`${slide.contentEn.trim().replace(/`/g, '\\`')}\`,
+    title: "${(slide.titleEn || slide.title).replace(/"/g, '\\"')}",
+    content: \`${(slide.contentEn || slide.content).trim().replace(/`/g, '\\`')}\`,
     emoji: "${slide.emoji}",
-    duration: ${Math.max(20000, (slide.audioText || slide.contentEn).length * 80)}
+    duration: ${Math.max(20000, (slide.audioText || slide.contentEn || slide.content).length * 80)}
   }`).join(',\n')
 
-    const code = `'use client'
+    return `'use client'
 
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
@@ -243,8 +303,6 @@ const VoiceQuiz = dynamic(() => import('@/components/quiz/VoiceQuiz'), { ssr: fa
 const LESSON_${lessonNumber}_SLIDES = [
 ${slidesCode}
 ];
-
-const LESSON_CONTENT = LESSON_${lessonNumber}_SLIDES.map(s => s.content).join('\\n\\n');
 
 export default function Lesson${lessonNumber}Page() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -463,7 +521,7 @@ export default function Lesson${lessonNumber}Page() {
         {/* Slide Navigation */}
         <div className="bg-white rounded-lg shadow border border-stone-200 p-6">
           <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-4">Lecture Sections</h3>
-          <div className="grid grid-cols-4 md:grid-cols-${Math.min(10, slides.length)} gap-2">
+          <div className="grid grid-cols-4 md:grid-cols-10 gap-2">
             {LESSON_${lessonNumber}_SLIDES.map((slide, index) => (
               <button
                 key={slide.id}
@@ -488,7 +546,7 @@ export default function Lesson${lessonNumber}Page() {
       {showQuiz && (
         <VoiceQuiz
           lessonId={${lessonNumber}}
-          lessonTitle="${lessonTitleEn.replace(/"/g, '\\"')}"
+          lessonTitle="${(lessonTitleEn || lessonTitle).replace(/"/g, '\\"')}"
           onClose={() => setShowQuiz(false)}
         />
       )}
@@ -505,10 +563,10 @@ export default function Lesson${lessonNumber}Page() {
             </Link>
             <span className="text-stone-500 text-sm font-serif">Lecture ${lessonNumber}</span>
             <Link 
-              href="/lessons/${lessonNumber + 1}"
+              href="/lessons"
               className="hover:text-white transition"
             >
-              Lecture ${lessonNumber + 1} →
+              All Lessons →
             </Link>
           </div>
         </div>
@@ -517,20 +575,16 @@ export default function Lesson${lessonNumber}Page() {
   );
 }
 `
-
-    setGeneratedCode(code)
-    setActiveTab('code')
   }
 
-  // Generate audio script
-  const generateAudioScript = () => {
+  const generateAudioScript = (): string => {
     const texts = slides.map((slide, idx) => {
-      const text = slide.audioText.trim() || slide.contentEn.replace(/[#*_`\n]/g, ' ').replace(/\s+/g, ' ').trim()
-      return `  // Slide ${idx + 1}: ${slide.titleEn}
+      const text = slide.audioText.trim() || (slide.contentEn || slide.content).replace(/[#*_`\n]/g, ' ').replace(/\s+/g, ' ').trim()
+      return `  // Slide ${idx + 1}: ${slide.titleEn || slide.title || 'Untitled'}
   \`${text.replace(/`/g, '\\`')}\`,`
     }).join('\n\n')
 
-    const script = `const { exec } = require('child_process');
+    return `const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
@@ -575,170 +629,261 @@ async function main() {
   console.log('🎉 Done!');
 }
 
-main().catch(console.error);`
-
-    setAudioScript(script)
-    setActiveTab('audio')
+main().catch(console.error);
+`
   }
 
-  const copyToClipboard = (text: string) => {
+  const generateQuestionsJson = (): string => {
+    const questionsData = questions.length > 0 ? questions : [
+      { id: 1, question: "Question 1 placeholder", correct_answer: "Answer placeholder", difficulty: "easy", points: 5 },
+      { id: 2, question: "Question 2 placeholder", correct_answer: "Answer placeholder", difficulty: "easy", points: 5 },
+      { id: 3, question: "Question 3 placeholder", correct_answer: "Answer placeholder", difficulty: "hard", points: 15 },
+      { id: 4, question: "Question 4 placeholder", correct_answer: "Answer placeholder", difficulty: "hard", points: 15 },
+      { id: 5, question: "Question 5 placeholder", correct_answer: "Answer placeholder", difficulty: "hard", points: 15 },
+    ]
+
+    return JSON.stringify({
+      lessonId: lessonNumber,
+      lessonTitle: lessonTitleEn || lessonTitle,
+      generatedAt: new Date().toISOString(),
+      questions: questionsData,
+    }, null, 2)
+  }
+
+  const generateLessonsPageUpdate = (): string => {
+    return `// Add this to the LESSONS array in src/app/(course)/lessons/page.tsx:
+
+  { 
+    order: ${lessonNumber}, 
+    title: '${lessonEmoji} ${lessonTitleEn || lessonTitle}', 
+    description: '${lessonDescription.replace(/'/g, "\\'")}',
+    duration: ${lessonDuration},
+    available: true,
+    color: '${lessonColor}'
+  },
+
+// Don't forget to update the statistics at the top of the page:
+// - Change "X of Y lessons available" 
+// - Update the Available/Locked counts
+// - Adjust the progress bar width percentage`
+  }
+
+  const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text)
-    alert('Скопировано!')
+    setStatus({ type: 'success', message: `${label} copied to clipboard!` })
   }
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <header className="bg-white shadow">
+      <header className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">🎓 Создание урока</h1>
-              <p className="text-gray-600 text-sm">Русский текст → Claude AI перевод → page.tsx + аудио</p>
+              <h1 className="text-2xl font-bold">🎓 Universal Lesson Creator</h1>
+              <p className="text-indigo-200 text-sm">Create complete lessons with translation, audio, and quiz</p>
             </div>
-            <Link href="/admin" className="px-4 py-2 text-gray-600 hover:text-gray-900">
+            <Link href="/admin" className="px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition">
               ← Dashboard
             </Link>
           </div>
         </div>
       </header>
 
+      {/* Status Bar */}
+      {status && (
+        <div className={`px-4 py-3 text-center text-sm font-medium ${
+          status.type === 'success' ? 'bg-green-100 text-green-800' :
+          status.type === 'error' ? 'bg-red-100 text-red-800' :
+          'bg-blue-100 text-blue-800'
+        }`}>
+          {status.message}
+        </div>
+      )}
+
       {/* Admin Key */}
       <div className="max-w-7xl mx-auto px-4 pt-4">
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center gap-4">
-          <label className="text-sm font-medium text-amber-800">🔑 Admin Key:</label>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-4">
+          <label className="text-sm font-medium text-amber-800 whitespace-nowrap">🔑 Admin Key:</label>
           <input
             type="password"
             value={adminKey}
             onChange={(e) => setAdminKey(e.target.value)}
-            placeholder="Введите ключ для перевода..."
-            className="flex-1 px-3 py-2 border border-amber-300 rounded-lg focus:outline-none focus:border-amber-500"
+            placeholder="Required for translation and question generation..."
+            className="flex-1 px-3 py-2 border border-amber-300 rounded-lg focus:outline-none focus:border-amber-500 text-sm"
           />
-          <span className="text-xs text-amber-600">Требуется для автоматического перевода через Claude AI</span>
         </div>
       </div>
 
-      {/* Lesson Info */}
+      {/* Tabs */}
       <div className="max-w-7xl mx-auto px-4 pt-4">
-        <div className="bg-white rounded-lg shadow p-4 mb-4">
-          <div className="grid grid-cols-5 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Номер урока</label>
-              <input
-                type="number"
-                value={lessonNumber}
-                onChange={(e) => setLessonNumber(parseInt(e.target.value) || 9)}
-                className="w-full px-3 py-2 border rounded-lg"
-                min="1"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Название (RU)</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={lessonTitle}
-                  onChange={(e) => setLessonTitle(e.target.value)}
-                  className="flex-1 px-3 py-2 border rounded-lg bg-yellow-50"
-                  placeholder="Теория когнитивного резонанса"
-                />
-                <button
-                  onClick={translateTitle}
-                  disabled={isTranslating || !lessonTitle.trim() || !adminKey}
-                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm whitespace-nowrap"
-                >
-                  {isTranslating ? '...' : '🌐 →'}
-                </button>
-              </div>
-            </div>
-            <div className="col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Название (EN)</label>
-              <input
-                type="text"
-                value={lessonTitleEn}
-                onChange={(e) => setLessonTitleEn(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg bg-blue-50"
-                placeholder="Theory of Cognitive Resonance"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Russian Text Input */}
-        <div className="bg-white rounded-lg shadow p-4 mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-medium text-gray-700">📝 Быстрый ввод текста урока (RU)</label>
-            <button
-              onClick={() => {
-                const textarea = document.getElementById('fullRussianText') as HTMLTextAreaElement
-                if (textarea?.value) {
-                  parseRussianText(textarea.value)
-                  textarea.value = ''
-                }
-              }}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
-            >
-              📋 Разбить на слайды
-            </button>
-          </div>
-          <textarea
-            id="fullRussianText"
-            className="w-full px-3 py-2 border rounded-lg bg-yellow-50 text-sm"
-            rows={4}
-            placeholder="Вставьте полный текст урока на русском. Разделяйте разделы пустыми строками. Система автоматически разобьёт на слайды..."
-          />
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-2 border-b bg-white rounded-t-lg px-4">
+        <div className="flex gap-1 bg-white rounded-t-lg border-b">
           {[
-            { id: 'slides', label: 'Слайды', icon: '🎬', count: slides.length },
-            { id: 'code', label: 'Код page.tsx', icon: '💻' },
-            { id: 'audio', label: 'Аудио скрипт', icon: '🔊' },
+            { id: 'input', label: '1️⃣ Input', icon: '📝' },
+            { id: 'slides', label: '2️⃣ Slides', icon: '🎬', count: slides.length },
+            { id: 'questions', label: '3️⃣ Questions', icon: '❓', count: questions.length },
+            { id: 'files', label: '4️⃣ Files', icon: '📁' },
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`px-4 py-3 font-medium transition border-b-2 ${
+              className={`px-5 py-3 font-medium transition border-b-2 ${
                 activeTab === tab.id
-                  ? 'text-blue-600 border-blue-600'
+                  ? 'text-indigo-600 border-indigo-600 bg-indigo-50'
                   : 'text-gray-500 hover:text-gray-700 border-transparent'
               }`}
             >
-              {tab.icon} {tab.label} {'count' in tab ? `(${tab.count})` : ''}
+              {tab.icon} {tab.label} {'count' in tab && tab.count ? `(${tab.count})` : ''}
             </button>
           ))}
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 pb-6">
-        {/* Tab: Slides */}
+      <main className="max-w-7xl mx-auto px-4 pb-8">
+        {/* TAB: INPUT */}
+        {activeTab === 'input' && (
+          <div className="bg-white rounded-b-lg shadow p-6">
+            <div className="grid grid-cols-2 gap-6">
+              {/* Left: Lesson Info */}
+              <div className="space-y-4">
+                <h3 className="font-bold text-gray-800 border-b pb-2">📋 Lesson Information</h3>
+                
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Lesson #</label>
+                    <input
+                      type="number"
+                      value={lessonNumber}
+                      onChange={(e) => setLessonNumber(parseInt(e.target.value) || 1)}
+                      className="w-full px-3 py-2 border rounded-lg"
+                      min="1"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Duration (min)</label>
+                    <input
+                      type="number"
+                      value={lessonDuration}
+                      onChange={(e) => setLessonDuration(parseInt(e.target.value) || 25)}
+                      className="w-full px-3 py-2 border rounded-lg"
+                      min="5"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Emoji</label>
+                    <select
+                      value={lessonEmoji}
+                      onChange={(e) => setLessonEmoji(e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg"
+                    >
+                      {emojiOptions.map(e => <option key={e} value={e}>{e}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Title (RU)</label>
+                  <input
+                    type="text"
+                    value={lessonTitle}
+                    onChange={(e) => setLessonTitle(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg bg-yellow-50"
+                    placeholder="Название урока на русском..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Title (EN)</label>
+                  <input
+                    type="text"
+                    value={lessonTitleEn}
+                    onChange={(e) => setLessonTitleEn(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg bg-blue-50"
+                    placeholder="Lesson title in English..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Description (EN) — for lessons list</label>
+                  <textarea
+                    value={lessonDescription}
+                    onChange={(e) => setLessonDescription(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg bg-blue-50"
+                    rows={2}
+                    placeholder="Short description for the lessons page..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Card Color</label>
+                  <select
+                    value={lessonColor}
+                    onChange={(e) => setLessonColor(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  >
+                    {colorOptions.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {/* Right: Russian Text Input */}
+              <div className="space-y-4">
+                <h3 className="font-bold text-gray-800 border-b pb-2">📝 Lesson Content (Russian)</h3>
+                <p className="text-xs text-gray-500">
+                  Paste the full Russian text. Separate sections with empty lines. First line of each section becomes the title.
+                </p>
+                <textarea
+                  id="fullRussianText"
+                  className="w-full px-3 py-2 border rounded-lg bg-yellow-50 text-sm font-mono"
+                  rows={15}
+                  placeholder="Введение
+
+Первый раздел урока. Текст первого раздела...
+
+Второй раздел
+
+Текст второго раздела..."
+                />
+                <button
+                  onClick={() => {
+                    const textarea = document.getElementById('fullRussianText') as HTMLTextAreaElement
+                    if (textarea?.value) {
+                      parseRussianText(textarea.value)
+                    }
+                  }}
+                  className="w-full py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition"
+                >
+                  📋 Parse into Slides →
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB: SLIDES */}
         {activeTab === 'slides' && (
-          <div className="bg-white rounded-b-lg shadow p-4">
+          <div className="bg-white rounded-b-lg shadow p-6">
             <div className="flex justify-between items-center mb-4">
-              <p className="text-sm text-gray-600">
-                Введите русский текст слева → нажмите 🌐 для автоперевода → проверьте результат
-              </p>
+              <div className="text-sm text-gray-600">
+                {slides.length} slides • Russian → English translation
+              </div>
               <div className="flex gap-2">
-                <button
-                  onClick={addSlide}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                >
-                  + Слайд
+                <button onClick={addSlide} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm">
+                  + Add Slide
                 </button>
                 <button
-                  onClick={translateAllSlides}
+                  onClick={translateAll}
                   disabled={isTranslating || slides.length === 0 || !adminKey}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm"
                 >
-                  {isTranslating ? '⏳ Перевод...' : '🌐 Перевести всё'}
+                  {isTranslating ? '⏳ Translating...' : '🌐 Translate All'}
                 </button>
                 <button
-                  onClick={generatePageCode}
-                  disabled={slides.length === 0 || !lessonTitleEn}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                  onClick={() => setActiveTab('questions')}
+                  disabled={slides.length === 0}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm"
                 >
-                  Генерировать код →
+                  Next: Questions →
                 </button>
               </div>
             </div>
@@ -746,47 +891,35 @@ main().catch(console.error);`
             {slides.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <div className="text-5xl mb-4">📝</div>
-                <p>Вставьте текст выше и нажмите «Разбить на слайды» или добавьте слайды вручную</p>
+                <p>Go to Input tab and paste Russian text, then click "Parse into Slides"</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                 {slides.map((slide, idx) => (
                   <div key={slide.id} className={`border rounded-lg p-4 ${translatingSlide === slide.id ? 'bg-blue-50 border-blue-300' : 'bg-gray-50'}`}>
-                    {/* Slide Header */}
                     <div className="flex items-center gap-3 mb-3">
                       <span className="font-bold text-gray-500 w-8">#{idx + 1}</span>
-                      <input
-                        type="text"
+                      <select
                         value={slide.emoji}
                         onChange={(e) => updateSlide(slide.id, 'emoji', e.target.value)}
-                        className="w-12 text-center text-xl border rounded"
-                        maxLength={2}
-                      />
+                        className="w-16 text-center text-xl border rounded"
+                      >
+                        {emojiOptions.map(e => <option key={e} value={e}>{e}</option>)}
+                      </select>
                       <div className="flex-1 grid grid-cols-2 gap-2">
-                        <div className="flex gap-1">
-                          <input
-                            type="text"
-                            value={slide.title}
-                            onChange={(e) => updateSlide(slide.id, 'title', e.target.value)}
-                            className="flex-1 px-3 py-1 border rounded bg-yellow-50"
-                            placeholder="Заголовок (RU)"
-                          />
-                        </div>
                         <input
-                          type="text"
+                          value={slide.title}
+                          onChange={(e) => updateSlide(slide.id, 'title', e.target.value)}
+                          className="px-3 py-1 border rounded bg-yellow-50 text-sm"
+                          placeholder="Заголовок (RU)"
+                        />
+                        <input
                           value={slide.titleEn}
                           onChange={(e) => updateSlide(slide.id, 'titleEn', e.target.value)}
-                          className="px-3 py-1 border rounded bg-blue-50"
+                          className="px-3 py-1 border rounded bg-blue-50 text-sm"
                           placeholder="Title (EN)"
                         />
                       </div>
-                      <button
-                        onClick={() => translateSlide(slide.id)}
-                        disabled={translatingSlide === slide.id || !adminKey}
-                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 text-sm"
-                      >
-                        {translatingSlide === slide.id ? '⏳' : '🌐'}
-                      </button>
                       <div className="flex gap-1">
                         <button onClick={() => moveSlide(idx, 'up')} disabled={idx === 0} className="px-2 py-1 text-gray-400 hover:text-gray-600 disabled:opacity-30">↑</button>
                         <button onClick={() => moveSlide(idx, 'down')} disabled={idx === slides.length - 1} className="px-2 py-1 text-gray-400 hover:text-gray-600 disabled:opacity-30">↓</button>
@@ -794,39 +927,20 @@ main().catch(console.error);`
                       </div>
                     </div>
 
-                    {/* Content */}
                     <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs text-gray-500 mb-1">Текст слайда (RU)</label>
-                        <textarea
-                          value={slide.content}
-                          onChange={(e) => updateSlide(slide.id, 'content', e.target.value)}
-                          className="w-full px-3 py-2 border rounded text-sm bg-yellow-50"
-                          rows={4}
-                          placeholder="Содержимое на русском..."
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs text-gray-500 mb-1">Content (EN) — Markdown с **bold** и &gt; цитаты</label>
-                        <textarea
-                          value={slide.contentEn}
-                          onChange={(e) => updateSlide(slide.id, 'contentEn', e.target.value)}
-                          className="w-full px-3 py-2 border rounded text-sm font-mono bg-blue-50"
-                          rows={4}
-                          placeholder="**Bold** text, > blockquotes..."
-                        />
-                      </div>
-                    </div>
-
-                    {/* Audio Text */}
-                    <div className="mt-3">
-                      <label className="block text-xs text-gray-500 mb-1">🔊 Текст для озвучки (EN) — plain text без markdown</label>
                       <textarea
-                        value={slide.audioText}
-                        onChange={(e) => updateSlide(slide.id, 'audioText', e.target.value)}
-                        className="w-full px-3 py-2 border rounded text-sm bg-green-50"
-                        rows={2}
-                        placeholder="Автозаполняется при переводе..."
+                        value={slide.content}
+                        onChange={(e) => updateSlide(slide.id, 'content', e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-sm bg-yellow-50"
+                        rows={3}
+                        placeholder="Текст (RU)..."
+                      />
+                      <textarea
+                        value={slide.contentEn}
+                        onChange={(e) => updateSlide(slide.id, 'contentEn', e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-sm font-mono bg-blue-50"
+                        rows={3}
+                        placeholder="Content (EN) with **bold** and > quotes..."
                       />
                     </div>
                   </div>
@@ -836,90 +950,138 @@ main().catch(console.error);`
           </div>
         )}
 
-        {/* Tab: Code */}
-        {activeTab === 'code' && (
-          <div className="bg-white rounded-b-lg shadow">
-            <div className="p-4 border-b flex justify-between items-center">
-              <div>
-                <span className="font-bold">page.tsx</span>
-                <span className="text-gray-500 text-sm ml-2">→ src/app/(course)/lessons/{lessonNumber}/page.tsx</span>
+        {/* TAB: QUESTIONS */}
+        {activeTab === 'questions' && (
+          <div className="bg-white rounded-b-lg shadow p-6">
+            <div className="flex justify-between items-center mb-4">
+              <div className="text-sm text-gray-600">
+                {questions.length} questions for Voice Quiz
               </div>
               <div className="flex gap-2">
-                {!generatedCode && (
-                  <button
-                    onClick={generatePageCode}
-                    disabled={slides.length === 0}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                  >
-                    Генерировать
-                  </button>
-                )}
                 <button
-                  onClick={() => copyToClipboard(generatedCode)}
-                  disabled={!generatedCode}
-                  className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                  onClick={generateQuestions}
+                  disabled={isGeneratingQuestions || slides.length === 0 || !adminKey}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm"
                 >
-                  📋 Копировать
+                  {isGeneratingQuestions ? '⏳ Generating...' : '🤖 Generate with AI'}
                 </button>
                 <button
-                  onClick={generateAudioScript}
+                  onClick={generateAllFiles}
                   disabled={slides.length === 0}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 text-sm"
                 >
-                  🔊 Аудио скрипт →
+                  Generate All Files →
                 </button>
               </div>
             </div>
-            
-            {generatedCode ? (
-              <pre className="p-4 bg-gray-900 text-green-400 overflow-auto text-xs max-h-[65vh] rounded-b-lg">
-                {generatedCode}
-              </pre>
+
+            {questions.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <div className="text-5xl mb-4">❓</div>
+                <p>Click "Generate with AI" to create quiz questions from lesson content</p>
+              </div>
             ) : (
-              <div className="p-12 text-center text-gray-500">
-                Создайте слайды и нажмите «Генерировать»
+              <div className="space-y-3">
+                {questions.map((q, i) => (
+                  <div key={q.id} className="bg-gray-50 border rounded-lg p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-800">Q{i + 1}: {q.question}</p>
+                        <p className="text-sm text-gray-600 mt-1">✓ {q.correct_answer}</p>
+                      </div>
+                      <span className={`px-2 py-1 rounded text-xs ${q.difficulty === 'hard' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                        {q.difficulty === 'hard' ? '🔥 Hard' : '📗 Easy'} • {q.points}pts
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
         )}
 
-        {/* Tab: Audio */}
-        {activeTab === 'audio' && (
-          <div className="bg-white rounded-b-lg shadow">
-            <div className="p-4 border-b flex justify-between items-center">
-              <div>
-                <span className="font-bold">generate-lesson{lessonNumber}-audio.js</span>
-                <span className="text-gray-500 text-sm ml-2">→ scripts/</span>
+        {/* TAB: FILES */}
+        {activeTab === 'files' && (
+          <div className="bg-white rounded-b-lg shadow p-6">
+            {!generatedFiles ? (
+              <div className="text-center py-12">
+                <div className="text-5xl mb-4">📁</div>
+                <p className="text-gray-500 mb-4">Generate all lesson files</p>
+                <button
+                  onClick={generateAllFiles}
+                  disabled={slides.length === 0}
+                  className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  🚀 Generate All Files
+                </button>
               </div>
-              <button
-                onClick={() => copyToClipboard(audioScript)}
-                disabled={!audioScript}
-                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
-              >
-                📋 Копировать
-              </button>
-            </div>
-            
-            {audioScript ? (
-              <>
-                <pre className="p-4 bg-gray-900 text-green-400 overflow-auto text-xs max-h-[50vh]">
-                  {audioScript}
-                </pre>
-                <div className="p-4 bg-purple-50 border-t">
-                  <h3 className="font-bold text-purple-900 mb-2">📖 Инструкция:</h3>
-                  <ol className="text-sm text-purple-800 space-y-2 list-decimal list-inside">
-                    <li>Создайте папку: <code className="bg-purple-100 px-1 rounded">mkdir -p src/app/\(course\)/lessons/{lessonNumber}</code></li>
-                    <li>Вставьте page.tsx код в файл</li>
-                    <li>Сохраните аудио скрипт: <code className="bg-purple-100 px-1 rounded">scripts/generate-lesson{lessonNumber}-audio.js</code></li>
-                    <li>Запустите: <code className="bg-purple-100 px-1 rounded">node scripts/generate-lesson{lessonNumber}-audio.js</code></li>
-                    <li>Сгенерируйте вопросы для теста: <code className="bg-purple-100 px-1 rounded">/admin/questions</code></li>
-                    <li>Деплой: <code className="bg-purple-100 px-1 rounded">git add . && git commit -m &apos;Add lesson {lessonNumber}&apos; && git push</code></li>
+            ) : (
+              <div className="space-y-6">
+                {/* Instructions */}
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                  <h3 className="font-bold text-indigo-900 mb-2">📖 How to create the lesson:</h3>
+                  <ol className="text-sm text-indigo-800 space-y-1 list-decimal list-inside">
+                    <li>Create folder: <code className="bg-indigo-100 px-1 rounded">mkdir -p src/app/(course)/lessons/{lessonNumber}</code></li>
+                    <li>Copy <strong>page.tsx</strong> content below into that folder</li>
+                    <li>Copy <strong>Audio Script</strong> into <code className="bg-indigo-100 px-1 rounded">scripts/generate-lesson{lessonNumber}-audio.js</code></li>
+                    <li>Run: <code className="bg-indigo-100 px-1 rounded">node scripts/generate-lesson{lessonNumber}-audio.js</code></li>
+                    <li>Copy <strong>questions.json</strong> into <code className="bg-indigo-100 px-1 rounded">public/data/questions/lesson{lessonNumber}.json</code></li>
+                    <li>Update <strong>lessons/page.tsx</strong> with the new lesson entry</li>
+                    <li>Commit & push: <code className="bg-indigo-100 px-1 rounded">git add . && git commit -m "Add lesson {lessonNumber}" && git push</code></li>
                   </ol>
                 </div>
-              </>
-            ) : (
-              <div className="p-12 text-center text-gray-500">
-                Сначала сгенерируйте код, затем нажмите «Аудио скрипт»
+
+                {/* File: page.tsx */}
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="bg-gray-100 px-4 py-2 flex justify-between items-center">
+                    <span className="font-mono text-sm">src/app/(course)/lessons/{lessonNumber}/page.tsx</span>
+                    <button onClick={() => copyToClipboard(generatedFiles.pageTsx, 'page.tsx')} className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">
+                      📋 Copy
+                    </button>
+                  </div>
+                  <pre className="p-4 bg-gray-900 text-green-400 overflow-auto text-xs max-h-64">
+                    {generatedFiles.pageTsx.substring(0, 2000)}...
+                  </pre>
+                </div>
+
+                {/* File: Audio Script */}
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="bg-gray-100 px-4 py-2 flex justify-between items-center">
+                    <span className="font-mono text-sm">scripts/generate-lesson{lessonNumber}-audio.js</span>
+                    <button onClick={() => copyToClipboard(generatedFiles.audioScript, 'Audio Script')} className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">
+                      📋 Copy
+                    </button>
+                  </div>
+                  <pre className="p-4 bg-gray-900 text-green-400 overflow-auto text-xs max-h-48">
+                    {generatedFiles.audioScript.substring(0, 1500)}...
+                  </pre>
+                </div>
+
+                {/* File: Questions JSON */}
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="bg-gray-100 px-4 py-2 flex justify-between items-center">
+                    <span className="font-mono text-sm">public/data/questions/lesson{lessonNumber}.json</span>
+                    <button onClick={() => copyToClipboard(generatedFiles.questionsJson, 'Questions JSON')} className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">
+                      📋 Copy
+                    </button>
+                  </div>
+                  <pre className="p-4 bg-gray-900 text-green-400 overflow-auto text-xs max-h-48">
+                    {generatedFiles.questionsJson}
+                  </pre>
+                </div>
+
+                {/* File: Lessons Page Update */}
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="bg-gray-100 px-4 py-2 flex justify-between items-center">
+                    <span className="font-mono text-sm">Update: src/app/(course)/lessons/page.tsx</span>
+                    <button onClick={() => copyToClipboard(generatedFiles.lessonsPageUpdate, 'Lessons Update')} className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">
+                      📋 Copy
+                    </button>
+                  </div>
+                  <pre className="p-4 bg-gray-900 text-yellow-400 overflow-auto text-xs">
+                    {generatedFiles.lessonsPageUpdate}
+                  </pre>
+                </div>
               </div>
             )}
           </div>
