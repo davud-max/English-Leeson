@@ -316,7 +316,13 @@ export default function Lesson14() {
     const audio = new Audio(PRESENTATION_SLIDES[currentSlide].audioFile);
     audio.volume = isMuted ? 0 : 1;
     
+    // Add user interaction requirement for autoplay
+    audio.onplay = () => {
+      console.log('Audio started playing');
+    };
+    
     audio.onended = () => {
+      console.log('Audio finished');
       if (currentSlide < PRESENTATION_SLIDES.length - 1) {
         setCurrentSlide(prev => prev + 1);
       } else {
@@ -326,22 +332,65 @@ export default function Lesson14() {
     
     audio.onerror = (event) => {
       console.error('Audio playback error:', event);
+      // Try fallback to Web Speech API if file fails
+      console.log('Falling back to Web Speech API');
+      speakCurrentSlideText();
     };
     
-    audio.play().catch(error => {
-      console.error('Failed to play audio:', error);
-    });
+    // Attempt to play with user gesture
+    const playPromise = audio.play();
     
-    setCurrentAudio(audio);
-    
-    // Update progress bar
-    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-    progressIntervalRef.current = setInterval(() => {
-      if (currentAudio) {
-        const progressPercent = (currentAudio.currentTime / currentAudio.duration) * 100;
-        setProgress(isNaN(progressPercent) ? 0 : progressPercent);
-      }
-    }, 100);
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          console.log('Audio playback started successfully');
+          setCurrentAudio(audio);
+          
+          // Update progress bar
+          if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+          progressIntervalRef.current = setInterval(() => {
+            if (audio) {
+              const progressPercent = (audio.currentTime / audio.duration) * 100;
+              setProgress(isNaN(progressPercent) ? 0 : progressPercent);
+            }
+          }, 100);
+        })
+        .catch(error => {
+          console.error('Failed to play audio:', error);
+          // Fallback to speech synthesis
+          console.log('Using Web Speech API fallback');
+          speakCurrentSlideText();
+        });
+    }
+  };
+
+  // Fallback function using Web Speech API
+  const speakCurrentSlideText = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      const textContent = PRESENTATION_SLIDES[currentSlide].content
+        .replace(/##.*\n/g, '') // Remove headers
+        .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+        .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
+        .replace(/[>]/g, '') // Remove quotes
+        .replace(/\n+/g, ' ')
+        .trim();
+      
+      const utterance = new SpeechSynthesisUtterance(textContent);
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      utterance.volume = isMuted ? 0 : 1;
+      
+      utterance.onend = () => {
+        if (currentSlide < PRESENTATION_SLIDES.length - 1) {
+          setCurrentSlide(prev => prev + 1);
+        } else {
+          setIsPlaying(false);
+        }
+      };
+      
+      speechSynthesis.speak(utterance);
+      console.log('Using Web Speech API fallback');
+    }
   };
 
   const stopAudio = () => {
