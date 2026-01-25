@@ -106,10 +106,10 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      const win = window as Window & { SpeechRecognition?: new () => SpeechRecognitionType; webkitSpeechRecognition?: new () => SpeechRecognitionType }
+      const SpeechRecognitionClass = win.SpeechRecognition || win.webkitSpeechRecognition
       if (SpeechRecognitionClass) {
-        const recognition = new SpeechRecognitionClass() as SpeechRecognitionType
+        const recognition = new SpeechRecognitionClass()
         recognition.lang = 'en-US'
         recognition.continuous = false
         recognition.interimResults = true
