@@ -21,6 +21,172 @@ export default function LessonCreatorPage() {
   const [generatedCode, setGeneratedCode] = useState('')
   const [audioScript, setAudioScript] = useState('')
   const [activeTab, setActiveTab] = useState<'slides' | 'code' | 'audio'>('slides')
+  const [adminKey, setAdminKey] = useState('')
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [translatingSlide, setTranslatingSlide] = useState<number | null>(null)
+
+  // Translate text using API
+  const translateText = async (text: string, type: 'title' | 'content' | 'audio'): Promise<string> => {
+    if (!adminKey) {
+      alert('Введите Admin Key')
+      return ''
+    }
+    if (!text.trim()) return ''
+
+    const response = await fetch('/api/admin/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, type, adminKey }),
+    })
+
+    const data = await response.json()
+    if (data.success) {
+      return data.result
+    } else {
+      throw new Error(data.error || 'Translation failed')
+    }
+  }
+
+  // Translate lesson title
+  const translateTitle = async () => {
+    if (!lessonTitle.trim()) return
+    setIsTranslating(true)
+    try {
+      const translated = await translateText(lessonTitle, 'title')
+      if (translated) setLessonTitleEn(translated)
+    } catch (error) {
+      alert('Ошибка перевода: ' + (error instanceof Error ? error.message : 'Unknown'))
+    } finally {
+      setIsTranslating(false)
+    }
+  }
+
+  // Translate single slide
+  const translateSlide = async (slideId: number) => {
+    const slide = slides.find(s => s.id === slideId)
+    if (!slide) return
+
+    setTranslatingSlide(slideId)
+    try {
+      // Translate title
+      if (slide.title && !slide.titleEn) {
+        const titleEn = await translateText(slide.title, 'title')
+        updateSlide(slideId, 'titleEn', titleEn)
+      }
+
+      // Translate content
+      if (slide.content) {
+        const contentEn = await translateText(slide.content, 'content')
+        updateSlide(slideId, 'contentEn', contentEn)
+
+        // Generate audio text
+        const audioText = await translateText(slide.content, 'audio')
+        updateSlide(slideId, 'audioText', audioText)
+      }
+    } catch (error) {
+      alert('Ошибка перевода слайда: ' + (error instanceof Error ? error.message : 'Unknown'))
+    } finally {
+      setTranslatingSlide(null)
+    }
+  }
+
+  // Translate all slides
+  const translateAllSlides = async () => {
+    if (!adminKey) {
+      alert('Введите Admin Key')
+      return
+    }
+    
+    setIsTranslating(true)
+    try {
+      // First translate lesson title
+      if (lessonTitle && !lessonTitleEn) {
+        const titleEn = await translateText(lessonTitle, 'title')
+        setLessonTitleEn(titleEn)
+      }
+
+      // Then translate each slide
+      for (const slide of slides) {
+        setTranslatingSlide(slide.id)
+        
+        // Translate slide title
+        if (slide.title && !slide.titleEn) {
+          const titleEn = await translateText(slide.title, 'title')
+          updateSlide(slide.id, 'titleEn', titleEn)
+        }
+
+        // Translate content
+        if (slide.content && !slide.contentEn) {
+          const contentEn = await translateText(slide.content, 'content')
+          updateSlide(slide.id, 'contentEn', contentEn)
+        }
+
+        // Generate audio text
+        if (slide.content && !slide.audioText) {
+          const audioText = await translateText(slide.content, 'audio')
+          updateSlide(slide.id, 'audioText', audioText)
+        }
+
+        // Small delay between API calls
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
+    } catch (error) {
+      alert('Ошибка перевода: ' + (error instanceof Error ? error.message : 'Unknown'))
+    } finally {
+      setIsTranslating(false)
+      setTranslatingSlide(null)
+    }
+  }
+
+  // Parse Russian text into slides automatically
+  const parseRussianText = (fullText: string) => {
+    // Split by double newlines or numbered sections
+    const sections = fullText.split(/\n\n+/).filter(s => s.trim())
+    
+    const newSlides: Slide[] = sections.map((section, idx) => {
+      // Try to extract title from first line if it looks like a header
+      const lines = section.trim().split('\n')
+      let title = ''
+      let content = section
+
+      // Check if first line is a title (short, no period at end, or starts with number/marker)
+      const firstLine = lines[0].trim()
+      if (
+        (firstLine.length < 80 && !firstLine.endsWith('.')) ||
+        /^[\d\.\)\-\*]+\s/.test(firstLine) ||
+        /^(Часть|Глава|Раздел|Введение|Заключение)/i.test(firstLine)
+      ) {
+        title = firstLine.replace(/^[\d\.\)\-\*]+\s*/, '')
+        content = lines.slice(1).join('\n').trim()
+      }
+
+      return {
+        id: idx + 1,
+        title,
+        titleEn: '',
+        content: content || section,
+        contentEn: '',
+        emoji: getEmojiForSection(idx, title),
+        audioText: ''
+      }
+    })
+
+    setSlides(newSlides)
+  }
+
+  // Get appropriate emoji based on content
+  const getEmojiForSection = (index: number, title: string): string => {
+    const lowerTitle = title.toLowerCase()
+    if (lowerTitle.includes('введен') || index === 0) return '📖'
+    if (lowerTitle.includes('часть') || lowerTitle.includes('раздел')) return '📋'
+    if (lowerTitle.includes('пример')) return '💡'
+    if (lowerTitle.includes('вывод') || lowerTitle.includes('заключ')) return '🎯'
+    if (lowerTitle.includes('вопрос')) return '❓'
+    if (lowerTitle.includes('практик')) return '🛠️'
+    
+    const emojis = ['📖', '🔍', '💡', '📊', '🎯', '🧠', '✨', '📝', '🌟', '🔮']
+    return emojis[index % emojis.length]
+  }
 
   // Add new slide
   const addSlide = () => {
@@ -38,7 +204,7 @@ export default function LessonCreatorPage() {
 
   // Update slide
   const updateSlide = (id: number, field: keyof Slide, value: string) => {
-    setSlides(slides.map(s => s.id === id ? { ...s, [field]: value } : s))
+    setSlides(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s))
   }
 
   // Remove slide
@@ -59,10 +225,10 @@ export default function LessonCreatorPage() {
   const generatePageCode = () => {
     const slidesCode = slides.map((slide, idx) => `  {
     id: ${idx + 1},
-    title: "${slide.emoji} ${slide.titleEn.replace(/"/g, '\\"')}",
+    title: "${slide.titleEn.replace(/"/g, '\\"')}",
     content: \`${slide.contentEn.trim().replace(/`/g, '\\`')}\`,
     emoji: "${slide.emoji}",
-    duration: ${Math.max(20000, slide.audioText.length * 80)}
+    duration: ${Math.max(20000, (slide.audioText || slide.contentEn).length * 80)}
   }`).join(',\n')
 
     const code = `'use client'
@@ -70,200 +236,285 @@ export default function LessonCreatorPage() {
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { useState, useRef, useEffect } from 'react'
+import dynamic from 'next/dynamic'
+
+const VoiceQuiz = dynamic(() => import('@/components/quiz/VoiceQuiz'), { ssr: false })
 
 const LESSON_${lessonNumber}_SLIDES = [
 ${slidesCode}
-]
+];
+
+const LESSON_CONTENT = LESSON_${lessonNumber}_SLIDES.map(s => s.content).join('\\n\\n');
 
 export default function Lesson${lessonNumber}Page() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [progress, setProgress] = useState(0)
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [audioError, setAudioError] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const slide = LESSON_${lessonNumber}_SLIDES[currentSlide]
-  const totalSlides = LESSON_${lessonNumber}_SLIDES.length
+  const totalSlides = LESSON_${lessonNumber}_SLIDES.length;
 
   useEffect(() => {
-    if (!isPlaying) return
+    if (!isPlaying) return;
 
-    const audioFile = \`/audio/lesson${lessonNumber}/slide\${currentSlide + 1}.mp3\`
+    const audioFile = \`/audio/lesson${lessonNumber}/slide\${currentSlide + 1}.mp3\`;
     if (audioRef.current) {
-      audioRef.current.src = audioFile
-      audioRef.current.play().catch(e => console.log("Audio play failed:", e))
+      audioRef.current.src = audioFile;
+      audioRef.current.play().catch(e => {
+        console.log("Audio not available, using timer fallback");
+        setAudioError(true);
+        const duration = LESSON_${lessonNumber}_SLIDES[currentSlide].duration;
+        timerRef.current = setTimeout(() => {
+          if (currentSlide < totalSlides - 1) {
+            setCurrentSlide(prev => prev + 1);
+          } else {
+            setIsPlaying(false);
+          }
+        }, duration);
+      });
     }
-  }, [currentSlide, isPlaying])
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [currentSlide, isPlaying, totalSlides]);
 
   useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
+    if (!isPlaying || !audioError) return;
+    
+    const duration = LESSON_${lessonNumber}_SLIDES[currentSlide].duration;
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) return 0;
+        return prev + (100 / (duration / 100));
+      });
+    }, 100);
 
-    const handleEnded = () => {
-      if (currentSlide < totalSlides - 1) {
-        setCurrentSlide(prev => prev + 1)
-      } else {
-        setIsPlaying(false)
+    return () => clearInterval(interval);
+  }, [isPlaying, audioError, currentSlide]);
+
+  useEffect(() => {
+    if (!isPlaying || audioError) return;
+    
+    const interval = setInterval(() => {
+      if (audioRef.current && audioRef.current.duration) {
+        const percent = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+        setProgress(percent);
       }
-    }
+    }, 100);
 
-    const handleTimeUpdate = () => {
-      if (audio.duration) {
-        setProgress(audio.currentTime / audio.duration)
-      }
-    }
+    return () => clearInterval(interval);
+  }, [isPlaying, audioError]);
 
-    audio.addEventListener('ended', handleEnded)
-    audio.addEventListener('timeupdate', handleTimeUpdate)
-    return () => {
-      audio.removeEventListener('ended', handleEnded)
-      audio.removeEventListener('timeupdate', handleTimeUpdate)
+  const handleAudioEnded = () => {
+    if (currentSlide < totalSlides - 1) {
+      setCurrentSlide(prev => prev + 1);
+      setProgress(0);
+    } else {
+      setIsPlaying(false);
+      setProgress(100);
     }
-  }, [currentSlide, totalSlides])
+  };
 
   const togglePlay = () => {
     if (isPlaying) {
-      audioRef.current?.pause()
-      setIsPlaying(false)
+      audioRef.current?.pause();
+      if (timerRef.current) clearTimeout(timerRef.current);
+      setIsPlaying(false);
     } else {
-      setIsPlaying(true)
+      setIsPlaying(true);
+      setProgress(0);
     }
-  }
+  };
 
   const goToSlide = (index: number) => {
-    setCurrentSlide(index)
-    setProgress(0)
-    if (isPlaying && audioRef.current) {
-      audioRef.current.src = \`/audio/lesson${lessonNumber}/slide\${index + 1}.mp3\`
-      audioRef.current.play().catch(e => console.log("Audio play failed:", e))
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setCurrentSlide(index);
+    setProgress(0);
+    if (isPlaying) {
+      setAudioError(false);
     }
-  }
+  };
+
+  const currentSlideData = LESSON_${lessonNumber}_SLIDES[currentSlide];
 
   return (
-    <div className="min-h-screen bg-stone-100">
-      <audio ref={audioRef} />
+    <div className="min-h-screen bg-stone-50">
+      <audio 
+        ref={audioRef} 
+        onEnded={handleAudioEnded}
+        onError={() => setAudioError(true)}
+      />
       
-      {/* Header */}
-      <header className="bg-stone-800 border-b-4 border-amber-700">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/lessons" className="text-amber-200 hover:text-amber-100 transition font-serif">
-              ← Back to Lectures
+      {/* Academic Header */}
+      <header className="bg-stone-800 text-stone-100 border-b-4 border-amber-700">
+        <div className="max-w-5xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/lessons" className="text-stone-400 hover:text-white flex items-center gap-2 text-sm">
+              ← Back to Course
             </Link>
-            <span className="text-stone-400 font-serif">
-              Lecture {toRoman(${lessonNumber})} • Slide {currentSlide + 1}/{totalSlides}
-            </span>
+            <div className="text-center">
+              <h1 className="text-lg font-serif">Algorithms of Thinking and Cognition</h1>
+              <p className="text-stone-400 text-sm">Lecture ${lessonNumber}</p>
+            </div>
+            <div className="text-stone-400 text-sm">
+              {currentSlide + 1} / {totalSlides}
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {/* Slide Header */}
-          <div className="bg-stone-800 text-white p-6">
-            <div className="text-amber-400 text-sm font-serif mb-2">
-              Lecture {toRoman(${lessonNumber})} — ${lessonTitleEn.replace(/'/g, "\\'")}
-            </div>
-            <h1 className="text-2xl font-serif">{slide.title}</h1>
-          </div>
+      <main className="max-w-4xl mx-auto px-6 py-10">
+        
+        {/* Lesson Title */}
+        <div className="text-center mb-10">
+          <span className="text-5xl mb-4 block">{currentSlideData.emoji}</span>
+          <h2 className="text-3xl font-serif text-stone-800 mb-2">
+            {currentSlideData.title}
+          </h2>
+          <div className="w-24 h-1 bg-amber-700 mx-auto"></div>
+        </div>
 
-          {/* Slide Content */}
-          <div className="p-8">
-            <div className="prose prose-stone max-w-none font-serif">
-              <ReactMarkdown>{slide.content}</ReactMarkdown>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="px-6 pb-2">
-            <div className="h-1 bg-stone-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-amber-600 transition-all duration-100"
-                style={{ width: \`\${progress * 100}%\` }}
-              />
-            </div>
-          </div>
-
-          {/* Controls */}
-          <div className="p-6 bg-stone-50 border-t flex justify-between items-center">
-            <button
-              onClick={() => goToSlide(Math.max(0, currentSlide - 1))}
-              disabled={currentSlide === 0}
-              className="px-4 py-2 text-stone-600 hover:text-stone-900 disabled:opacity-30 font-serif"
+        {/* Content Card */}
+        <article className="bg-white rounded-lg shadow-lg border border-stone-200 p-8 md:p-12 mb-8">
+          <div className="prose prose-stone prose-lg max-w-none">
+            <ReactMarkdown
+              components={{
+                p: ({children}) => <p className="text-stone-700 leading-relaxed mb-5 text-lg">{children}</p>,
+                strong: ({children}) => <strong className="text-stone-900 font-semibold">{children}</strong>,
+                em: ({children}) => <em className="text-stone-600 italic">{children}</em>,
+                blockquote: ({children}) => (
+                  <blockquote className="border-l-4 border-amber-700 pl-6 my-6 italic text-stone-600 bg-amber-50 py-4 pr-4 rounded-r">
+                    {children}
+                  </blockquote>
+                ),
+                ul: ({children}) => <ul className="list-disc list-outside ml-6 text-stone-700 space-y-2 my-4">{children}</ul>,
+                ol: ({children}) => <ol className="list-decimal list-outside ml-6 text-stone-700 space-y-2 my-4">{children}</ol>,
+                li: ({children}) => <li className="text-stone-700 leading-relaxed">{children}</li>,
+              }}
             >
-              ← Previous
-            </button>
-
-            <button
-              onClick={togglePlay}
-              className={\`px-8 py-3 rounded-full font-serif transition \${
-                isPlaying 
-                  ? 'bg-stone-700 text-white' 
-                  : 'bg-amber-600 text-white hover:bg-amber-700'
-              }\`}
-            >
-              {isPlaying ? '⏸ Pause' : '▶ Play Lecture'}
-            </button>
-
-            <button
-              onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
-              disabled={currentSlide === totalSlides - 1}
-              className="px-4 py-2 text-stone-600 hover:text-stone-900 disabled:opacity-30 font-serif"
-            >
-              Next →
-            </button>
+              {currentSlideData.content}
+            </ReactMarkdown>
           </div>
+        </article>
+
+        {/* Progress Section */}
+        <div className="bg-white rounded-lg shadow border border-stone-200 p-6 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm text-stone-500 font-medium">Slide Progress</span>
+            <span className="text-sm text-stone-500">{Math.round(progress)}%</span>
+          </div>
+          <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-amber-700 transition-all duration-300 rounded-full"
+              style={{ width: \`\${progress}%\` }}
+            />
+          </div>
+          
+          {audioError && (
+            <p className="text-xs text-stone-400 mt-2 text-center">
+              Audio unavailable — using timed advancement
+            </p>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div className="flex items-center justify-center gap-6 mb-10">
+          <button
+            onClick={() => goToSlide(Math.max(0, currentSlide - 1))}
+            disabled={currentSlide === 0}
+            className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
+          >
+            ← Previous
+          </button>
+          
+          <button
+            onClick={togglePlay}
+            className="px-8 py-3 rounded-lg bg-amber-700 text-white font-semibold hover:bg-amber-800 transition shadow-md"
+          >
+            {isPlaying ? '⏸ Pause' : '▶ Play Lecture'}
+          </button>
+          
+          <button
+            onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
+            disabled={currentSlide === totalSlides - 1}
+            className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
+          >
+            Next →
+          </button>
+        </div>
+
+        {/* Voice Quiz Button */}
+        <div className="bg-gradient-to-r from-amber-600 to-amber-800 rounded-lg shadow-lg p-6 mb-10 text-center">
+          <h3 className="text-xl font-bold text-white mb-2">🎤 Ready to Test Your Knowledge?</h3>
+          <p className="text-amber-100 mb-4">Take a voice quiz with AI-generated questions based on this lecture</p>
+          <button
+            onClick={() => setShowQuiz(true)}
+            className="px-8 py-3 bg-white text-amber-700 rounded-lg font-bold hover:bg-amber-50 transition shadow-md"
+          >
+            Start Voice Quiz
+          </button>
         </div>
 
         {/* Slide Navigation */}
-        <div className="mt-6 flex justify-center gap-2 flex-wrap">
-          {LESSON_${lessonNumber}_SLIDES.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => goToSlide(idx)}
-              className={\`w-8 h-8 rounded-full text-sm font-serif transition \${
-                idx === currentSlide
-                  ? 'bg-amber-600 text-white'
-                  : idx < currentSlide
-                  ? 'bg-stone-300 text-stone-600'
-                  : 'bg-stone-200 text-stone-500 hover:bg-stone-300'
-              }\`}
-            >
-              {idx + 1}
-            </button>
-          ))}
+        <div className="bg-white rounded-lg shadow border border-stone-200 p-6">
+          <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-4">Lecture Sections</h3>
+          <div className="grid grid-cols-4 md:grid-cols-${Math.min(10, slides.length)} gap-2">
+            {LESSON_${lessonNumber}_SLIDES.map((slide, index) => (
+              <button
+                key={slide.id}
+                onClick={() => goToSlide(index)}
+                className={\`p-3 rounded text-sm font-medium transition \${
+                  index === currentSlide
+                    ? 'bg-amber-700 text-white'
+                    : index < currentSlide
+                    ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                    : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                }\`}
+                title={slide.title}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="max-w-4xl mx-auto px-4 py-8">
-        <div className="flex justify-between text-sm font-serif text-stone-500">
-          ${lessonNumber > 1 ? `<Link href="/lessons/${lessonNumber - 1}" className="hover:text-amber-700">
-            ← Lecture {toRoman(${lessonNumber - 1})}
-          </Link>` : '<span></span>'}
-          <Link href="/lessons/${lessonNumber + 1}" className="hover:text-amber-700">
-            Lecture {toRoman(${lessonNumber + 1})} →
-          </Link>
+      {/* Voice Quiz Modal */}
+      {showQuiz && (
+        <VoiceQuiz
+          lessonId={${lessonNumber}}
+          lessonTitle="${lessonTitleEn.replace(/"/g, '\\"')}"
+          onClose={() => setShowQuiz(false)}
+        />
+      )}
+
+      {/* Academic Footer */}
+      <footer className="bg-stone-800 text-stone-400 py-6 mt-16 border-t-4 border-amber-700">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex justify-between items-center">
+            <Link 
+              href="/lessons/${lessonNumber - 1}"
+              className="hover:text-white transition"
+            >
+              ← Lecture ${lessonNumber - 1}
+            </Link>
+            <span className="text-stone-500 text-sm font-serif">Lecture ${lessonNumber}</span>
+            <Link 
+              href="/lessons/${lessonNumber + 1}"
+              className="hover:text-white transition"
+            >
+              Lecture ${lessonNumber + 1} →
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
-  )
-}
-
-function toRoman(num: number): string {
-  const lookup: [number, string][] = [
-    [1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'],
-    [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'],
-    [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']
-  ]
-  let result = ''
-  for (const [value, symbol] of lookup) {
-    while (num >= value) {
-      result += symbol
-      num -= value
-    }
-  }
-  return result
+  );
 }
 `
 
@@ -343,7 +594,7 @@ main().catch(console.error);`
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">🎓 Создание урока</h1>
-              <p className="text-gray-600 text-sm">Русский текст → Английский перевод → page.tsx + аудио</p>
+              <p className="text-gray-600 text-sm">Русский текст → Claude AI перевод → page.tsx + аудио</p>
             </div>
             <Link href="/admin" className="px-4 py-2 text-gray-600 hover:text-gray-900">
               ← Dashboard
@@ -352,10 +603,25 @@ main().catch(console.error);`
         </div>
       </header>
 
+      {/* Admin Key */}
+      <div className="max-w-7xl mx-auto px-4 pt-4">
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center gap-4">
+          <label className="text-sm font-medium text-amber-800">🔑 Admin Key:</label>
+          <input
+            type="password"
+            value={adminKey}
+            onChange={(e) => setAdminKey(e.target.value)}
+            placeholder="Введите ключ для перевода..."
+            className="flex-1 px-3 py-2 border border-amber-300 rounded-lg focus:outline-none focus:border-amber-500"
+          />
+          <span className="text-xs text-amber-600">Требуется для автоматического перевода через Claude AI</span>
+        </div>
+      </div>
+
       {/* Lesson Info */}
-      <div className="max-w-7xl mx-auto px-4 pt-6">
+      <div className="max-w-7xl mx-auto px-4 pt-4">
         <div className="bg-white rounded-lg shadow p-4 mb-4">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-5 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Номер урока</label>
               <input
@@ -366,27 +632,61 @@ main().catch(console.error);`
                 min="1"
               />
             </div>
-            <div>
+            <div className="col-span-2">
               <label className="block text-xs font-medium text-gray-500 mb-1">Название (RU)</label>
-              <input
-                type="text"
-                value={lessonTitle}
-                onChange={(e) => setLessonTitle(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg"
-                placeholder="Теория когнитивного резонанса"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={lessonTitle}
+                  onChange={(e) => setLessonTitle(e.target.value)}
+                  className="flex-1 px-3 py-2 border rounded-lg bg-yellow-50"
+                  placeholder="Теория когнитивного резонанса"
+                />
+                <button
+                  onClick={translateTitle}
+                  disabled={isTranslating || !lessonTitle.trim() || !adminKey}
+                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm whitespace-nowrap"
+                >
+                  {isTranslating ? '...' : '🌐 →'}
+                </button>
+              </div>
             </div>
             <div className="col-span-2">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Название (EN) — для page.tsx</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Название (EN)</label>
               <input
                 type="text"
                 value={lessonTitleEn}
                 onChange={(e) => setLessonTitleEn(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg"
+                className="w-full px-3 py-2 border rounded-lg bg-blue-50"
                 placeholder="Theory of Cognitive Resonance"
               />
             </div>
           </div>
+        </div>
+
+        {/* Quick Russian Text Input */}
+        <div className="bg-white rounded-lg shadow p-4 mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-sm font-medium text-gray-700">📝 Быстрый ввод текста урока (RU)</label>
+            <button
+              onClick={() => {
+                const textarea = document.getElementById('fullRussianText') as HTMLTextAreaElement
+                if (textarea?.value) {
+                  parseRussianText(textarea.value)
+                  textarea.value = ''
+                }
+              }}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+            >
+              📋 Разбить на слайды
+            </button>
+          </div>
+          <textarea
+            id="fullRussianText"
+            className="w-full px-3 py-2 border rounded-lg bg-yellow-50 text-sm"
+            rows={4}
+            placeholder="Вставьте полный текст урока на русском. Разделяйте разделы пустыми строками. Система автоматически разобьёт на слайды..."
+          />
         </div>
 
         {/* Tabs */}
@@ -417,19 +717,26 @@ main().catch(console.error);`
           <div className="bg-white rounded-b-lg shadow p-4">
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-gray-600">
-                Введите русский текст слева, английский перевод справа. Аудио текст — то, что будет озвучено.
+                Введите русский текст слева → нажмите 🌐 для автоперевода → проверьте результат
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={addSlide}
                   className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                 >
-                  + Добавить слайд
+                  + Слайд
+                </button>
+                <button
+                  onClick={translateAllSlides}
+                  disabled={isTranslating || slides.length === 0 || !adminKey}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {isTranslating ? '⏳ Перевод...' : '🌐 Перевести всё'}
                 </button>
                 <button
                   onClick={generatePageCode}
                   disabled={slides.length === 0 || !lessonTitleEn}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
                 >
                   Генерировать код →
                 </button>
@@ -439,15 +746,15 @@ main().catch(console.error);`
             {slides.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <div className="text-5xl mb-4">📝</div>
-                <p>Нажмите «Добавить слайд» чтобы начать</p>
+                <p>Вставьте текст выше и нажмите «Разбить на слайды» или добавьте слайды вручную</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {slides.map((slide, idx) => (
-                  <div key={slide.id} className="border rounded-lg p-4 bg-gray-50">
+                  <div key={slide.id} className={`border rounded-lg p-4 ${translatingSlide === slide.id ? 'bg-blue-50 border-blue-300' : 'bg-gray-50'}`}>
                     {/* Slide Header */}
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="font-bold text-gray-500">#{idx + 1}</span>
+                      <span className="font-bold text-gray-500 w-8">#{idx + 1}</span>
                       <input
                         type="text"
                         value={slide.emoji}
@@ -456,13 +763,15 @@ main().catch(console.error);`
                         maxLength={2}
                       />
                       <div className="flex-1 grid grid-cols-2 gap-2">
-                        <input
-                          type="text"
-                          value={slide.title}
-                          onChange={(e) => updateSlide(slide.id, 'title', e.target.value)}
-                          className="px-3 py-1 border rounded bg-yellow-50"
-                          placeholder="Заголовок (RU)"
-                        />
+                        <div className="flex gap-1">
+                          <input
+                            type="text"
+                            value={slide.title}
+                            onChange={(e) => updateSlide(slide.id, 'title', e.target.value)}
+                            className="flex-1 px-3 py-1 border rounded bg-yellow-50"
+                            placeholder="Заголовок (RU)"
+                          />
+                        </div>
                         <input
                           type="text"
                           value={slide.titleEn}
@@ -471,6 +780,13 @@ main().catch(console.error);`
                           placeholder="Title (EN)"
                         />
                       </div>
+                      <button
+                        onClick={() => translateSlide(slide.id)}
+                        disabled={translatingSlide === slide.id || !adminKey}
+                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 text-sm"
+                      >
+                        {translatingSlide === slide.id ? '⏳' : '🌐'}
+                      </button>
                       <div className="flex gap-1">
                         <button onClick={() => moveSlide(idx, 'up')} disabled={idx === 0} className="px-2 py-1 text-gray-400 hover:text-gray-600 disabled:opacity-30">↑</button>
                         <button onClick={() => moveSlide(idx, 'down')} disabled={idx === slides.length - 1} className="px-2 py-1 text-gray-400 hover:text-gray-600 disabled:opacity-30">↓</button>
@@ -491,26 +807,26 @@ main().catch(console.error);`
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1">Slide content (EN) — Markdown</label>
+                        <label className="block text-xs text-gray-500 mb-1">Content (EN) — Markdown с **bold** и &gt; цитаты</label>
                         <textarea
                           value={slide.contentEn}
                           onChange={(e) => updateSlide(slide.id, 'contentEn', e.target.value)}
                           className="w-full px-3 py-2 border rounded text-sm font-mono bg-blue-50"
                           rows={4}
-                          placeholder="**Bold** text, lists, etc..."
+                          placeholder="**Bold** text, > blockquotes..."
                         />
                       </div>
                     </div>
 
                     {/* Audio Text */}
                     <div className="mt-3">
-                      <label className="block text-xs text-gray-500 mb-1">🔊 Текст для озвучки (EN) — если пусто, используется content</label>
+                      <label className="block text-xs text-gray-500 mb-1">🔊 Текст для озвучки (EN) — plain text без markdown</label>
                       <textarea
                         value={slide.audioText}
                         onChange={(e) => updateSlide(slide.id, 'audioText', e.target.value)}
                         className="w-full px-3 py-2 border rounded text-sm bg-green-50"
                         rows={2}
-                        placeholder="Plain text for TTS (no markdown)..."
+                        placeholder="Автозаполняется при переводе..."
                       />
                     </div>
                   </div>
@@ -596,7 +912,8 @@ main().catch(console.error);`
                     <li>Вставьте page.tsx код в файл</li>
                     <li>Сохраните аудио скрипт: <code className="bg-purple-100 px-1 rounded">scripts/generate-lesson{lessonNumber}-audio.js</code></li>
                     <li>Запустите: <code className="bg-purple-100 px-1 rounded">node scripts/generate-lesson{lessonNumber}-audio.js</code></li>
-                    <li>Деплой: <code className="bg-purple-100 px-1 rounded">git add . &amp;&amp; git commit -m &apos;Add lesson {lessonNumber}&apos; &amp;&amp; git push</code></li>
+                    <li>Сгенерируйте вопросы для теста: <code className="bg-purple-100 px-1 rounded">/admin/questions</code></li>
+                    <li>Деплой: <code className="bg-purple-100 px-1 rounded">git add . && git commit -m &apos;Add lesson {lessonNumber}&apos; && git push</code></li>
                   </ol>
                 </div>
               </>
