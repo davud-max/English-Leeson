@@ -3,10 +3,36 @@
 import { useState, useEffect, useRef } from 'react';
 import MarkdownContent from '@/components/course/MarkdownContent';
 
+// Import audio files as modules (more reliable for Next.js)
+import segment01 from '@/public/audio/lessons/14/segment-01.mp3';
+import segment02 from '@/public/audio/lessons/14/segment-02.mp3';
+import segment03 from '@/public/audio/lessons/14/segment-03.mp3';
+import segment04 from '@/public/audio/lessons/14/segment-04.mp3';
+import segment05 from '@/public/audio/lessons/14/segment-05.mp3';
+import segment06 from '@/public/audio/lessons/14/segment-06.mp3';
+import segment07 from '@/public/audio/lessons/14/segment-07.mp3';
+import segment08 from '@/public/audio/lessons/14/segment-08.mp3';
+import segment09 from '@/public/audio/lessons/14/segment-09.mp3';
+import segment10 from '@/public/audio/lessons/14/segment-10.mp3';
+
 const LESSON_TITLE = "How Consciousness Creates Reality";
 const LESSON_ID = 14;
 
-// Presentation slides content with audio files
+// Map imported audio files to slide indices
+const AUDIO_FILES = [
+  segment01,
+  segment02,
+  segment03,
+  segment04,
+  segment05,
+  segment06,
+  segment07,
+  segment08,
+  segment09,
+  segment10
+];
+
+// Presentation slides content
 const PRESENTATION_SLIDES = [
   {
     id: 1,
@@ -31,8 +57,7 @@ graph LR
 
 **Only one thing can break this cycle — the act of primary distinction.**
 `,
-    emoji: "🌀",
-    audioFile: "/audio/lessons/14/segment-01.mp3"
+    emoji: "🌀"
   },
   {
     id: 2,
@@ -62,8 +87,7 @@ graph TD
 
 > **Light is not photons** — it's the ability to draw a line and say: "this is not that."
 `,
-    emoji: "💧",
-    audioFile: "/audio/lessons/14/segment-02.mp3"
+    emoji: "💧"
   },
   {
     id: 3,
@@ -89,8 +113,7 @@ graph LR
 
 > **Light = First operation of distinction**
 `,
-    emoji: "🕯️",
-    audioFile: "/audio/lessons/14/segment-03.mp3"
+    emoji: "🕯️"
   },
   {
     id: 4,
@@ -116,8 +139,7 @@ graph TD
     F --> G
 \`\`\`
 `,
-    emoji: "⭕",
-    audioFile: "/audio/lessons/14/segment-04.mp3"
+    emoji: "⭕"
   },
   {
     id: 5,
@@ -143,8 +165,7 @@ graph TD
 
 > **This is not mysticism, but a strict scheme of how cognition works.**
 `,
-    emoji: "☦️",
-    audioFile: "/audio/lessons/14/segment-05.mp3"
+    emoji: "☦️"
   },
   {
     id: 6,
@@ -165,8 +186,7 @@ graph LR
 
 > **The world "appeared" when an Observer capable of distinction emerged.**
 `,
-    emoji: "✨",
-    audioFile: "/audio/lessons/14/segment-06.mp3"
+    emoji: "✨"
   },
   {
     id: 7,
@@ -189,8 +209,7 @@ graph LR
 
 > **Man is not passive observer but active participant in creation.**
 `,
-    emoji: "🌬️",
-    audioFile: "/audio/lessons/14/segment-07.mp3"
+    emoji: "🌬️"
   },
   {
     id: 8,
@@ -216,8 +235,7 @@ graph LR
 
 > **Reality transforms when consciousness transforms.**
 `,
-    emoji: "🌌",
-    audioFile: "/audio/lessons/14/segment-08.mp3"
+    emoji: "🌌"
   },
   {
     id: 9,
@@ -244,8 +262,7 @@ graph TD
 
 > **Your reality is constructed by your consciousness.**
 `,
-    emoji: "🎨",
-    audioFile: "/audio/lessons/14/segment-09.mp3"
+    emoji: "🎨"
   },
   {
     id: 10,
@@ -274,8 +291,7 @@ Look at any object. Try to:
 
 > **You'll feel dizziness — experience of boundary dissolution.**
 `,
-    emoji: "🌀",
-    audioFile: "/audio/lessons/14/segment-10.mp3"
+    emoji: "🌀"
   }
 ];
 
