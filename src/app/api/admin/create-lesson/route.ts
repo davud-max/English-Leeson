@@ -4,21 +4,29 @@ import { writeFile, mkdir, readFile } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 
+interface CreateLessonRequest {
+  adminKey: string
+  action: string
+  lessonNumber?: number
+  lessonTitle?: string
+  lessonDescription?: string
+  lessonColor?: string
+  lessonDuration?: number
+  questions?: Array<{
+    id: number
+    question: string
+    correct_answer: string
+    difficulty: string
+    points: number
+  }>
+  pageCode?: string
+  audioScript?: string
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { 
-      adminKey, 
-      action,
-      lessonNumber,
-      lessonTitle,
-      lessonDescription,
-      lessonColor,
-      lessonDuration,
-      slides,
-      questions,
-      pageCode,
-      audioScript,
-    } = await request.json()
+    const body: CreateLessonRequest = await request.json()
+    const { adminKey, action, lessonNumber } = body
 
     // Admin authentication
     if (adminKey !== process.env.ADMIN_SECRET_KEY) {
@@ -28,7 +36,7 @@ export async function POST(request: NextRequest) {
     const baseDir = process.cwd()
 
     // Action: Create page.tsx
-    if (action === 'create_page') {
+    if (action === 'create_page' && lessonNumber && body.pageCode) {
       const lessonDir = path.join(baseDir, 'src', 'app', '(course)', 'lessons', String(lessonNumber))
       
       if (!existsSync(lessonDir)) {
@@ -36,7 +44,7 @@ export async function POST(request: NextRequest) {
       }
 
       const pageFile = path.join(lessonDir, 'page.tsx')
-      await writeFile(pageFile, pageCode, 'utf8')
+      await writeFile(pageFile, body.pageCode, 'utf8')
 
       return NextResponse.json({
         success: true,
@@ -46,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Action: Create audio script
-    if (action === 'create_audio_script') {
+    if (action === 'create_audio_script' && lessonNumber && body.audioScript) {
       const scriptsDir = path.join(baseDir, 'scripts')
       
       if (!existsSync(scriptsDir)) {
@@ -54,7 +62,7 @@ export async function POST(request: NextRequest) {
       }
 
       const scriptFile = path.join(scriptsDir, `generate-lesson${lessonNumber}-audio.js`)
-      await writeFile(scriptFile, audioScript, 'utf8')
+      await writeFile(scriptFile, body.audioScript, 'utf8')
 
       return NextResponse.json({
         success: true,
@@ -64,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Action: Create questions JSON
-    if (action === 'create_questions') {
+    if (action === 'create_questions' && lessonNumber && body.questions) {
       const questionsDir = path.join(baseDir, 'public', 'data', 'questions')
       
       if (!existsSync(questionsDir)) {
@@ -74,9 +82,9 @@ export async function POST(request: NextRequest) {
       const questionsFile = path.join(questionsDir, `lesson${lessonNumber}.json`)
       await writeFile(questionsFile, JSON.stringify({
         lessonId: lessonNumber,
-        lessonTitle,
+        lessonTitle: body.lessonTitle || `Lesson ${lessonNumber}`,
         generatedAt: new Date().toISOString(),
-        questions,
+        questions: body.questions,
       }, null, 2), 'utf8')
 
       return NextResponse.json({
@@ -87,7 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Action: Update lessons list
-    if (action === 'update_lessons_list') {
+    if (action === 'update_lessons_list' && lessonNumber) {
       const lessonsPagePath = path.join(baseDir, 'src', 'app', '(course)', 'lessons', 'page.tsx')
       
       let content = await readFile(lessonsPagePath, 'utf8')
@@ -95,11 +103,11 @@ export async function POST(request: NextRequest) {
       // Find the LESSONS array and add new lesson
       const newLessonEntry = `  { 
     order: ${lessonNumber}, 
-    title: '${lessonTitle}', 
-    description: '${lessonDescription}',
-    duration: ${lessonDuration},
+    title: '${body.lessonTitle || `Lesson ${lessonNumber}`}', 
+    description: '${body.lessonDescription || ''}',
+    duration: ${body.lessonDuration || 25},
     available: true,
-    color: '${lessonColor}'
+    color: '${body.lessonColor || 'from-blue-500 to-indigo-600'}'
   },`
 
       // Check if lesson already exists
@@ -112,7 +120,6 @@ export async function POST(request: NextRequest) {
       }
 
       // Find position to insert (before the closing bracket of LESSONS array)
-      // Look for the last lesson entry and insert after it
       const lessonsArrayMatch = content.match(/const LESSONS = \[([\s\S]*?)\n\]/m)
       if (lessonsArrayMatch) {
         const arrayContent = lessonsArrayMatch[1]
@@ -162,15 +169,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Action: Create audio directory placeholder
-    if (action === 'create_audio_dir') {
+    if (action === 'create_audio_dir' && lessonNumber) {
       const audioDir = path.join(baseDir, 'public', 'audio', `lesson${lessonNumber}`)
       
       if (!existsSync(audioDir)) {
         await mkdir(audioDir, { recursive: true })
-        // Create a placeholder file
         await writeFile(
           path.join(audioDir, '.gitkeep'), 
-          '# Audio files will be generated using edge-tts\n# Run: node scripts/generate-lesson' + lessonNumber + '-audio.js\n'
+          `# Audio files will be generated using edge-tts\n# Run: node scripts/generate-lesson${lessonNumber}-audio.js\n`
         )
       }
 
@@ -181,7 +187,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid action or missing parameters' }, { status: 400 })
 
   } catch (error) {
     console.error('Create lesson error:', error)

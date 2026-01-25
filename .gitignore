@@ -35,3 +35,6 @@ next-env.d.ts
 
 # backup files
 *.bak
+*.ts.bak
+scripts/*.bak
+src/**/*.bak
