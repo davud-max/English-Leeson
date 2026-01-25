@@ -3,6 +3,9 @@
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { useState, useRef, useEffect } from 'react'
+import dynamic from 'next/dynamic'
+
+const VoiceQuiz = dynamic(() => import('@/components/quiz/VoiceQuiz'), { ssr: false })
 
 const LESSON_10_SLIDES = [
   {
@@ -56,11 +59,14 @@ const LESSON_10_SLIDES = [
   }
 ];
 
+const LESSON_CONTENT = LESSON_10_SLIDES.map(s => s.content).join('\n\n');
+
 export default function Lesson10Page() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [audioError, setAudioError] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -260,6 +266,18 @@ export default function Lesson10Page() {
           </button>
         </div>
 
+        {/* Voice Quiz Button */}
+        <div className="bg-gradient-to-r from-amber-600 to-amber-800 rounded-lg shadow-lg p-6 mb-10 text-center">
+          <h3 className="text-xl font-bold text-white mb-2">🎤 Ready to Test Your Knowledge?</h3>
+          <p className="text-amber-100 mb-4">Take a voice quiz with AI-generated questions based on this lecture</p>
+          <button
+            onClick={() => setShowQuiz(true)}
+            className="px-8 py-3 bg-white text-amber-700 rounded-lg font-bold hover:bg-amber-50 transition shadow-md"
+          >
+            Start Voice Quiz
+          </button>
+        </div>
+
         {/* Slide Navigation */}
         <div className="bg-white rounded-lg shadow border border-stone-200 p-6">
           <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-4">Lecture Sections</h3>
@@ -283,6 +301,16 @@ export default function Lesson10Page() {
           </div>
         </div>
       </main>
+
+      {/* Voice Quiz Modal */}
+      {showQuiz && (
+        <VoiceQuiz
+          lessonId={10}
+          lessonTitle="How Thought Finds Us"
+          lessonContent={LESSON_CONTENT}
+          onClose={() => setShowQuiz(false)}
+        />
+      )}
 
       {/* Academic Footer */}
       <footer className="bg-stone-800 text-stone-400 py-6 mt-16 border-t-4 border-amber-700">
