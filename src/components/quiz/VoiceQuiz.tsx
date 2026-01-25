@@ -49,37 +49,87 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
   const [results, setResults] = useState<QuizResult>({ correct: 0, total: 0, points: 0, maxPoints: 0 })
   const [showResults, setShowResults] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [hasQuestionAudio, setHasQuestionAudio] = useState(false)
   
   const recognitionRef = useRef<SpeechRecognitionType | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
   const synthRef = useRef<SpeechSynthesis | null>(null)
 
-  // Initialize speech synthesis
+  // Initialize audio element
   useEffect(() => {
+    audioRef.current = new Audio()
+    audioRef.current.onended = () => setIsSpeaking(false)
+    audioRef.current.onerror = () => setIsSpeaking(false)
+    
     if (typeof window !== 'undefined') {
       synthRef.current = window.speechSynthesis
     }
+    
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause()
+        audioRef.current = null
+      }
+    }
   }, [])
 
-  // Text-to-Speech function
-  const speak = useCallback((text: string, onEnd?: () => void) => {
-    if (!synthRef.current) return
+  // Check if question audio exists
+  const checkQuestionAudio = useCallback(async (questionIndex: number): Promise<boolean> => {
+    try {
+      const audioUrl = `/audio/questions/lesson${lessonId}/question${questionIndex + 1}.mp3`
+      const response = await fetch(audioUrl, { method: 'HEAD' })
+      return response.ok
+    } catch {
+      return false
+    }
+  }, [lessonId])
 
-    // Cancel any ongoing speech
+  // Play audio from MP3 file
+  const playQuestionAudio = useCallback(async (questionIndex: number): Promise<boolean> => {
+    if (!audioRef.current) return false
+    
+    const audioUrl = `/audio/questions/lesson${lessonId}/question${questionIndex + 1}.mp3`
+    
+    try {
+      setIsSpeaking(true)
+      audioRef.current.src = audioUrl
+      await audioRef.current.play()
+      return true
+    } catch {
+      setIsSpeaking(false)
+      return false
+    }
+  }, [lessonId])
+
+  // Browser TTS fallback with male voice
+  const speakWithBrowserTTS = useCallback((text: string, onEnd?: () => void) => {
+    if (!synthRef.current) {
+      onEnd?.()
+      return
+    }
+
     synthRef.current.cancel()
     
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = 'en-US'
     utterance.rate = 0.9
-    utterance.pitch = 1
+    utterance.pitch = 0.9 // Slightly lower for male voice
     
-    // Try to find a good English voice
+    // Try to find male English voice
     const voices = synthRef.current.getVoices()
-    const englishVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) 
-      || voices.find(v => v.lang.startsWith('en-US'))
+    const maleVoice = voices.find(v => 
+      v.lang.startsWith('en') && (
+        v.name.toLowerCase().includes('male') ||
+        v.name.toLowerCase().includes('guy') ||
+        v.name.toLowerCase().includes('david') ||
+        v.name.toLowerCase().includes('james') ||
+        v.name.toLowerCase().includes('daniel')
+      )
+    ) || voices.find(v => v.lang.startsWith('en-US'))
       || voices.find(v => v.lang.startsWith('en'))
     
-    if (englishVoice) {
-      utterance.voice = englishVoice
+    if (maleVoice) {
+      utterance.voice = maleVoice
     }
 
     utterance.onstart = () => setIsSpeaking(true)
@@ -95,12 +145,49 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
     synthRef.current.speak(utterance)
   }, [])
 
-  // Stop speaking
-  const stopSpeaking = useCallback(() => {
+  // Main speak function - tries MP3 first, then browser TTS
+  const speakQuestion = useCallback(async (questionIndex: number) => {
+    // Stop any current audio
+    if (audioRef.current) {
+      audioRef.current.pause()
+    }
     if (synthRef.current) {
       synthRef.current.cancel()
-      setIsSpeaking(false)
     }
+
+    // Try to play MP3 first
+    const played = await playQuestionAudio(questionIndex)
+    
+    if (!played && questions[questionIndex]) {
+      // Fallback to browser TTS
+      const questionText = `Question ${questionIndex + 1}. ${questions[questionIndex].question}`
+      speakWithBrowserTTS(questionText)
+    }
+  }, [playQuestionAudio, speakWithBrowserTTS, questions])
+
+  // Speak feedback/evaluation
+  const speakFeedback = useCallback((text: string) => {
+    // Stop any current audio
+    if (audioRef.current) {
+      audioRef.current.pause()
+    }
+    if (synthRef.current) {
+      synthRef.current.cancel()
+    }
+    
+    // Use browser TTS for dynamic feedback
+    speakWithBrowserTTS(text)
+  }, [speakWithBrowserTTS])
+
+  // Stop all audio
+  const stopSpeaking = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+    }
+    if (synthRef.current) {
+      synthRef.current.cancel()
+    }
+    setIsSpeaking(false)
   }, [])
 
   // Initialize speech recognition
@@ -151,7 +238,6 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
     setError(null)
 
     try {
-      // Load from static JSON file
       const response = await fetch(`/data/questions/lesson${lessonId}.json`)
 
       if (!response.ok) {
@@ -166,6 +252,10 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
         setQuestions(data.questions)
         const maxPoints = data.questions.reduce((sum: number, q: Question) => sum + q.points, 0)
         setResults({ correct: 0, total: data.questions.length, points: 0, maxPoints })
+        
+        // Check if audio exists for first question
+        const audioExists = await checkQuestionAudio(0)
+        setHasQuestionAudio(audioExists)
       } else {
         setError('No questions available for this lesson.')
       }
@@ -180,8 +270,7 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
   // Speak current question when it changes
   useEffect(() => {
     if (questions.length > 0 && !isLoading && !feedback) {
-      const currentQuestion = questions[currentIndex]
-      speak(`Question ${currentIndex + 1}. ${currentQuestion.question}`)
+      speakQuestion(currentIndex)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex, questions, isLoading])
@@ -192,7 +281,6 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
       return
     }
 
-    // Stop speaking if currently speaking
     stopSpeaking()
 
     if (isListening) {
@@ -204,7 +292,7 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
 
   const submitAnswer = async () => {
     if (!userAnswer.trim()) {
-      speak('Please enter or speak your answer')
+      speakFeedback('Please enter or speak your answer')
       return
     }
 
@@ -252,14 +340,14 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
           ? `Correct! You earned ${earnedPoints} points. ${data.feedback}`
           : `Not quite right. The correct answer is: ${currentQuestion.correct_answer}. You earned ${earnedPoints} points.`
         
-        speak(feedbackText)
+        speakFeedback(feedbackText)
       } else {
         setFeedback({
           score: 0,
           text: data.error || 'Error checking answer',
           isCorrect: false,
         })
-        speak('Error checking your answer. Please try again.')
+        speakFeedback('Error checking your answer. Please try again.')
       }
     } catch (err) {
       console.error('Error checking answer:', err)
@@ -268,7 +356,7 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
         text: 'Connection error. Please try again.',
         isCorrect: false,
       })
-      speak('Connection error. Please try again.')
+      speakFeedback('Connection error. Please try again.')
     } finally {
       setIsChecking(false)
     }
@@ -282,9 +370,8 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
       setFeedback(null)
     } else {
       setShowResults(true)
-      // Speak results
       const percentage = results.maxPoints > 0 ? Math.round((results.points / results.maxPoints) * 100) : 0
-      speak(`Quiz complete! You got ${results.correct} out of ${results.total} correct, earning ${results.points} out of ${results.maxPoints} points. Your score is ${percentage} percent.`)
+      speakFeedback(`Quiz complete! You got ${results.correct} out of ${results.total} correct, earning ${results.points} out of ${results.maxPoints} points. Your score is ${percentage} percent.`)
     }
   }
 
@@ -299,8 +386,7 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
 
   const repeatQuestion = () => {
     if (questions.length > 0) {
-      const currentQuestion = questions[currentIndex]
-      speak(`Question ${currentIndex + 1}. ${currentQuestion.question}`)
+      speakQuestion(currentIndex)
     }
   }
 
@@ -417,6 +503,7 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
           <h2 className="text-xl font-bold flex items-center gap-2">
             🎤 Voice Quiz
             {isSpeaking && <span className="text-sm animate-pulse">🔊</span>}
+            {hasQuestionAudio && <span className="text-xs bg-white/20 px-2 py-0.5 rounded">HD Audio</span>}
           </h2>
           <button
             onClick={() => { stopSpeaking(); onClose(); }}
@@ -451,7 +538,7 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
             <button
               onClick={repeatQuestion}
               disabled={isSpeaking}
-              className="text-amber-700 hover:text-amber-800 flex items-center gap-1"
+              className="text-amber-700 hover:text-amber-800 flex items-center gap-1 disabled:opacity-50"
             >
               🔊 Repeat
             </button>

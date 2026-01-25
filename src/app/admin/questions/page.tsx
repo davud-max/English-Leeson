@@ -14,13 +14,23 @@ const LESSONS = [
   { id: 14, title: 'How Consciousness Creates', content: `We began with something simple: "Describe what you see." But we encountered a fundamental paradox: To describe something, you need words. But words are terms. And terms require definitions. Which brings us back to needing to describe... A closed circle. Only one thing can break this cycle — the act of primary distinction. Imagine absolute darkness — not physical darkness, but meaningful darkness. No "here" or "there", no "self" or "other". This is what ancient texts call "water" — homogeneous, indistinguishable Being. Biblical formulation: "And God said: let there be light. And there was light." God didn't "create" light in the usual sense. He named it. Light = The first operation of distinction. The world is born only after acts of distinction. God didn't "create" the world like a craftsman makes furniture. The world "appeared" when an Observer capable of distinction emerged.` },
 ]
 
+interface Question {
+  id: number
+  question: string
+  correct_answer: string
+  difficulty: string
+  points: number
+}
+
 export default function AdminQuestionsPage() {
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null)
   const [count, setCount] = useState(5)
   const [difficulty, setDifficulty] = useState('mixed')
   const [adminKey, setAdminKey] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [result, setResult] = useState<{ success: boolean; message: string; questions?: unknown[] } | null>(null)
+  const [result, setResult] = useState<{ success: boolean; message: string; questions?: Question[] } | null>(null)
+  const [audioScript, setAudioScript] = useState('')
+  const [showAudioScript, setShowAudioScript] = useState(false)
 
   const generateQuestions = async () => {
     if (!selectedLesson || !adminKey) {
@@ -33,6 +43,8 @@ export default function AdminQuestionsPage() {
 
     setIsGenerating(true)
     setResult(null)
+    setAudioScript('')
+    setShowAudioScript(false)
 
     try {
       const response = await fetch('/api/admin/generate-questions', {
@@ -56,6 +68,9 @@ export default function AdminQuestionsPage() {
           message: data.message,
           questions: data.questions,
         })
+        
+        // Generate audio script
+        generateAudioScriptForQuestions(selectedLesson, data.questions)
       } else {
         setResult({
           success: false,
@@ -70,6 +85,68 @@ export default function AdminQuestionsPage() {
     } finally {
       setIsGenerating(false)
     }
+  }
+
+  const generateAudioScriptForQuestions = (lessonId: number, questions: Question[]) => {
+    const questionTexts = questions.map((q, idx) => {
+      return `  // Question ${idx + 1}
+  \`Question ${idx + 1}. ${q.question.replace(/`/g, '\\`')}\`,`
+    }).join('\n\n')
+
+    const script = `const { exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const util = require('util');
+const execPromise = util.promisify(exec);
+
+// Questions for Lesson ${lessonId}
+const QUESTIONS = [
+${questionTexts}
+];
+
+const VOICE = 'en-US-GuyNeural';
+const RATE = '-5%';
+
+async function generateAudio(text, outputPath) {
+  const escapedText = text.replace(/"/g, '\\\\"').replace(/'/g, "'\\\\''");
+  const command = \`edge-tts --voice "\${VOICE}" --rate="\${RATE}" --text "\${escapedText}" --write-media "\${outputPath}"\`;
+  await execPromise(command);
+}
+
+async function main() {
+  console.log('🎤 Generating question audio for Lesson ${lessonId}...');
+  
+  const audioDir = path.join(__dirname, '..', 'public', 'audio', 'questions', 'lesson${lessonId}');
+  if (!fs.existsSync(audioDir)) {
+    fs.mkdirSync(audioDir, { recursive: true });
+  }
+  
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    const filename = \`question\${i + 1}.mp3\`;
+    const filepath = path.join(audioDir, filename);
+    
+    console.log(\`🔊 Question \${i + 1}/\${QUESTIONS.length}...\`);
+    
+    try {
+      await generateAudio(QUESTIONS[i], filepath);
+      const stats = fs.statSync(filepath);
+      console.log(\`✅ \${filename} (\${Math.round(stats.size / 1024)}KB)\`);
+    } catch (error) {
+      console.error(\`❌ \${filename}: \${error.message}\`);
+    }
+  }
+  
+  console.log('🎉 Done! Audio files saved to public/audio/questions/lesson${lessonId}/');
+}
+
+main().catch(console.error);`
+
+    setAudioScript(script)
+  }
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+    alert('Скопировано!')
   }
 
   return (
@@ -169,7 +246,7 @@ export default function AdminQuestionsPage() {
                 {result.questions && (
                   <div className="mt-4 space-y-3">
                     <p className="text-sm text-stone-600">Generated questions:</p>
-                    {(result.questions as { id: number; question: string; correct_answer: string; difficulty: string; points: number }[]).map((q, i) => (
+                    {result.questions.map((q, i) => (
                       <div key={i} className="bg-white p-3 rounded border">
                         <p className="font-medium text-stone-800">Q{i + 1}: {q.question}</p>
                         <p className="text-sm text-stone-600 mt-1">Answer: {q.correct_answer}</p>
@@ -182,6 +259,45 @@ export default function AdminQuestionsPage() {
                 )}
               </div>
             )}
+
+            {/* Audio Script Section */}
+            {audioScript && (
+              <div className="border-t pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-stone-800">🔊 Audio Generation Script</h3>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setShowAudioScript(!showAudioScript)}
+                      className="px-4 py-2 bg-stone-200 rounded-lg hover:bg-stone-300 text-sm"
+                    >
+                      {showAudioScript ? 'Hide' : 'Show'} Script
+                    </button>
+                    <button
+                      onClick={() => copyToClipboard(audioScript)}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+                    >
+                      📋 Copy Script
+                    </button>
+                  </div>
+                </div>
+                
+                {showAudioScript && (
+                  <pre className="p-4 bg-gray-900 text-green-400 rounded-lg overflow-auto text-xs max-h-64">
+                    {audioScript}
+                  </pre>
+                )}
+                
+                <div className="mt-4 p-4 bg-purple-50 rounded-lg">
+                  <h4 className="font-semibold text-purple-900 mb-2">📖 How to generate question audio:</h4>
+                  <ol className="text-sm text-purple-800 space-y-2 list-decimal list-inside">
+                    <li>Save script as: <code className="bg-purple-100 px-1 rounded">scripts/generate-lesson{selectedLesson}-questions-audio.js</code></li>
+                    <li>Run: <code className="bg-purple-100 px-1 rounded">node scripts/generate-lesson{selectedLesson}-questions-audio.js</code></li>
+                    <li>Audio will be saved to: <code className="bg-purple-100 px-1 rounded">public/audio/questions/lesson{selectedLesson}/</code></li>
+                    <li>Commit and push to deploy</li>
+                  </ol>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -191,8 +307,8 @@ export default function AdminQuestionsPage() {
           <ul className="text-sm text-amber-700 space-y-1">
             <li>• Questions are generated using Claude AI based on lesson content</li>
             <li>• Generated questions are saved to <code>/public/data/questions/lessonX.json</code></li>
-            <li>• Students will see pre-generated questions (no AI calls during quiz)</li>
-            <li>• Questions are read aloud using browser TTS</li>
+            <li>• <strong>Questions audio:</strong> Generated from MP3 files using same voice as lessons (en-US-GuyNeural)</li>
+            <li>• <strong>Feedback audio:</strong> Uses browser TTS with similar voice settings</li>
             <li>• You need to set ADMIN_SECRET_KEY in Railway environment variables</li>
           </ul>
         </div>
