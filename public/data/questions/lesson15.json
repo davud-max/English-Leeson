@@ -1,0 +1,42 @@
+{
+  "lessonId": 15,
+  "lessonTitle": "A Theory of Everything",
+  "generatedAt": "2026-01-25T14:00:00.000Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is Minus-Space according to the hypothesis presented in this lecture?",
+      "correct_answer": "Minus-Space is a state beyond zero dimensions where there is no possibility for extension - it is less than zero, the fundamental negation of space itself.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "Why would movement be instantaneous in Minus-Space?",
+      "correct_answer": "Because if there is no extension in Minus-Space, there is no distance to overcome. The transition from one position to another requires no time - it is instantaneous.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "How does the hypothesis explain what exists between the discrete 'pixels' of space at the Planck scale?",
+      "correct_answer": "Between the boundaries of spatial cells exists Minus-Space - the invisible framework and seam of reality that separates them and defines their discreteness, allowing space to be a structure rather than infinite expanse.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "What are resonance tubes and how do they explain fundamental forces?",
+      "correct_answer": "Resonance tubes are fundamental threads (conditionally called gravitons) connecting particles through Minus-Space. Different types of resonance within these tubes are perceived as different forces: one frequency type as gravity, another as electromagnetism, and complex resonances as strong and weak nuclear interactions.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "Why does the lecture describe the Minus-Space hypothesis as a 'philosophical hypothesis' rather than a scientific theory?",
+      "correct_answer": "Because science requires mathematical theories that derive precise numbers which can be compared with measurements. The Minus-Space hypothesis was born from imagery and analogy - its concepts remain poetic metaphors rather than testable mathematical predictions.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}
