@@ -433,17 +433,17 @@ export default function Lesson21Page() {
         <div className="max-w-4xl mx-auto px-6">
           <div className="flex justify-between items-center">
             <Link 
-              href="/lessons/20"
+              href="/lessons/15"
               className="hover:text-white transition"
             >
-              ← Lecture 20
+              ← Lecture 15
             </Link>
             <span className="text-stone-500 text-sm font-serif">Lecture 21</span>
             <Link 
-              href="/lessons/22"
+              href="/lessons"
               className="hover:text-white transition"
             >
-              Lecture 22 →
+              All Lessons →
             </Link>
           </div>
         </div>

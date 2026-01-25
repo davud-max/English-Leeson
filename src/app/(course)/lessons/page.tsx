@@ -139,6 +139,38 @@ const LESSONS = [
     available: false,
     color: 'from-amber-500 to-orange-600'
   },
+  { 
+    order: 18, 
+    title: '🔄 Cycles of Understanding', 
+    description: 'How knowledge spirals upward through repetition and deepening.',
+    duration: 25,
+    available: false,
+    color: 'from-rose-500 to-pink-600'
+  },
+  { 
+    order: 19, 
+    title: '🌊 Waves of Consciousness', 
+    description: 'The rhythm of thought and the patterns of awareness.',
+    duration: 25,
+    available: false,
+    color: 'from-sky-500 to-cyan-600'
+  },
+  { 
+    order: 20, 
+    title: '⚡ The Spark of Insight', 
+    description: 'Moments of clarity and the mechanics of understanding.',
+    duration: 25,
+    available: false,
+    color: 'from-yellow-500 to-orange-600'
+  },
+  { 
+    order: 21, 
+    title: '👁️ Observation, Terms and Counting', 
+    description: 'The foundation of knowledge: from observation to abstraction to quantification.',
+    duration: 25,
+    available: true,
+    color: 'from-emerald-500 to-green-600'
+  },
 ]
 
 export default function LessonsPage() {
@@ -168,22 +200,22 @@ export default function LessonsPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Your Progress</h2>
-              <p className="text-gray-600">15 of 17 lessons available • Complete all lessons to earn your certificate</p>
+              <p className="text-gray-600">16 of 21 lessons available • Complete all lessons to earn your certificate</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">15</div>
+                <div className="text-3xl font-bold text-blue-600">16</div>
                 <div className="text-sm text-gray-500">Available</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-400">2</div>
+                <div className="text-3xl font-bold text-gray-400">5</div>
                 <div className="text-sm text-gray-500">Locked</div>
               </div>
             </div>
           </div>
           <div className="mt-4">
             <div className="w-full bg-gray-200 rounded-full h-3">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style={{ width: '88%' }}></div>
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style={{ width: '76%' }}></div>
             </div>
           </div>
         </div>
@@ -234,7 +266,7 @@ export default function LessonsPage() {
 
         {/* CTA Section */}
         <div className="mt-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 rounded-3xl p-10 text-white text-center shadow-2xl">
-          <h2 className="text-3xl font-bold mb-4">🚀 Unlock All 17 Lessons!</h2>
+          <h2 className="text-3xl font-bold mb-4">🚀 Unlock All 21 Lessons!</h2>
           <p className="text-blue-100 mb-8 text-xl max-w-2xl mx-auto">
             Get lifetime access to the complete course with AI-generated questions, voice input, and a certificate of completion.
           </p>

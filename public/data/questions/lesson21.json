@@ -1,0 +1,42 @@
+{
+  "lessonId": 21,
+  "lessonTitle": "Observation, Terms and Counting",
+  "generatedAt": "2026-01-25T14:30:00.000Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the difference between seeing and observing according to this lecture?",
+      "correct_answer": "An animal sees but does not observe. Only humans observe. Observation is the artificial separation of a part from unified existence - it requires conscious distinction.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What is a definition and how does it differ from a regular description?",
+      "correct_answer": "A definition is the shortest description of what is observed. While ten people may give different descriptions, the shortest description will be identical for everyone.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What are fundamental terms and why is 'point' considered one?",
+      "correct_answer": "Fundamental terms have no definitions - they are ultimate concepts that exist only in the mind as pure abstraction. A point is fundamental because it is zero-dimensional and cannot be defined further. A pencil mark on paper is not a point but a spot.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "Explain the difference between a name and a term.",
+      "correct_answer": "A name is a word for a real object - it can be shown but cannot be described completely because real objects have infinite details. A term is a word for an abstract object - it cannot be shown but can be described completely and definitively.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "Why can't you visualize the number five itself?",
+      "correct_answer": "The number five is a pure abstraction - it's impossible to visualize. When you try, you either imagine five objects (a group) or the symbol '5' (a digit), but not the number itself. Numbers exist only as abstract concepts.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}

@@ -62,8 +62,8 @@ async function main() {
   console.log(`Voice: ${VOICE}`);
   console.log(`Rate: ${RATE}`);
   
-  // Generate for lessons 8-15
-  const lessons = [8, 9, 10, 11, 12, 13, 14, 15];
+  // Generate for lessons 8-15 and 21
+  const lessons = [8, 9, 10, 11, 12, 13, 14, 15, 21];
   
   for (const lessonId of lessons) {
     await generateQuestionsAudio(lessonId);
