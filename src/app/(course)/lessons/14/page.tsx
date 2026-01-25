@@ -560,10 +560,55 @@ export default function Lesson14() {
         </div>
       </main>
 
-      {/* Footer */}
+      {/* Footer with navigation */}
       <footer className="bg-white border-t border-gray-200 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center text-gray-500">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+            {/* Lesson navigation */}
+            <div className="flex items-center space-x-4">
+              <a 
+                href="/lessons/13" 
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                <span>Lesson 13</span>
+              </a>
+              
+              <span className="text-gray-400">|</span>
+              
+              <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-lg font-medium">
+                Lesson 14
+              </span>
+              
+              <span className="text-gray-400">|</span>
+              
+              <a 
+                href="/lessons/15" 
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <span>Lesson 15</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </a>
+            </div>
+            
+            {/* Main lessons page link */}
+            <a 
+              href="/lessons" 
+              className="flex items-center space-x-2 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+              <span>All Lessons</span>
+            </a>
+          </div>
+          
+          <div className="mt-6 pt-6 border-t border-gray-200 text-center text-gray-500">
             <p>Lesson {LESSON_ID}: {LESSON_TITLE}</p>
             <p className="mt-2 text-sm">Interactive presentation with professional audio narration</p>
           </div>
