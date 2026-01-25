@@ -164,7 +164,7 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           <Link href="/admin/create-lesson" className="block">
             <div className="bg-white rounded-xl shadow p-5 hover:shadow-lg transition border-l-4 border-indigo-500 h-full">
               <div className="text-3xl mb-2">🎓</div>
@@ -178,6 +178,14 @@ export default function AdminDashboard() {
               <div className="text-3xl mb-2">📝</div>
               <h3 className="font-bold text-gray-900 mb-1">Manage Lessons</h3>
               <p className="text-gray-600 text-xs">Edit content in database</p>
+            </div>
+          </Link>
+          
+          <Link href="/admin/questions" className="block">
+            <div className="bg-white rounded-xl shadow p-5 hover:shadow-lg transition border-l-4 border-amber-500 h-full">
+              <div className="text-3xl mb-2">🎤</div>
+              <h3 className="font-bold text-gray-900 mb-1">Voice Quiz</h3>
+              <p className="text-gray-600 text-xs">Generate quiz questions</p>
             </div>
           </Link>
           
