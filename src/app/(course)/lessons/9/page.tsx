@@ -300,7 +300,6 @@ export default function Lesson9Page() {
         <VoiceQuiz
           lessonId={9}
           lessonTitle="Sacred Text and Reality"
-          lessonContent={LESSON_CONTENT}
           onClose={() => setShowQuiz(false)}
         />
       )}

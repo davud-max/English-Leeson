@@ -20,74 +20,96 @@ interface QuizResult {
 interface VoiceQuizProps {
   lessonId: number
   lessonTitle: string
-  lessonContent: string
   onClose: () => void
 }
 
-// Extend Window interface for Speech Recognition
-declare global {
-  interface Window {
-    SpeechRecognition: new () => SpeechRecognition
-    webkitSpeechRecognition: new () => SpeechRecognition
-  }
-}
-
-interface SpeechRecognition extends EventTarget {
+// Speech Recognition Types
+interface SpeechRecognitionType {
   lang: string
   continuous: boolean
   interimResults: boolean
-  onstart: ((this: SpeechRecognition, ev: Event) => void) | null
-  onend: ((this: SpeechRecognition, ev: Event) => void) | null
-  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void) | null
-  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void) | null
+  onstart: (() => void) | null
+  onend: (() => void) | null
+  onerror: ((event: { error: string }) => void) | null
+  onresult: ((event: { resultIndex: number; results: { [index: number]: { [index: number]: { transcript: string } } } }) => void) | null
   start(): void
   stop(): void
   abort(): void
 }
 
-interface SpeechRecognitionErrorEvent extends Event {
-  error: string
-}
-
-interface SpeechRecognitionEvent extends Event {
-  resultIndex: number
-  results: SpeechRecognitionResultList
-}
-
-interface SpeechRecognitionResultList {
-  length: number
-  [index: number]: SpeechRecognitionResult
-}
-
-interface SpeechRecognitionResult {
-  [index: number]: SpeechRecognitionAlternative
-}
-
-interface SpeechRecognitionAlternative {
-  transcript: string
-  confidence: number
-}
-
-export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClose }: VoiceQuizProps) {
+export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizProps) {
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswer, setUserAnswer] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isChecking, setIsChecking] = useState(false)
   const [isListening, setIsListening] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
   const [feedback, setFeedback] = useState<{ score: number; text: string; isCorrect: boolean } | null>(null)
   const [results, setResults] = useState<QuizResult>({ correct: 0, total: 0, points: 0, maxPoints: 0 })
   const [showResults, setShowResults] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const recognitionRef = useRef<SpeechRecognitionType | null>(null)
+  const synthRef = useRef<SpeechSynthesis | null>(null)
+
+  // Initialize speech synthesis
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      synthRef.current = window.speechSynthesis
+    }
+  }, [])
+
+  // Text-to-Speech function
+  const speak = useCallback((text: string, onEnd?: () => void) => {
+    if (!synthRef.current) return
+
+    // Cancel any ongoing speech
+    synthRef.current.cancel()
+    
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = 'en-US'
+    utterance.rate = 0.9
+    utterance.pitch = 1
+    
+    // Try to find a good English voice
+    const voices = synthRef.current.getVoices()
+    const englishVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) 
+      || voices.find(v => v.lang.startsWith('en-US'))
+      || voices.find(v => v.lang.startsWith('en'))
+    
+    if (englishVoice) {
+      utterance.voice = englishVoice
+    }
+
+    utterance.onstart = () => setIsSpeaking(true)
+    utterance.onend = () => {
+      setIsSpeaking(false)
+      onEnd?.()
+    }
+    utterance.onerror = () => {
+      setIsSpeaking(false)
+      onEnd?.()
+    }
+
+    synthRef.current.speak(utterance)
+  }, [])
+
+  // Stop speaking
+  const stopSpeaking = useCallback(() => {
+    if (synthRef.current) {
+      synthRef.current.cancel()
+      setIsSpeaking(false)
+    }
+  }, [])
 
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      if (SpeechRecognitionClass) {
+        const recognition = new SpeechRecognitionClass() as SpeechRecognitionType
         recognition.lang = 'en-US'
         recognition.continuous = false
         recognition.interimResults = true
@@ -100,7 +122,7 @@ export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClos
         }
         recognition.onresult = (event) => {
           let transcript = ''
-          for (let i = event.resultIndex; i < event.results.length; i++) {
+          for (let i = event.resultIndex; i < Object.keys(event.results).length; i++) {
             transcript += event.results[i][0].transcript
           }
           setUserAnswer(transcript)
@@ -114,47 +136,55 @@ export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClos
       if (recognitionRef.current) {
         recognitionRef.current.abort()
       }
+      stopSpeaking()
     }
-  }, [])
+  }, [stopSpeaking])
 
-  // Generate questions on mount
+  // Load pre-generated questions
   useEffect(() => {
-    generateQuestions()
-  }, [])
+    loadQuestions()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessonId])
 
-  const generateQuestions = async () => {
+  const loadQuestions = async () => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const response = await fetch('/api/generate-questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lessonId,
-          lessonTitle,
-          lessonContent,
-          count: 5,
-          difficulty: 'mixed',
-        }),
-      })
+      // Load from static JSON file
+      const response = await fetch(`/data/questions/lesson${lessonId}.json`)
+
+      if (!response.ok) {
+        setError('No questions available for this lesson yet. Please ask the administrator to generate them.')
+        setIsLoading(false)
+        return
+      }
 
       const data = await response.json()
 
-      if (data.success && data.questions?.length > 0) {
+      if (data.questions?.length > 0) {
         setQuestions(data.questions)
         const maxPoints = data.questions.reduce((sum: number, q: Question) => sum + q.points, 0)
         setResults({ correct: 0, total: data.questions.length, points: 0, maxPoints })
       } else {
-        setError(data.error || 'No questions generated')
+        setError('No questions available for this lesson.')
       }
     } catch (err) {
-      console.error('Error generating questions:', err)
-      setError('Failed to generate questions. Please try again.')
+      console.error('Error loading questions:', err)
+      setError('Failed to load questions. Please try again later.')
     } finally {
       setIsLoading(false)
     }
   }
+
+  // Speak current question when it changes
+  useEffect(() => {
+    if (questions.length > 0 && !isLoading && !feedback) {
+      const currentQuestion = questions[currentIndex]
+      speak(`Question ${currentIndex + 1}. ${currentQuestion.question}`)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex, questions, isLoading])
 
   const toggleMicrophone = useCallback(() => {
     if (!recognitionRef.current) {
@@ -162,22 +192,26 @@ export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClos
       return
     }
 
+    // Stop speaking if currently speaking
+    stopSpeaking()
+
     if (isListening) {
       recognitionRef.current.stop()
     } else {
       recognitionRef.current.start()
     }
-  }, [isListening])
+  }, [isListening, stopSpeaking])
 
   const submitAnswer = async () => {
     if (!userAnswer.trim()) {
-      alert('Please enter or speak your answer')
+      speak('Please enter or speak your answer')
       return
     }
 
     const currentQuestion = questions[currentIndex]
     setIsChecking(true)
     setFeedback(null)
+    stopSpeaking()
 
     if (recognitionRef.current && isListening) {
       recognitionRef.current.stop()
@@ -206,17 +240,26 @@ export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClos
           points: prev.points + earnedPoints,
         }))
 
-        setFeedback({
+        const feedbackData = {
           score: data.score,
           text: data.feedback,
           isCorrect: data.is_correct,
-        })
+        }
+        setFeedback(feedbackData)
+
+        // Speak the feedback
+        const feedbackText = data.is_correct 
+          ? `Correct! You earned ${earnedPoints} points. ${data.feedback}`
+          : `Not quite right. The correct answer is: ${currentQuestion.correct_answer}. You earned ${earnedPoints} points.`
+        
+        speak(feedbackText)
       } else {
         setFeedback({
           score: 0,
           text: data.error || 'Error checking answer',
           isCorrect: false,
         })
+        speak('Error checking your answer. Please try again.')
       }
     } catch (err) {
       console.error('Error checking answer:', err)
@@ -225,27 +268,40 @@ export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClos
         text: 'Connection error. Please try again.',
         isCorrect: false,
       })
+      speak('Connection error. Please try again.')
     } finally {
       setIsChecking(false)
     }
   }
 
   const nextQuestion = () => {
+    stopSpeaking()
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => prev + 1)
       setUserAnswer('')
       setFeedback(null)
     } else {
       setShowResults(true)
+      // Speak results
+      const percentage = results.maxPoints > 0 ? Math.round((results.points / results.maxPoints) * 100) : 0
+      speak(`Quiz complete! You got ${results.correct} out of ${results.total} correct, earning ${results.points} out of ${results.maxPoints} points. Your score is ${percentage} percent.`)
     }
   }
 
   const restartQuiz = () => {
+    stopSpeaking()
     setCurrentIndex(0)
     setUserAnswer('')
     setFeedback(null)
     setShowResults(false)
     setResults({ correct: 0, total: questions.length, points: 0, maxPoints: results.maxPoints })
+  }
+
+  const repeatQuestion = () => {
+    if (questions.length > 0) {
+      const currentQuestion = questions[currentIndex]
+      speak(`Question ${currentIndex + 1}. ${currentQuestion.question}`)
+    }
   }
 
   // Loading state
@@ -254,8 +310,8 @@ export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClos
       <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl max-w-xl w-full p-8 text-center">
           <div className="animate-spin w-12 h-12 border-4 border-amber-700 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <h3 className="text-xl font-semibold text-stone-800">Generating Questions...</h3>
-          <p className="text-stone-500 mt-2">AI is creating quiz questions based on the lesson</p>
+          <h3 className="text-xl font-semibold text-stone-800">Loading Questions...</h3>
+          <p className="text-stone-500 mt-2">Please wait</p>
         </div>
       </div>
     )
@@ -266,23 +322,15 @@ export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClos
     return (
       <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl max-w-xl w-full p-8 text-center">
-          <div className="text-5xl mb-4">⚠️</div>
-          <h3 className="text-xl font-semibold text-stone-800">Error</h3>
+          <div className="text-5xl mb-4">📚</div>
+          <h3 className="text-xl font-semibold text-stone-800">Questions Not Available</h3>
           <p className="text-stone-500 mt-2">{error}</p>
-          <div className="flex gap-4 justify-center mt-6">
-            <button
-              onClick={generateQuestions}
-              className="px-6 py-2 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition"
-            >
-              Try Again
-            </button>
-            <button
-              onClick={onClose}
-              className="px-6 py-2 bg-stone-200 text-stone-700 rounded-lg hover:bg-stone-300 transition"
-            >
-              Close
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="mt-6 px-6 py-2 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition"
+          >
+            Close
+          </button>
         </div>
       </div>
     )
@@ -368,9 +416,10 @@ export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClos
         <div className="bg-gradient-to-r from-amber-600 to-amber-800 p-5 text-white flex justify-between items-center rounded-t-2xl">
           <h2 className="text-xl font-bold flex items-center gap-2">
             🎤 Voice Quiz
+            {isSpeaking && <span className="text-sm animate-pulse">🔊</span>}
           </h2>
           <button
-            onClick={onClose}
+            onClick={() => { stopSpeaking(); onClose(); }}
             className="text-3xl opacity-80 hover:opacity-100 transition"
           >
             ×
@@ -395,8 +444,17 @@ export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClos
             {currentQuestion.question}
           </h3>
           
-          <div className="text-amber-600 text-sm mb-6 flex items-center gap-1">
-            ⭐ {currentQuestion.points} points • {currentQuestion.difficulty === 'hard' ? '🔥 Advanced' : '📗 Basic'}
+          <div className="flex items-center justify-between text-sm mb-6">
+            <span className="text-amber-600 flex items-center gap-1">
+              ⭐ {currentQuestion.points} points • {currentQuestion.difficulty === 'hard' ? '🔥 Advanced' : '📗 Basic'}
+            </span>
+            <button
+              onClick={repeatQuestion}
+              disabled={isSpeaking}
+              className="text-amber-700 hover:text-amber-800 flex items-center gap-1"
+            >
+              🔊 Repeat
+            </button>
           </div>
 
           {/* Answer input section */}
@@ -408,12 +466,12 @@ export default function VoiceQuiz({ lessonId, lessonTitle, lessonContent, onClos
 
               <button
                 onClick={toggleMicrophone}
-                disabled={isChecking}
+                disabled={isChecking || isSpeaking}
                 className={`w-20 h-20 rounded-full border-none text-3xl cursor-pointer transition-all shadow-lg mb-4 ${
                   isListening 
                     ? 'bg-gradient-to-br from-red-500 to-red-700 animate-pulse' 
                     : 'bg-gradient-to-br from-amber-600 to-amber-800 hover:scale-110'
-                } text-white`}
+                } text-white disabled:opacity-50`}
               >
                 🎤
               </button>

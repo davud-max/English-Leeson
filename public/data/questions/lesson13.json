@@ -1,0 +1,42 @@
+{
+  "lessonId": 13,
+  "lessonTitle": "The Sixth Human Level",
+  "generatedAt": "2026-01-25T12:00:00.000Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What does the Word (Logos) represent in the context of creation?",
+      "correct_answer": "The Word (Logos) is the principle of distinction, the ability to draw boundaries.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What does the first day of creation (light separating from darkness) represent?",
+      "correct_answer": "It represents the first distinction - the primary act of drawing a boundary between observable and unobservable.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "Why is the sixth day of creation significant for humans?",
+      "correct_answer": "The sixth level is the human level - where consciousness can observe itself. Man is created in God's image because man has the ability to distinguish, name, and create through language.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "What does the Sabbath (seventh day) represent in terms of creation through distinction?",
+      "correct_answer": "The Sabbath represents the completion of creation through distinction - the rest after the full process of differentiation is complete.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "How are the six days of creation related to levels of distinction?",
+      "correct_answer": "Each day represents a new level of distinction - from basic (light/darkness) through increasingly complex divisions (waters, land, heavenly bodies, life forms) to the sixth level where self-aware consciousness emerges.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}

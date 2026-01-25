@@ -1,0 +1,42 @@
+{
+  "lessonId": 8,
+  "lessonTitle": "Theory of Cognitive Resonance",
+  "generatedAt": "2026-01-25T12:00:00.000Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What are the two main circuits of consciousness described in the Theory of Cognitive Resonance?",
+      "correct_answer": "The Analog Circuit (world of immediate, bodily, sensory experience) and the Digital Circuit (world of abstractions, signs, and concepts).",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What is cognitive resonance and when does it occur?",
+      "correct_answer": "Cognitive resonance is the moment when a pattern from the digital circuit matches with the analog core, causing amplification of the signal and birth of a conscious thought.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What shapes our Inner Resonator or cognitive profile according to the theory?",
+      "correct_answer": "Heredity (features of the nervous system), Cultural Code (language, values, concepts of society), and Personal Experience (every experience, success and failure).",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "Why is traditional memorization described as a dead-end path for developing thinking?",
+      "correct_answer": "Because it loads the digital circuit with empty signs without connection to experience, providing no material for resonance, and making students not want to learn.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "What is the effective path to learning according to the Pedagogy of Resonance?",
+      "correct_answer": "First create analog experience (the student feels the problem, acts, experiences), then provide the digital label (name, formula, rule), resulting in powerful resonance where knowledge becomes one's own.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}

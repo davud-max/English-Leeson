@@ -331,7 +331,6 @@ export default function Lesson14Page() {
         <VoiceQuiz
           lessonId={14}
           lessonTitle="How Consciousness Creates"
-          lessonContent={LESSON_CONTENT}
           onClose={() => setShowQuiz(false)}
         />
       )}

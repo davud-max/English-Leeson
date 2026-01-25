@@ -1,0 +1,42 @@
+{
+  "lessonId": 14,
+  "lessonTitle": "How Consciousness Creates",
+  "generatedAt": "2026-01-25T12:00:00.000Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What paradox do we encounter when trying to describe what we see?",
+      "correct_answer": "To describe something we need words, but words are terms that require definitions, which brings us back to needing to describe - a closed circle that only the act of primary distinction can break.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What does 'absolute darkness' represent in the cognitive sense?",
+      "correct_answer": "Absolute darkness represents meaningful darkness - a state with no distinctions: no 'here' or 'there', no 'self' or 'other'. It's what ancient texts call 'water' - homogeneous, indistinguishable Being.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What are the three inseparable elements required for every cognitive act?",
+      "correct_answer": "Being (what is, the Source Material), Consciousness (what distinguishes, the Observing Spirit), and the Act of Distinction (light giving birth to boundaries, the Word/Logos).",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "What does 'new heaven and new earth' mean in terms of consciousness?",
+      "correct_answer": "It means a consciousness paradigm shift - a change in distinguishing ability, appearance of 'new light', where the old world disappears and a new world emerges through transformed cognition.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "Why do we live in 'constructed reality' rather than 'objective reality'?",
+      "correct_answer": "Because our reality is distinguished by our consciousness - objects are boundaries drawn by our light-consciousness in the fabric of Being. These boundaries are stable due to shared cognitive frameworks and similar distinguishing abilities.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}

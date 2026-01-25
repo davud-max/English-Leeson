@@ -1,0 +1,42 @@
+{
+  "lessonId": 9,
+  "lessonTitle": "Sacred Text and Reality",
+  "generatedAt": "2026-01-25T12:00:00.000Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What do 'heaven' and 'earth' represent as abstract concepts in the Book of Genesis?",
+      "correct_answer": "Heaven represents the unobservable (Nothing) and earth represents the observable (the World).",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What does 'water' symbolize in the biblical creation narrative?",
+      "correct_answer": "Water symbolizes Being - boundless, formless, and indistinguishable primordial existence before any distinctions were made.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What is the significance of 'light' in the context of cognitive theory?",
+      "correct_answer": "Light represents the ability to abstract - the capacity to distinguish boundaries between the observable and the unobservable, enabling observation and cognition.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "How does the 'firmament' relate to the concept of abstraction?",
+      "correct_answer": "The firmament is the boundary that divided the World and Nothing after light appeared - it represents the first distinction that becomes visible through the ability to abstract.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "Why does the text suggest that 'many different Worlds' can potentially exist within the same Being?",
+      "correct_answer": "Because different beings with different metrics of distinction can split the same Being in completely different boundaries, creating different observable realities.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}

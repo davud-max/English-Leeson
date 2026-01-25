@@ -311,7 +311,6 @@ export default function Lesson13Page() {
         <VoiceQuiz
           lessonId={13}
           lessonTitle="The Sixth Human Level"
-          lessonContent={LESSON_CONTENT}
           onClose={() => setShowQuiz(false)}
         />
       )}

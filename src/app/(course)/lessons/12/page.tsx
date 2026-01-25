@@ -297,7 +297,6 @@ export default function Lesson12Page() {
         <VoiceQuiz
           lessonId={12}
           lessonTitle="Three Steps to Heaven"
-          lessonContent={LESSON_CONTENT}
           onClose={() => setShowQuiz(false)}
         />
       )}

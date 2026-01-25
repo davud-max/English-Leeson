@@ -1,0 +1,42 @@
+{
+  "lessonId": 10,
+  "lessonTitle": "How Thought Finds Us",
+  "generatedAt": "2026-01-25T12:00:00.000Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "According to the radio receiver model, what role does our 'I' play in the thinking process?",
+      "correct_answer": "Our 'I' is not the author of thoughts but their radio receiver - we catch thoughts rather than compose them.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What is memory described as in this theory?",
+      "correct_answer": "Memory is not a warehouse of pictures but preserved patterns of frequencies that we tune into through resonance.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What does it mean 'to remember' according to the resonance model?",
+      "correct_answer": "To remember means to tune your heterodyne to the frequency of the preserved pattern and obtain resonance.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "What are the four key abilities that should be developed to teach thinking effectively?",
+      "correct_answer": "The ability to distinguish (find differences), compare (find similarities and differences), abstract (move from specific to general), and create conditions for resonance (ask the right questions).",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "What happens when a child arrives at the formulation of the Pythagorean theorem themselves?",
+      "correct_answer": "Cognitive resonance occurs in their brain - they cry 'Wow!' and will think with pleasure because the knowledge becomes truly their own.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "lessonId": 11,
+  "lessonTitle": "The Number 666",
+  "generatedAt": "2026-01-25T12:00:00.000Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What does the 'first six' represent in the interpretation of 666?",
+      "correct_answer": "The first six represents the Beast level - a world ruled by six isolated senses (five senses plus instinct), each pulling in its own direction with no awareness of the other.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What is the organizing principle that unites the six senses at the human level?",
+      "correct_answer": "Love is the new principle that unites the six senses, directing them outward toward understanding another 'I'.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What distinguishes Divine Love (Agape) from human love?",
+      "correct_answer": "Divine Love (Agape) is the principle of connecting souls directly, bypassing the mediation of the senses, informing the soul of what another soul experiences.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "Why is 666 described as a 'formula' rather than a single number?",
+      "correct_answer": "Because 666 represents three steps (six-one, six-two, six-three) - a three-step path of ascent from beast to human to divine level.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "What does the 'End of Light' mean in this interpretation?",
+      "correct_answer": "The End of Light is not a catastrophe but the completion of its mission - when the goal of reaching the third six (divine level) is achieved, the need for distinction falls away.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}

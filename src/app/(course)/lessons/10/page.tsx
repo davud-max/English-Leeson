@@ -307,7 +307,6 @@ export default function Lesson10Page() {
         <VoiceQuiz
           lessonId={10}
           lessonTitle="How Thought Finds Us"
-          lessonContent={LESSON_CONTENT}
           onClose={() => setShowQuiz(false)}
         />
       )}

@@ -347,7 +347,6 @@ export default function Lesson8Page() {
         <VoiceQuiz
           lessonId={8}
           lessonTitle="Theory of Cognitive Resonance"
-          lessonContent={LESSON_CONTENT}
           onClose={() => setShowQuiz(false)}
         />
       )}

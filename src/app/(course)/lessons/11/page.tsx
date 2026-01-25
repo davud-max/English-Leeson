@@ -300,7 +300,6 @@ export default function Lesson11Page() {
         <VoiceQuiz
           lessonId={11}
           lessonTitle="The Number 666"
-          lessonContent={LESSON_CONTENT}
           onClose={() => setShowQuiz(false)}
         />
       )}

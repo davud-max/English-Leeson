@@ -1,0 +1,42 @@
+{
+  "lessonId": 12,
+  "lessonTitle": "Three Steps to Heaven",
+  "generatedAt": "2026-01-25T12:00:00.000Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What characterizes the physical existence level (first step)?",
+      "correct_answer": "Perception through six senses, a world of reactions, and no self-awareness.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What emerges at the human level (second step) that distinguishes it from the beast level?",
+      "correct_answer": "Abstract thinking emerges, along with the ability to see oneself from outside, and love as a new organizing principle.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What is the nature of the path from beast to human to divine?",
+      "correct_answer": "It is not about external changes but internal transformation, where each level includes and transcends the previous one.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "What does 'calculate' or 'count' mean in the context of understanding the number of the beast?",
+      "correct_answer": "It means to understand the algorithm - to derive the meaning through calculation and reasoning, not just to memorize or learn.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "What happens at the divine level when souls merge in Agape love?",
+      "correct_answer": "At the divine level, pure spiritual connection occurs where souls merge, transcending physical separation and uniting with God.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}
