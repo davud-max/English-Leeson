@@ -3,33 +3,21 @@
 import { useState, useEffect, useRef } from 'react';
 import MarkdownContent from '@/components/course/MarkdownContent';
 
-// Import audio files as modules (more reliable for Next.js)
-import segment01 from '@/public/audio/lessons/14/segment-01.mp3';
-import segment02 from '@/public/audio/lessons/14/segment-02.mp3';
-import segment03 from '@/public/audio/lessons/14/segment-03.mp3';
-import segment04 from '@/public/audio/lessons/14/segment-04.mp3';
-import segment05 from '@/public/audio/lessons/14/segment-05.mp3';
-import segment06 from '@/public/audio/lessons/14/segment-06.mp3';
-import segment07 from '@/public/audio/lessons/14/segment-07.mp3';
-import segment08 from '@/public/audio/lessons/14/segment-08.mp3';
-import segment09 from '@/public/audio/lessons/14/segment-09.mp3';
-import segment10 from '@/public/audio/lessons/14/segment-10.mp3';
-
 const LESSON_TITLE = "How Consciousness Creates Reality";
 const LESSON_ID = 14;
 
-// Map imported audio files to slide indices
-const AUDIO_FILES = [
-  segment01,
-  segment02,
-  segment03,
-  segment04,
-  segment05,
-  segment06,
-  segment07,
-  segment08,
-  segment09,
-  segment10
+// Audio file paths (using direct paths but with proper handling)
+const AUDIO_FILE_PATHS = [
+  '/audio/lessons/14/segment-01.mp3',
+  '/audio/lessons/14/segment-02.mp3',
+  '/audio/lessons/14/segment-03.mp3',
+  '/audio/lessons/14/segment-04.mp3',
+  '/audio/lessons/14/segment-05.mp3',
+  '/audio/lessons/14/segment-06.mp3',
+  '/audio/lessons/14/segment-07.mp3',
+  '/audio/lessons/14/segment-08.mp3',
+  '/audio/lessons/14/segment-09.mp3',
+  '/audio/lessons/14/segment-10.mp3'
 ];
 
 // Presentation slides content
@@ -329,16 +317,17 @@ export default function Lesson14() {
       currentAudio.pause();
     }
     
-    const audio = new Audio(PRESENTATION_SLIDES[currentSlide].audioFile);
+    const audioPath = AUDIO_FILE_PATHS[currentSlide];
+    const audio = new Audio(audioPath);
     audio.volume = isMuted ? 0 : 1;
     
     // Add user interaction requirement for autoplay
     audio.onplay = () => {
-      console.log('Audio started playing');
+      console.log(`Audio started playing: ${audioPath}`);
     };
     
     audio.onended = () => {
-      console.log('Audio finished');
+      console.log(`Audio finished: ${audioPath}`);
       if (currentSlide < PRESENTATION_SLIDES.length - 1) {
         setCurrentSlide(prev => prev + 1);
       } else {
@@ -347,7 +336,7 @@ export default function Lesson14() {
     };
     
     audio.onerror = (event) => {
-      console.error('Audio playback error:', event);
+      console.error(`Audio playback error for ${audioPath}:`, event);
       // Try fallback to Web Speech API if file fails
       console.log('Falling back to Web Speech API');
       speakCurrentSlideText();
@@ -359,7 +348,7 @@ export default function Lesson14() {
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          console.log('Audio playback started successfully');
+          console.log(`Audio playback started successfully: ${audioPath}`);
           setCurrentAudio(audio);
           
           // Update progress bar
@@ -372,7 +361,7 @@ export default function Lesson14() {
           }, 100);
         })
         .catch(error => {
-          console.error('Failed to play audio:', error);
+          console.error(`Failed to play audio ${audioPath}:`, error);
           // Fallback to speech synthesis
           console.log('Using Web Speech API fallback');
           speakCurrentSlideText();
