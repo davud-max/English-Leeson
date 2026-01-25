@@ -891,7 +891,7 @@ main().catch(console.error);
             {slides.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <div className="text-5xl mb-4">📝</div>
-                <p>Go to Input tab and paste Russian text, then click "Parse into Slides"</p>
+                <p>Go to Input tab and paste Russian text, then click &quot;Parse into Slides&quot;</p>
               </div>
             ) : (
               <div className="space-y-4 max-h-[60vh] overflow-y-auto">
@@ -940,7 +940,7 @@ main().catch(console.error);
                         onChange={(e) => updateSlide(slide.id, 'contentEn', e.target.value)}
                         className="w-full px-3 py-2 border rounded text-sm font-mono bg-blue-50"
                         rows={3}
-                        placeholder="Content (EN) with **bold** and > quotes..."
+                        placeholder="Content (EN) with bold and quotes..."
                       />
                     </div>
                   </div>
@@ -978,7 +978,7 @@ main().catch(console.error);
             {questions.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <div className="text-5xl mb-4">❓</div>
-                <p>Click "Generate with AI" to create quiz questions from lesson content</p>
+                <p>Click &quot;Generate with AI&quot; to create quiz questions from lesson content</p>
               </div>
             ) : (
               <div className="space-y-3">
