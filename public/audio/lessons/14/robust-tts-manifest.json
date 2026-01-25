@@ -1,0 +1,232 @@
+{
+  "lessonId": 14,
+  "title": "How Consciousness Creates Reality",
+  "servicesAttempted": [
+    "Google Translate TTS",
+    "Alternative Google TTS"
+  ],
+  "totalSegments": 27,
+  "generatedSegments": 18,
+  "failedSegments": [
+    1,
+    6,
+    7,
+    20,
+    22,
+    23,
+    25,
+    26,
+    27
+  ],
+  "successRate": "67%",
+  "createdAt": "2026-01-25T06:02:33.263Z",
+  "segmentsInfo": [
+    {
+      "segment": 1,
+      "status": "success",
+      "characterCount": 214,
+      "wordCount": 37,
+      "filename": "segment-02.mp3",
+      "filesize": 70080
+    },
+    {
+      "segment": 2,
+      "status": "success",
+      "characterCount": 105,
+      "wordCount": 18,
+      "filename": "segment-03.mp3",
+      "filesize": 137856
+    },
+    {
+      "segment": 3,
+      "status": "success",
+      "characterCount": 186,
+      "wordCount": 28,
+      "filename": "segment-04.mp3",
+      "filesize": 70656
+    },
+    {
+      "segment": 4,
+      "status": "success",
+      "characterCount": 110,
+      "wordCount": 21,
+      "filename": "segment-05.mp3",
+      "filesize": 53760
+    },
+    {
+      "segment": 5,
+      "status": "success",
+      "characterCount": 82,
+      "wordCount": 17,
+      "filename": "segment-08.mp3",
+      "filesize": 48384
+    },
+    {
+      "segment": 6,
+      "status": "success",
+      "characterCount": 251,
+      "wordCount": 46,
+      "filename": "segment-09.mp3",
+      "filesize": 56256
+    },
+    {
+      "segment": 7,
+      "status": "success",
+      "characterCount": 226,
+      "wordCount": 35,
+      "filename": "segment-10.mp3",
+      "filesize": 54528
+    },
+    {
+      "segment": 8,
+      "status": "success",
+      "characterCount": 82,
+      "wordCount": 13,
+      "filename": "segment-11.mp3",
+      "filesize": 67584
+    },
+    {
+      "segment": 9,
+      "status": "success",
+      "characterCount": 85,
+      "wordCount": 14,
+      "filename": "segment-12.mp3",
+      "filesize": 23424
+    },
+    {
+      "segment": 10,
+      "status": "success",
+      "characterCount": 93,
+      "wordCount": 18,
+      "filename": "segment-13.mp3",
+      "filesize": 15360
+    },
+    {
+      "segment": 11,
+      "status": "success",
+      "characterCount": 96,
+      "wordCount": 15,
+      "filename": "segment-14.mp3",
+      "filesize": 24960
+    },
+    {
+      "segment": 12,
+      "status": "success",
+      "characterCount": 40,
+      "wordCount": 6,
+      "filename": "segment-15.mp3",
+      "filesize": 37824
+    },
+    {
+      "segment": 13,
+      "status": "success",
+      "characterCount": 16,
+      "wordCount": 4,
+      "filename": "segment-16.mp3",
+      "filesize": 93120
+    },
+    {
+      "segment": 14,
+      "status": "success",
+      "characterCount": 35,
+      "wordCount": 4,
+      "filename": "segment-17.mp3",
+      "filesize": 30144
+    },
+    {
+      "segment": 15,
+      "status": "success",
+      "characterCount": 55,
+      "wordCount": 9,
+      "filename": "segment-18.mp3",
+      "filesize": 43776
+    },
+    {
+      "segment": 16,
+      "status": "success",
+      "characterCount": 144,
+      "wordCount": 25,
+      "filename": "segment-19.mp3",
+      "filesize": 36864
+    },
+    {
+      "segment": 17,
+      "status": "success",
+      "characterCount": 42,
+      "wordCount": 7,
+      "filename": "segment-21.mp3",
+      "filesize": 85440
+    },
+    {
+      "segment": 18,
+      "status": "success",
+      "characterCount": 51,
+      "wordCount": 9,
+      "filename": "segment-24.mp3",
+      "filesize": 54144
+    },
+    {
+      "segment": 1,
+      "status": "failed",
+      "characterCount": 214,
+      "wordCount": 37,
+      "error": "All TTS services failed"
+    },
+    {
+      "segment": 6,
+      "status": "failed",
+      "characterCount": 251,
+      "wordCount": 46,
+      "error": "All TTS services failed"
+    },
+    {
+      "segment": 7,
+      "status": "failed",
+      "characterCount": 226,
+      "wordCount": 35,
+      "error": "All TTS services failed"
+    },
+    {
+      "segment": 20,
+      "status": "failed",
+      "characterCount": 290,
+      "wordCount": 50,
+      "error": "All TTS services failed"
+    },
+    {
+      "segment": 22,
+      "status": "failed",
+      "characterCount": 306,
+      "wordCount": 54,
+      "error": "All TTS services failed"
+    },
+    {
+      "segment": 23,
+      "status": "failed",
+      "characterCount": 366,
+      "wordCount": 69,
+      "error": "All TTS services failed"
+    },
+    {
+      "segment": 25,
+      "status": "failed",
+      "characterCount": 284,
+      "wordCount": 48,
+      "error": "All TTS services failed"
+    },
+    {
+      "segment": 26,
+      "status": "failed",
+      "characterCount": 260,
+      "wordCount": 45,
+      "error": "All TTS services failed"
+    },
+    {
+      "segment": 27,
+      "status": "failed",
+      "characterCount": 307,
+      "wordCount": 53,
+      "error": "All TTS services failed"
+    }
+  ]
+}

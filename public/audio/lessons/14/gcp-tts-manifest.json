@@ -1,0 +1,60 @@
+{
+  "lessonId": 14,
+  "title": "How Consciousness Creates Reality",
+  "service": "Google Cloud TTS",
+  "voice": "en-US-Neural2-J",
+  "gender": "MALE",
+  "totalRequested": 9,
+  "successfullyGenerated": 9,
+  "failedSegments": [],
+  "successRate": "100%",
+  "totalAudioSizeKB": 1168,
+  "createdAt": "2026-01-25T06:08:58.789Z",
+  "generatedFiles": [
+    {
+      "segment": 1,
+      "filename": "segment-01.mp3",
+      "sizeKB": 122
+    },
+    {
+      "segment": 6,
+      "filename": "segment-06.mp3",
+      "sizeKB": 151
+    },
+    {
+      "segment": 7,
+      "filename": "segment-07.mp3",
+      "sizeKB": 128
+    },
+    {
+      "segment": 20,
+      "filename": "segment-20.mp3",
+      "sizeKB": 144
+    },
+    {
+      "segment": 22,
+      "filename": "segment-22.mp3",
+      "sizeKB": 141
+    },
+    {
+      "segment": 23,
+      "filename": "segment-23.mp3",
+      "sizeKB": 175
+    },
+    {
+      "segment": 25,
+      "filename": "segment-25.mp3",
+      "sizeKB": 183
+    },
+    {
+      "segment": 26,
+      "filename": "segment-26.mp3",
+      "sizeKB": 50
+    },
+    {
+      "segment": 27,
+      "filename": "segment-27.mp3",
+      "sizeKB": 75
+    }
+  ]
+}

@@ -1,621 +1,330 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useRef } from 'react';
-import MarkdownContent from '@/components/course/MarkdownContent';
+import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
+import { useState, useRef, useEffect } from 'react'
 
-const LESSON_TITLE = "How Consciousness Creates Reality";
-const LESSON_ID = 14;
-
-// Audio file paths (using direct paths but with proper handling)
-const AUDIO_FILE_PATHS = [
-  '/audio/lessons/14/segment-01.mp3',
-  '/audio/lessons/14/segment-02.mp3',
-  '/audio/lessons/14/segment-03.mp3',
-  '/audio/lessons/14/segment-04.mp3',
-  '/audio/lessons/14/segment-05.mp3',
-  '/audio/lessons/14/segment-06.mp3',
-  '/audio/lessons/14/segment-07.mp3',
-  '/audio/lessons/14/segment-08.mp3',
-  '/audio/lessons/14/segment-09.mp3',
-  '/audio/lessons/14/segment-10.mp3'
-];
-
-// Presentation slides content
-const PRESENTATION_SLIDES = [
+const LESSON_14_SLIDES = [
   {
     id: 1,
     title: "The Paradox of Description",
-    content: `
-## 🔍 The Closed Circle of Language
-
-We began with something simple: **"Describe what you see."**
-
-But we encountered a fundamental paradox:
-
-\`\`\`mermaid
-graph LR
-    A[Observation] --> B[Description]
-    B --> C[Words Needed]
-    C --> D[Terms Required]
-    D --> E[Definitions Needed]
-    E --> A
-\`\`\`
-
-**The Problem:** To describe something, you need words. But words are terms. And terms require definitions. Which brings us back to needing to describe...
-
-**Only one thing can break this cycle — the act of primary distinction.**
-`,
-    emoji: "🌀"
+    content: "We began with something simple: **\"Describe what you see.\"**\n\nBut we encountered a fundamental paradox:\n\nTo describe something, you need **words**. But words are **terms**. And terms require **definitions**. Which brings us back to needing to describe...\n\n> **A closed circle.** Only one thing can break this cycle — the **act of primary distinction**.\n\nThis is where cognition truly begins — not with ready-made concepts, but with the ability to draw a boundary between \"this\" and \"not this.\"",
+    emoji: "🌀",
+    duration: 28000
   },
   {
     id: 2,
     title: "Absolute Darkness",
-    content: `
-## 🌑 The Primordial State
-
-**Imagine absolute darkness** — not physical darkness, but meaningful darkness.
-
-In this state, there is:
-- No "here" or "there"
-- No "self" or "other"  
-- No distinctions whatsoever
-
-This is what ancient texts call **"water"** — homogeneous, indistinguishable Being.
-
-\`\`\`mermaid
-graph TD
-    A[Absolute Unity] --> B[No Boundaries]
-    B --> C[Indistinguishable Existence]
-    C --> D[Primordial Water]
-\`\`\`
-
-**What can emerge from this unity?** Only one thing — the appearance of boundaries.
-
-**But for boundaries to appear, light is needed.**
-
-> **Light is not photons** — it's the ability to draw a line and say: "this is not that."
-`,
-    emoji: "💧"
+    content: "**Imagine absolute darkness** — not physical darkness, but meaningful darkness.\n\nIn this state, there is:\n\n• No \"here\" or \"there\"\n• No \"self\" or \"other\"\n• No distinctions whatsoever\n\nThis is what ancient texts call **\"water\"** — homogeneous, indistinguishable Being.\n\n> What can emerge from this unity? Only one thing — the **appearance of boundaries**.\n\nBut for boundaries to appear, **light is needed**. And light is not photons — it's the ability to draw a line and say: **\"this is not that.\"**",
+    emoji: "💧",
+    duration: 30000
   },
   {
     id: 3,
     title: "The Act of Naming",
-    content: `
-## ✨ Light as Distinction
-
-**Biblical formulation:** "And God said: let there be light. And there was light."
-
-**Key insight:** God didn't "create" light in the usual sense. **He named it.**
-
-\`\`\`mermaid
-graph LR
-    A[Silent Existence] --> B[Act of Naming]
-    B --> C[Light Appears]
-    C --> D[Boundaries Form]
-\`\`\`
-
-**What does this mean in our terms?**
-- Observable separates from unobservable
-- "Earth" (World) separates from "Heaven" (Nothing)
-- Firmament appears — the first boundary
-
-> **Light = First operation of distinction**
-`,
-    emoji: "🕯️"
+    content: "**Biblical formulation:** *\"And God said: let there be light. And there was light.\"*\n\n**Key insight:** God didn't \"create\" light in the usual sense. **He named it.**\n\nWhat does this mean in our terms?\n\n• Observable separates from unobservable\n• \"Earth\" (World) separates from \"Heaven\" (Nothing)\n• **Firmament appears** — the first boundary\n\n> **Light = The first operation of distinction**\n\nBefore naming, there was no difference. The act of naming **creates** the difference.",
+    emoji: "✨",
+    duration: 28000
   },
   {
     id: 4,
     title: "Circle Lesson Revisited",
-    content: `
-## 🔄 Three Elements in Action
-
-Let's recall our first lecture about the circle:
-
-**Object:** Chalk mark on board = "water" (indistinguishable Being)
-
-**Observer:** Child watching = Spirit "moving over water"
-
-**Description:** Drawing boundaries (curved, closed, equidistant) = Light
-
-\`\`\`mermaid
-graph TD
-    A[Chalk Mark - Water] --> D[Undifferentiated]
-    B[Child - Spirit] --> E[Observing]
-    C[Boundary Drawing - Light] --> F[Distinguishing]
-    D --> G[Three Inseparable Elements]
-    E --> G
-    F --> G
-\`\`\`
-`,
-    emoji: "⭕"
+    content: "Let's recall our first lecture about the circle:\n\n**Object:** Chalk mark on board = \"water\" (indistinguishable Being)\n\n**Observer:** Child watching = Spirit \"moving over water\"\n\n**Description:** Drawing boundaries (curved, closed, equidistant) = Light\n\n> These three elements are **inseparable**. Remove any one — and the circle doesn't exist.\n\nThe circle is not \"out there\" waiting to be discovered. It **emerges** in the act of distinction performed by a conscious observer.",
+    emoji: "⭕",
+    duration: 26000
   },
   {
     id: 5,
     title: "The Trinity of Cognition",
-    content: `
-## 🔺 Three Inseparable Elements
-
-**Being** — what is (Father = Source Material)
-
-**Consciousness** — what distinguishes (Holy Spirit = Observing Spirit)
-
-**Act of Distinction** — light giving birth to boundaries (Son/Logos = Word)
-
-\`\`\`mermaid
-graph TD
-    A[Father - Being] --> D[Source Material]
-    B[Son - Distinction] --> E[Light/Boundaries]
-    C[Spirit - Consciousness] --> F[Observer]
-    D --> G[Cognitive Process]
-    E --> G
-    F --> G
-\`\`\`
-
-> **This is not mysticism, but a strict scheme of how cognition works.**
-`,
-    emoji: "☦️"
+    content: "**Three Inseparable Elements:**\n\n• **Being** — what is (Father = Source Material)\n• **Consciousness** — what distinguishes (Holy Spirit = Observing Spirit)\n• **Act of Distinction** — light giving birth to boundaries (Son/Logos = Word)\n\n> This is not mysticism, but a **strict scheme of how cognition works**.\n\nEvery cognitive act requires all three:\n\n1. Something to cognize (Being)\n2. Someone to cognize it (Consciousness)\n3. The act of cognizing (Distinction)\n\nRemove any element — and cognition disappears.",
+    emoji: "🔺",
+    duration: 30000
   },
   {
     id: 6,
     title: "World as Appearance",
-    content: `
-## 🌍 World Through Distinction
-
-**Key principle:** Terms in our first lecture were born only after definitions. Similarly, the world is born only after acts of distinction.
-
-\`\`\`mermaid
-graph LR
-    A[No Distinction] --> B[Act of Distinction]
-    B --> C[Boundaries Appear]
-    C --> D[World Emerges]
-\`\`\`
-
-**God didn't "create" the world like a craftsman makes furniture.**
-
-> **The world "appeared" when an Observer capable of distinction emerged.**
-`,
-    emoji: "✨"
+    content: "**Key principle:** Terms in our first lecture were born only after definitions. Similarly, the **world is born only after acts of distinction**.\n\nGod didn't \"create\" the world like a craftsman makes furniture.\n\n> The world **\"appeared\"** when an Observer capable of distinction emerged.\n\nThis is not idealism denying external reality. This is a precise statement about the **nature of cognition**:\n\n• Without an observer — no observed\n• Without distinction — no distinct objects\n• Without light — no boundaries",
+    emoji: "🌍",
+    duration: 28000
   },
   {
     id: 7,
     title: "Human as Co-Creator",
-    content: `
-## 👤 Man as Co-Creator
-
-**Biblical perspective:** "And the Lord God formed man from dust of the ground, and breathed into his nostrils breath of life."
-
-**Translation:**
-- "Dust of the ground" = undifferentiated material of being
-- "Breath of life" = the light of distinction that makes man conscious
-
-\`\`\`mermaid
-graph LR
-    A[Potential Being] --> B[Act of Distinction]
-    B --> C[Living Consciousness]
-    C --> D[Co-Creation]
-\`\`\`
-
-> **Man is not passive observer but active participant in creation.**
-`,
-    emoji: "🌬️"
+    content: "**Biblical perspective:** *\"And the Lord God formed man from dust of the ground, and breathed into his nostrils breath of life.\"*\n\n**Translation:**\n\n• \"Dust of the ground\" = undifferentiated material of being\n• \"Breath of life\" = the light of distinction that makes man conscious\n\n> Man is not a passive observer but an **active participant in creation**.\n\nEvery time you distinguish something — name it, categorize it, understand it — you participate in the ongoing act of creation.",
+    emoji: "🌬️",
+    duration: 28000
   },
   {
     id: 8,
-    title: "New Heaven and Earth",
-    content: `
-## 🌟 Paradigm Shift
-
-**Revelation 21:1:** "And I saw a new heaven and a new earth, for the first heaven and the first earth had passed away."
-
-**This is not about planetary destruction.**
-
-\`\`\`mermaid
-graph LR
-    A[Old Distinction] --> B[New Light]
-    B --> C[Old World Dissolves]
-    C --> D[New World Appears]
-\`\`\`
-
-**It's about consciousness paradigm shift:**
-- Change in distinguishing ability
-- Appearance of "new light"
-- Old world disappears, new world emerges
-
-> **Reality transforms when consciousness transforms.**
-`,
-    emoji: "🌌"
+    title: "New Heaven and New Earth",
+    content: "**Revelation 21:1:** *\"And I saw a new heaven and a new earth, for the first heaven and the first earth had passed away.\"*\n\nThis is not about planetary destruction.\n\nIt's about **consciousness paradigm shift**:\n\n• Change in distinguishing ability\n• Appearance of \"new light\"\n• Old world disappears, new world emerges\n\n> **Reality transforms when consciousness transforms.**\n\nWhen humanity develops a new way of seeing — a new \"light\" — the entire world changes. Not physically, but **cognitively**.",
+    emoji: "🌌",
+    duration: 30000
   },
   {
     id: 9,
     title: "Constructed Reality",
-    content: `
-## 🧠 Reality We Live In
-
-**We don't live in "objective reality."**
-
-We live in **reality distinguished by our consciousness.**
-
-\`\`\`mermaid
-graph TD
-    A[Your Objects] --> B[Table-Cup-Friend]
-    B --> C[Boundaries Drawn]
-    C --> D[By Your Light-Consciousness]
-    D --> E[In Fabric of Being]
-\`\`\`
-
-**Why are these boundaries stable?**
-- Our "metric" of distinction is shared culturally
-- Common cognitive framework
-- Similar distinguishing abilities
-
-> **Your reality is constructed by your consciousness.**
-`,
-    emoji: "🎨"
+    content: "**We don't live in \"objective reality.\"**\n\nWe live in **reality distinguished by our consciousness**.\n\nYour objects — table, cup, friend — these are boundaries drawn **by your light-consciousness** in the fabric of Being.\n\n**Why are these boundaries stable?**\n\n• Our \"metric\" of distinction is shared culturally\n• Common cognitive framework\n• Similar distinguishing abilities\n\n> Your reality is **constructed** by your consciousness. This is not solipsism — it's the recognition that cognition is always an **active process**.",
+    emoji: "🎨",
+    duration: 28000
   },
   {
     id: 10,
     title: "Different Worlds",
-    content: `
-## 🌎 Multiple Realities
-
-**Same physical Being, different distinctions:**
-
-\`\`\`mermaid
-graph TD
-    A[Physical Being - One] --> B[Different Metrics]
-    B --> C[Dolphin Reality]
-    B --> D[Bat Reality]
-    B --> E[Alien Reality]
-    C --> F[Different Boundaries]
-    D --> F
-    E --> F
-\`\`\`
-
-**Exercise:**
-Look at any object. Try to:
-1. Stop recognizing it
-2. Forget its name and function  
-3. See it as "piece of distinguished Being"
-
-> **You'll feel dizziness — experience of boundary dissolution.**
-`,
-    emoji: "🌀"
+    content: "**Same physical Being, different distinctions:**\n\n• A dolphin distinguishes reality differently\n• A bat perceives different boundaries\n• An alien might have completely different \"light\"\n\n**Exercise:** Look at any object. Try to:\n\n1. Stop recognizing it\n2. Forget its name and function\n3. See it as \"piece of distinguished Being\"\n\n> You'll feel dizziness — the **experience of boundary dissolution**.\n\nThis is a glimpse of what lies beneath our constructed reality — the undifferentiated water of Being.\n\n*Thank you for your attention.*",
+    emoji: "🌀",
+    duration: 32000
   }
 ];
 
-export default function Lesson14() {
+export default function Lesson14Page() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [audioError, setAudioError] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Cleanup on unmount
+  const totalSlides = LESSON_14_SLIDES.length;
+
   useEffect(() => {
+    if (!isPlaying) return;
+
+    const audioFile = `/audio/lesson14/slide${currentSlide + 1}.mp3`;
+    if (audioRef.current) {
+      audioRef.current.src = audioFile;
+      audioRef.current.play().catch(e => {
+        console.log("Audio not available, using timer fallback");
+        setAudioError(true);
+        // Fallback to timer-based advancement
+        const duration = LESSON_14_SLIDES[currentSlide].duration;
+        timerRef.current = setTimeout(() => {
+          if (currentSlide < totalSlides - 1) {
+            setCurrentSlide(prev => prev + 1);
+          } else {
+            setIsPlaying(false);
+          }
+        }, duration);
+      });
+    }
+
     return () => {
-      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-      if (currentAudio) {
-        currentAudio.pause();
-        setCurrentAudio(null);
-      }
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [currentAudio]);
+  }, [currentSlide, isPlaying, totalSlides]);
 
-  // Handle slide change
+  // Progress animation for timer fallback
   useEffect(() => {
-    if (isPlaying) {
-      playCurrentSlide();
-    } else {
-      stopAudio();
-    }
-    setProgress(0);
-  }, [currentSlide, isPlaying]);
+    if (!isPlaying || !audioError) return;
+    
+    const duration = LESSON_14_SLIDES[currentSlide].duration;
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) return 0;
+        return prev + (100 / (duration / 100));
+      });
+    }, 100);
 
-  const playCurrentSlide = () => {
-    if (currentAudio) {
-      currentAudio.pause();
-    }
+    return () => clearInterval(interval);
+  }, [isPlaying, audioError, currentSlide]);
+
+  // Audio progress tracking
+  useEffect(() => {
+    if (!isPlaying || audioError) return;
     
-    const audioPath = AUDIO_FILE_PATHS[currentSlide];
-    const audio = new Audio(audioPath);
-    audio.volume = isMuted ? 0 : 1;
-    
-    // Add user interaction requirement for autoplay
-    audio.onplay = () => {
-      console.log(`Audio started playing: ${audioPath}`);
-    };
-    
-    audio.onended = () => {
-      console.log(`Audio finished: ${audioPath}`);
-      if (currentSlide < PRESENTATION_SLIDES.length - 1) {
-        setCurrentSlide(prev => prev + 1);
-      } else {
-        setIsPlaying(false);
+    const interval = setInterval(() => {
+      if (audioRef.current && audioRef.current.duration) {
+        const percent = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+        setProgress(percent);
       }
-    };
-    
-    audio.onerror = (event) => {
-      console.error(`Audio playback error for ${audioPath}:`, event);
-      // Try fallback to Web Speech API if file fails
-      console.log('Falling back to Web Speech API');
-      speakCurrentSlideText();
-    };
-    
-    // Attempt to play with user gesture
-    const playPromise = audio.play();
-    
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          console.log(`Audio playback started successfully: ${audioPath}`);
-          setCurrentAudio(audio);
-          
-          // Update progress bar
-          if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-          progressIntervalRef.current = setInterval(() => {
-            if (audio) {
-              const progressPercent = (audio.currentTime / audio.duration) * 100;
-              setProgress(isNaN(progressPercent) ? 0 : progressPercent);
-            }
-          }, 100);
-        })
-        .catch(error => {
-          console.error(`Failed to play audio ${audioPath}:`, error);
-          // Fallback to speech synthesis
-          console.log('Using Web Speech API fallback');
-          speakCurrentSlideText();
-        });
-    }
-  };
+    }, 100);
 
-  // Fallback function using Web Speech API
-  const speakCurrentSlideText = () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      const textContent = PRESENTATION_SLIDES[currentSlide].content
-        .replace(/##.*\n/g, '') // Remove headers
-        .replace(/```[\s\S]*?```/g, '') // Remove code blocks
-        .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
-        .replace(/[>]/g, '') // Remove quotes
-        .replace(/\n+/g, ' ')
-        .trim();
-      
-      const utterance = new SpeechSynthesisUtterance(textContent);
-      utterance.rate = 0.9;
-      utterance.pitch = 1.0;
-      utterance.volume = isMuted ? 0 : 1;
-      
-      utterance.onend = () => {
-        if (currentSlide < PRESENTATION_SLIDES.length - 1) {
-          setCurrentSlide(prev => prev + 1);
-        } else {
-          setIsPlaying(false);
-        }
-      };
-      
-      speechSynthesis.speak(utterance);
-      console.log('Using Web Speech API fallback');
-    }
-  };
+    return () => clearInterval(interval);
+  }, [isPlaying, audioError]);
 
-  const stopAudio = () => {
-    if (currentAudio) {
-      currentAudio.pause();
-      setCurrentAudio(null);
-    }
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-      progressIntervalRef.current = null;
-    }
-    setProgress(0);
-  };
-
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-    if (currentAudio) {
-      currentAudio.volume = isMuted ? 1 : 0;
-    }
-  };
-
-  const nextSlide = () => {
-    if (currentSlide < PRESENTATION_SLIDES.length - 1) {
+  const handleAudioEnded = () => {
+    if (currentSlide < totalSlides - 1) {
       setCurrentSlide(prev => prev + 1);
+      setProgress(0);
+    } else {
+      setIsPlaying(false);
+      setProgress(100);
     }
   };
 
-  const prevSlide = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide(prev => prev - 1);
+  const togglePlay = () => {
+    if (isPlaying) {
+      audioRef.current?.pause();
+      if (timerRef.current) clearTimeout(timerRef.current);
+      setIsPlaying(false);
+    } else {
+      setIsPlaying(true);
+      setProgress(0);
     }
   };
 
   const goToSlide = (index: number) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
     setCurrentSlide(index);
+    setProgress(0);
+    if (isPlaying) {
+      setAudioError(false);
+    }
   };
 
-  const currentSlideData = PRESENTATION_SLIDES[currentSlide];
+  const currentSlideData = LESSON_14_SLIDES[currentSlide];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="min-h-screen bg-stone-50">
+      <audio 
+        ref={audioRef} 
+        onEnded={handleAudioEnded}
+        onError={() => setAudioError(true)}
+      />
+      
+      {/* Academic Header */}
+      <header className="bg-stone-800 text-stone-100 border-b-4 border-amber-700">
+        <div className="max-w-5xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Lesson {LESSON_ID}</h1>
-              <p className="text-lg text-indigo-600">{LESSON_TITLE}</p>
+            <Link href="/lessons" className="text-stone-400 hover:text-white flex items-center gap-2 text-sm">
+              ← Back to Course
+            </Link>
+            <div className="text-center">
+              <h1 className="text-lg font-serif">Algorithms of Thinking and Cognition</h1>
+              <p className="text-stone-400 text-sm">Lecture XIV</p>
             </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={toggleMute}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                aria-label={isMuted ? "Unmute" : "Mute"}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`w-5 h-5 ${isMuted ? 'text-gray-400' : 'text-indigo-600'}`}>
-                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                </svg>
-              </button>
-              <button
-                onClick={togglePlayPause}
-                className="flex items-center space-x-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
-              >
-                {isPlaying ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-                    <rect x="6" y="4" width="4" height="16"></rect>
-                    <rect x="14" y="4" width="4" height="16"></rect>
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                  </svg>
-                )}
-                <span>{isPlaying ? 'Pause' : 'Play'}</span>
-              </button>
+            <div className="text-stone-400 text-sm">
+              {currentSlide + 1} / {totalSlides}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Progress Bar */}
-      <div className="bg-gray-200 h-1 w-full">
-        <div 
-          className="bg-indigo-600 h-1 transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
-
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Slide Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <span className="text-4xl">{currentSlideData.emoji}</span>
-                <div>
-                  <h2 className="text-2xl font-bold">{currentSlideData.title}</h2>
-                  <p className="text-indigo-100">Slide {currentSlide + 1} of {PRESENTATION_SLIDES.length}</p>
-                </div>
-              </div>
-            </div>
+      <main className="max-w-4xl mx-auto px-6 py-10">
+        
+        {/* Lesson Title */}
+        <div className="text-center mb-10">
+          <span className="text-5xl mb-4 block">{currentSlideData.emoji}</span>
+          <h2 className="text-3xl font-serif text-stone-800 mb-2">
+            {currentSlideData.title}
+          </h2>
+          <div className="w-24 h-1 bg-amber-700 mx-auto"></div>
+        </div>
+
+        {/* Content Card */}
+        <article className="bg-white rounded-lg shadow-lg border border-stone-200 p-8 md:p-12 mb-8">
+          <div className="prose prose-stone prose-lg max-w-none">
+            <ReactMarkdown
+              components={{
+                p: ({children}) => <p className="text-stone-700 leading-relaxed mb-5 text-lg">{children}</p>,
+                strong: ({children}) => <strong className="text-stone-900 font-semibold">{children}</strong>,
+                em: ({children}) => <em className="text-stone-600 italic">{children}</em>,
+                blockquote: ({children}) => (
+                  <blockquote className="border-l-4 border-amber-700 pl-6 my-6 italic text-stone-600 bg-amber-50 py-4 pr-4 rounded-r">
+                    {children}
+                  </blockquote>
+                ),
+                ul: ({children}) => <ul className="list-disc list-outside ml-6 text-stone-700 space-y-2 my-4">{children}</ul>,
+                ol: ({children}) => <ol className="list-decimal list-outside ml-6 text-stone-700 space-y-2 my-4">{children}</ol>,
+                li: ({children}) => <li className="text-stone-700 leading-relaxed">{children}</li>,
+                h1: ({children}) => <h1 className="text-2xl font-serif text-stone-800 mt-8 mb-4">{children}</h1>,
+                h2: ({children}) => <h2 className="text-xl font-serif text-stone-800 mt-6 mb-3">{children}</h2>,
+                h3: ({children}) => <h3 className="text-lg font-semibold text-stone-800 mt-4 mb-2">{children}</h3>,
+              }}
+            >
+              {currentSlideData.content}
+            </ReactMarkdown>
           </div>
+        </article>
 
-          {/* Slide Content */}
-          <div className="p-8">
-            <div className="prose prose-lg max-w-none">
-              <MarkdownContent content={currentSlideData.content} />
-            </div>
+        {/* Progress Section */}
+        <div className="bg-white rounded-lg shadow border border-stone-200 p-6 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm text-stone-500 font-medium">Slide Progress</span>
+            <span className="text-sm text-stone-500">{Math.round(progress)}%</span>
           </div>
+          <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-amber-700 transition-all duration-300 rounded-full"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          
+          {audioError && (
+            <p className="text-xs text-stone-400 mt-2 text-center">
+              Audio unavailable — using timed advancement
+            </p>
+          )}
+        </div>
 
-          {/* Navigation */}
-          <div className="bg-gray-50 px-8 py-6 border-t border-gray-200">
-            <div className="flex items-center justify-between">
+        {/* Controls */}
+        <div className="flex items-center justify-center gap-6 mb-10">
+          <button
+            onClick={() => goToSlide(Math.max(0, currentSlide - 1))}
+            disabled={currentSlide === 0}
+            className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
+          >
+            ← Previous
+          </button>
+          
+          <button
+            onClick={togglePlay}
+            className="px-8 py-3 rounded-lg bg-amber-700 text-white font-semibold hover:bg-amber-800 transition shadow-md"
+          >
+            {isPlaying ? '⏸ Pause' : '▶ Play Lecture'}
+          </button>
+          
+          <button
+            onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
+            disabled={currentSlide === totalSlides - 1}
+            className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
+          >
+            Next →
+          </button>
+        </div>
+
+        {/* Slide Navigation */}
+        <div className="bg-white rounded-lg shadow border border-stone-200 p-6">
+          <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-4">Lecture Sections</h3>
+          <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
+            {LESSON_14_SLIDES.map((slide, index) => (
               <button
-                onClick={prevSlide}
-                disabled={currentSlide === 0}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  currentSlide === 0 
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                key={slide.id}
+                onClick={() => goToSlide(index)}
+                className={`p-3 rounded text-sm font-medium transition ${
+                  index === currentSlide
+                    ? 'bg-amber-700 text-white'
+                    : index < currentSlide
+                    ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                    : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                 }`}
+                title={slide.title}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-                  <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-                <span>Previous</span>
+                {index + 1}
               </button>
-
-              {/* Slide Thumbnails */}
-              <div className="flex space-x-2">
-                {PRESENTATION_SLIDES.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      index === currentSlide 
-                        ? 'bg-indigo-600' 
-                        : 'bg-gray-300 hover:bg-gray-400'
-                    }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={nextSlide}
-                disabled={currentSlide === PRESENTATION_SLIDES.length - 1}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  currentSlide === PRESENTATION_SLIDES.length - 1 
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                }`}
-              >
-                <span>Next</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </button>
-            </div>
+            ))}
           </div>
         </div>
       </main>
 
-      {/* Footer with navigation */}
-      <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-            {/* Lesson navigation */}
-            <div className="flex items-center space-x-4">
-              <a 
-                href="/lessons/13" 
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-                  <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-                <span>Lesson 13</span>
-              </a>
-              
-              <span className="text-gray-400">|</span>
-              
-              <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-lg font-medium">
-                Lesson 14
-              </span>
-              
-              <span className="text-gray-400">|</span>
-              
-              <a 
-                href="/lessons/15" 
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <span>Lesson 15</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </a>
-            </div>
-            
-            {/* Main lessons page link */}
-            <a 
-              href="/lessons" 
-              className="flex items-center space-x-2 bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+      {/* Academic Footer */}
+      <footer className="bg-stone-800 text-stone-400 py-6 mt-16 border-t-4 border-amber-700">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex justify-between items-center">
+            <Link 
+              href="/lessons/13"
+              className="hover:text-white transition"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-              </svg>
-              <span>All Lessons</span>
-            </a>
-          </div>
-          
-          <div className="mt-6 pt-6 border-t border-gray-200 text-center text-gray-500">
-            <p>Lesson {LESSON_ID}: {LESSON_TITLE}</p>
-            <p className="mt-2 text-sm">Interactive presentation with professional audio narration</p>
+              ← Lecture XIII: The Sixth Human Level
+            </Link>
+            <span className="text-stone-500 text-sm font-serif">Lecture XIV</span>
+            <Link 
+              href="/lessons/15"
+              className="hover:text-white transition"
+            >
+              Lecture XV: A Theory of Everything →
+            </Link>
           </div>
         </div>
       </footer>

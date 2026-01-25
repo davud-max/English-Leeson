@@ -111,7 +111,7 @@ const LESSONS = [
     order: 14, 
     title: '🌌 How Consciousness Creates', 
     description: 'The act of primary distinction. The triad: Being, Consciousness, and the Act of Distinction.',
-    duration: 20,
+    duration: 30,
     available: true,
     color: 'from-indigo-500 to-blue-600'
   },
@@ -176,7 +176,7 @@ export default function LessonsPage() {
                 <div className="text-sm text-gray-500">Available</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-400">4</div>
+                <div className="text-3xl font-bold text-gray-400">3</div>
                 <div className="text-sm text-gray-500">Locked</div>
               </div>
             </div>

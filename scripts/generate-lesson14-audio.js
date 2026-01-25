@@ -1,82 +1,141 @@
-#!/usr/bin/env node
+// Generate audio for Lesson 14: How Consciousness Creates Reality
+// Run: node scripts/generate-lesson14-audio.js
 
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Audio content for Lesson 14
-const AUDIO_SEGMENTS = [
-  "We began with something simple: 'Describe what you see.' And we encountered a paradox: to describe, you already need to know words. But words are terms, and terms are labels for definitions. We get a closed circle.",
-  "Only one thing can break it — the act of primary distinction. Even before words. Even before definitions.",
-  "Imagine absolute darkness. Not physical, but meaningful. There is no 'here' or 'there', no 'I' or 'not-I'. This is what ancient texts call 'water' — homogeneous, indistinguishable Being.",
-  "What can happen in this 'water'? Only one thing — the appearance of a boundary. But for this, light is needed.",
-  "Light is not photons. It's the ability to draw a line and say: 'this is not that.'",
-  "In the Bible, this moment is described thus: 'And God said: let there be light. And there was light.' Notice: God didn't 'create' light in the usual sense. He named it. That is, light appears as an act of naming, as the first operation of distinction.",
-  "Light separated from darkness. What does this mean in our conceptual system? The observable separated from the unobservable. 'Earth' — World — separated from 'heaven' — Nothing. A firmament appeared — that very first boundary.",
-  "Let's recall our first lecture. What happened when we started describing a circle?",
-  "Object — chalk mark on board — this is analogous to 'water', indistinguishable Being.",
-  "Observer — the child who looks — this is analogous to the Spirit that 'moves over the water.'",
-  "Act of description — drawing boundaries: curved, closed, equidistant — this is the light itself.",
-  "Here are the three inseparable elements:",
-  "Being — what is.",
-  "Consciousness — what distinguishes.",
-  "Act of distinction — light, giving birth to boundaries.",
-  "In religious tradition, this is called Father, Son, and Holy Spirit. But in our system, this is not mysticism, but a strict scheme of cognition.",
-  "Father equals Being — the source material.",
-  "Son equals Logos, Word, act of distinction — light.",
-  "Holy Spirit equals Consciousness, spirit of the observer.",
-  "Pay attention: in our first lecture, a term was born only after definition. Here too: the world is born only after the act of distinction. God didn't 'create' the world like a carpenter creates a table. The world 'appeared' as a result of an Observer capable of distinguishing it appearing.",
-  "Here's the key point. If the world appears only when there is someone to distinguish it, then man is not a passive spectator. He is a co-creator.",
-  "In the Bible: 'And the Lord God formed man from the dust of the ground, and breathed into his nostrils the breath of life.' 'Dust of the ground' — this is still undifferentiated material of being. 'Breath of life' — this is that same light, the ability to distinguish, which makes man living consciousness.",
-  "The terrible meaning of the phrase becomes clear: 'And I saw a new heaven and a new earth, for the first heaven and the first earth had passed away.' This is not about the end of the planet. This is about a change in consciousness paradigm. When a person's way of distinguishing changes — 'new light' appears — for him the old world disappears and a new one appears.",
-  "We live not in 'objective reality'. We live in reality distinguished by our consciousness.",
-  "Your table, your cup, your friend — all this is boundaries drawn by your light-consciousness in the indivisible fabric of Being. These boundaries are stable because our way of distinguishing — our 'metric', as physicists would say — is common to all people raised in the same culture.",
-  "But imagine a creature with a different 'metric' — for example, a dolphin, a bat, or an alien. For them, the firmament passes in different places. Their 'earth' and their 'heaven' are different. They live in a different world, though the physical Being is one.",
-  "Exercise: Look at any object in the room. Try to stop recognizing it. Forget its name, function. Try to see in it simply 'a piece of distinguished Being'. This is an attempt to return to 'water' before the appearance of light. You will feel slight dizziness. This is the experience of dissolving boundaries."
+const slides = [
+  {
+    id: 1,
+    text: `We began with something simple: "Describe what you see." But we encountered a fundamental paradox.
+
+To describe something, you need words. But words are terms. And terms require definitions. Which brings us back to needing to describe... A closed circle.
+
+Only one thing can break this cycle — the act of primary distinction. This is where cognition truly begins — not with ready-made concepts, but with the ability to draw a boundary between "this" and "not this."`
+  },
+  {
+    id: 2,
+    text: `Imagine absolute darkness — not physical darkness, but meaningful darkness.
+
+In this state, there is no "here" or "there", no "self" or "other", no distinctions whatsoever.
+
+This is what ancient texts call "water" — homogeneous, indistinguishable Being.
+
+What can emerge from this unity? Only one thing — the appearance of boundaries. But for boundaries to appear, light is needed. And light is not photons — it's the ability to draw a line and say: "this is not that."`
+  },
+  {
+    id: 3,
+    text: `Biblical formulation: "And God said: let there be light. And there was light."
+
+Key insight: God didn't "create" light in the usual sense. He named it.
+
+What does this mean in our terms? Observable separates from unobservable. "Earth" — the World — separates from "Heaven" — Nothing. Firmament appears — the first boundary.
+
+Light equals the first operation of distinction. Before naming, there was no difference. The act of naming creates the difference.`
+  },
+  {
+    id: 4,
+    text: `Let's recall our first lecture about the circle.
+
+Object: Chalk mark on board equals "water" — indistinguishable Being.
+Observer: Child watching equals Spirit "moving over water".
+Description: Drawing boundaries — curved, closed, equidistant — equals Light.
+
+These three elements are inseparable. Remove any one — and the circle doesn't exist. The circle is not "out there" waiting to be discovered. It emerges in the act of distinction performed by a conscious observer.`
+  },
+  {
+    id: 5,
+    text: `Three Inseparable Elements.
+
+Being — what is — Father equals Source Material.
+Consciousness — what distinguishes — Holy Spirit equals Observing Spirit.
+Act of Distinction — light giving birth to boundaries — Son or Logos equals Word.
+
+This is not mysticism, but a strict scheme of how cognition works.
+
+Every cognitive act requires all three: Something to cognize — Being. Someone to cognize it — Consciousness. The act of cognizing — Distinction. Remove any element — and cognition disappears.`
+  },
+  {
+    id: 6,
+    text: `Key principle: Terms in our first lecture were born only after definitions. Similarly, the world is born only after acts of distinction.
+
+God didn't "create" the world like a craftsman makes furniture. The world "appeared" when an Observer capable of distinction emerged.
+
+This is not idealism denying external reality. This is a precise statement about the nature of cognition. Without an observer — no observed. Without distinction — no distinct objects. Without light — no boundaries.`
+  },
+  {
+    id: 7,
+    text: `Biblical perspective: "And the Lord God formed man from dust of the ground, and breathed into his nostrils breath of life."
+
+Translation: "Dust of the ground" equals undifferentiated material of being. "Breath of life" equals the light of distinction that makes man conscious.
+
+Man is not a passive observer but an active participant in creation. Every time you distinguish something — name it, categorize it, understand it — you participate in the ongoing act of creation.`
+  },
+  {
+    id: 8,
+    text: `Revelation 21:1: "And I saw a new heaven and a new earth, for the first heaven and the first earth had passed away."
+
+This is not about planetary destruction. It's about consciousness paradigm shift.
+
+Change in distinguishing ability. Appearance of "new light". Old world disappears, new world emerges.
+
+Reality transforms when consciousness transforms. When humanity develops a new way of seeing — a new "light" — the entire world changes. Not physically, but cognitively.`
+  },
+  {
+    id: 9,
+    text: `We don't live in "objective reality." We live in reality distinguished by our consciousness.
+
+Your objects — table, cup, friend — these are boundaries drawn by your light-consciousness in the fabric of Being.
+
+Why are these boundaries stable? Our "metric" of distinction is shared culturally. Common cognitive framework. Similar distinguishing abilities.
+
+Your reality is constructed by your consciousness. This is not solipsism — it's the recognition that cognition is always an active process.`
+  },
+  {
+    id: 10,
+    text: `Same physical Being, different distinctions. A dolphin distinguishes reality differently. A bat perceives different boundaries. An alien might have completely different "light".
+
+Exercise: Look at any object. Try to stop recognizing it. Forget its name and function. See it as "piece of distinguished Being".
+
+You'll feel dizziness — the experience of boundary dissolution. This is a glimpse of what lies beneath our constructed reality — the undifferentiated water of Being.
+
+Thank you for your attention.`
+  }
 ];
 
-// Create audio directory if it doesn't exist
-const audioDir = path.join(__dirname, '..', 'public', 'audio', 'lessons', '14');
-if (!fs.existsSync(audioDir)) {
-  fs.mkdirSync(audioDir, { recursive: true });
+const outputDir = path.join(__dirname, '..', 'public', 'audio', 'lesson14');
+
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+  console.log(`📁 Created directory: ${outputDir}`);
 }
 
-console.log('Generating Lesson 14 audio segments...');
-console.log(`Target directory: ${audioDir}`);
-
-// Create individual segment files
-AUDIO_SEGMENTS.forEach((text, index) => {
-  const segmentNumber = index + 1;
-  const filename = `segment-${segmentNumber.toString().padStart(2, '0')}.txt`;
-  const filepath = path.join(audioDir, filename);
+async function generateAudio() {
+  console.log('🎙️ Generating audio for Lesson 14: How Consciousness Creates Reality\n');
   
-  fs.writeFileSync(filepath, text, 'utf8');
-  console.log(`Created: ${filename}`);
-});
+  for (const slide of slides) {
+    const outputFile = path.join(outputDir, `slide${slide.id}.mp3`);
+    const textFile = path.join(outputDir, `slide${slide.id}.txt`);
+    
+    fs.writeFileSync(textFile, slide.text);
+    
+    console.log(`🔊 Generating slide ${slide.id}...`);
+    
+    try {
+      execSync(`edge-tts --voice en-US-GuyNeural --rate="-5%" --file "${textFile}" --write-media "${outputFile}"`, {
+        stdio: 'inherit'
+      });
+      
+      fs.unlinkSync(textFile);
+      
+      console.log(`✅ Slide ${slide.id} complete: ${outputFile}\n`);
+    } catch (error) {
+      console.error(`❌ Error generating slide ${slide.id}:`, error.message);
+    }
+  }
+  
+  console.log('🎉 Audio generation complete for Lesson 14!');
+}
 
-// Create combined file
-const combinedContent = AUDIO_SEGMENTS.join('\n\n=== SLIDE BREAK ===\n\n');
-const combinedPath = path.join(audioDir, 'lesson-14-complete.txt');
-fs.writeFileSync(combinedPath, combinedContent, 'utf8');
-console.log(`\nCreated combined file: lesson-14-complete.txt`);
-
-// Create JSON manifest
-const manifest = {
-  lessonId: 14,
-  title: "How Consciousness Creates Reality",
-  segments: AUDIO_SEGMENTS.length,
-  createdAt: new Date().toISOString(),
-  segmentsInfo: AUDIO_SEGMENTS.map((text, index) => ({
-    segment: index + 1,
-    characterCount: text.length,
-    wordCount: text.split(/\s+/).filter(word => word.length > 0).length
-  }))
-};
-
-const manifestPath = path.join(audioDir, 'manifest.json');
-fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
-console.log(`Created manifest: manifest.json`);
-
-console.log('\n✅ Lesson 14 audio generation complete!');
-console.log(`Total segments: ${AUDIO_SEGMENTS.length}`);
-console.log(`Total characters: ${AUDIO_SEGMENTS.reduce((sum, text) => sum + text.length, 0)}`);
-console.log(`Total words: ${AUDIO_SEGMENTS.reduce((sum, text) => sum + text.split(/\s+/).filter(word => word.length > 0).length, 0)}`);
+generateAudio();
