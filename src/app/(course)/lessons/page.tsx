@@ -171,6 +171,21 @@ const LESSONS = [
     available: true,
     color: 'from-emerald-500 to-green-600'
   },
+// Add this to the LESSONS array in src/app/(course)/lessons/page.tsx:
+
+  { 
+    order: 22, 
+    title: '📖 FORMULAS, ABSTRACTION AND RULES', 
+    description: '',
+    duration: 25,
+    available: true,
+    color: 'from-blue-500 to-indigo-600'
+  },
+
+// Don't forget to update the statistics at the top of the page:
+// - Change "X of Y lessons available" 
+// - Update the Available/Locked counts
+// - Adjust the progress bar width percentage
 ]
 
 export default function LessonsPage() {

@@ -1,0 +1,42 @@
+{
+  "lessonId": 22,
+  "lessonTitle": "FORMULAS, ABSTRACTION AND RULES",
+  "generatedAt": "2026-01-26T06:31:45.564Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is a parameter and how does it relate to quantities?",
+      "correct_answer": "A parameter is a letter designation for a quantity. A quantity is the result of counting or measurement.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What is the difference between measurement and calculation according to the lesson?",
+      "correct_answer": "Measurement is directly obtaining a value using tools like rulers. Calculation is obtaining the value of a parameter through its connections with other parameters using formulas.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "Explain the complete pathway from abstraction to rule formation and analyze why this sequence is essential for human thinking.",
+      "correct_answer": "The pathway is: abstraction → knowledge → thinking → goal → rule. This sequence is essential because it shows how humans isolate parts of reality, convert them to symbolic knowledge, operate on abstractions to form thoughts, create desired models as goals, and develop systematic action sequences to achieve those goals.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "How does the ability to abstract distinguish humans from animals, and what role does this play in purposeful action?",
+      "correct_answer": "Animals cannot abstract and exist in a unified system of signals and reactions, while humans can extract and distinguish parts of being as separate wholes. This abstraction ability allows humans to create models, set goals, and act purposefully rather than being bound by instincts.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "What is the primary purpose of a formula according to the lesson?",
+      "correct_answer": "A formula allows us to calculate what is difficult or impossible to measure by using what is easy to measure.",
+      "difficulty": "easy",
+      "points": 5
+    }
+  ]
+}
