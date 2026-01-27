@@ -189,6 +189,15 @@ const LESSONS = [
     available: true,
     color: 'from-blue-500 to-indigo-600'
   },
+  { 
+    order: 24, 
+    title: '📖 THE BIRTH OF MONEY AND BANKS: FROM FAIR TO CITY', 
+    description: '',
+    duration: 25,
+    available: true,
+    color: 'from-blue-500 to-indigo-600'
+  },
+
 // Don't forget to update the statistics at the top of the page:
 // - Change "X of Y lessons available" 
 // - Update the Available/Locked counts
