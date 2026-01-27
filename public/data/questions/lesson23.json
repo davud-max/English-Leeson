@@ -1,0 +1,42 @@
+{
+  "lessonId": 23,
+  "lessonTitle": "HUMAN ACTIVITY, LAW AND CIVILIZATION",
+  "generatedAt": "2026-01-27T07:32:51.396Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the Law according to this lesson, and how was it obtained?",
+      "correct_answer": "The Law is the prohibition against violence toward another human being. It was not invented but discovered, like a law of physics.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What distinguishes economics from physics in terms of the nature of their laws?",
+      "correct_answer": "Physics discovers objective laws independent of opinion that affect everyone equally, while economics deals with people's subjective value judgments that are constantly changing.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "Analyze the relationship between the four levels of civilization and modern civilizational conflicts. How does a person's civilizational level determine their capacity for violence?",
+      "correct_answer": "People at lower civilizational levels have narrower definitions of who counts as 'their own' - from family to tribe to nation to civil society. Civilizational conflicts occur when people at different levels interact, as those at lower levels may not recognize the humanity of others outside their circle and thus justify violence against them.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "What is the fundamental difference between society and organization as presented in the lesson?",
+      "correct_answer": "An organization is intentionally created with known goals and resources but unknown methods. Society emerges spontaneously with unknown goals but known rules (the 10 commandments).",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "Explain why economic theories that promise complete certainty are compared to 'perpetual motion machines' and analyze the implications for distinguishing genuine human activity from imitation.",
+      "correct_answer": "Economic theories promising complete certainty are false because economics deals with subjective human values and uncertainty that can be reduced but never eliminated. This understanding is crucial for identifying imitations of human activity - false economic activities that use coercion instead of voluntary exchange, which can infiltrate society under pretexts like 'fair redistribution' and cause crises.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}

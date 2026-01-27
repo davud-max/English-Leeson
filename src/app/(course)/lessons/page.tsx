@@ -181,7 +181,14 @@ const LESSONS = [
     available: true,
     color: 'from-blue-500 to-indigo-600'
   },
-
+{ 
+    order: 23, 
+    title: '📖 HUMAN ACTIVITY, LAW AND CIVILIZATION', 
+    description: '',
+    duration: 25,
+    available: true,
+    color: 'from-blue-500 to-indigo-600'
+  },
 // Don't forget to update the statistics at the top of the page:
 // - Change "X of Y lessons available" 
 // - Update the Available/Locked counts
