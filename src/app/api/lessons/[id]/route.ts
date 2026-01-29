@@ -9,14 +9,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const lessonId = parseInt(params.id)
-
-    if (isNaN(lessonId)) {
-      return NextResponse.json(
-        { error: 'Invalid lesson ID' },
-        { status: 400 }
-      )
-    }
+    const lessonId = params.id
 
     // Get lesson from database
     const lesson = await prisma.lesson.findUnique({
