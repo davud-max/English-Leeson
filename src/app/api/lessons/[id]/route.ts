@@ -19,9 +19,8 @@ export async function GET(
         title: true,
         description: true,
         content: true,
-        audio_text: true,
-        duration_minutes: true,
-        order_num: true,
+        duration: true,
+        order: true,
       }
     })
 

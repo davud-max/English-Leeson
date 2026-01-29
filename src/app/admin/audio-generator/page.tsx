@@ -43,8 +43,8 @@ export default function AudioGeneratorPage() {
       if (response.ok) {
         const data = await response.json()
         
-        // Parse slides from content or audio_text
-        const slideTexts = parseSlides(data.audio_text || data.content || '')
+        // Parse slides from content
+        const slideTexts = parseSlides(data.content || '')
         
         if (slideTexts.length === 0) {
           alert('No slides found in this lesson')
