@@ -5,7 +5,41 @@ const path = require('path');
 // Lesson 1 Audio texts
 const LESSON_1_TEXTS = [
   // Slide 1
-  ``,
+  `# Terms and Definitions
+
+## How Knowledge is Born
+
+Everything begins with observation. Observable phenomena must be described in words so the listener understands exactly what you observed.
+
+**Definition** = Shortest description of observable phenomenon, sufficient for understanding by another person.
+
+**Term** = Word assigned to definition for convenience of use.
+
+## Four Ultimate Terms
+
+These four ultimate terms allow building descriptions and definitions of any abstract objects:
+
+- **Point** — zero dimensions (ultimate term, no definition)
+- **Line** — one dimension (consists of multitude of points)
+- **Plane** — two dimensions (consists of multitude of parallel lines)
+- **Space** — three dimensions (consists of planes)
+
+## Real vs Abstract Objects
+
+**Real object** cannot be described completely, but can be directly demonstrated and designated by word (noun, name).
+
+**Abstract object** cannot be demonstrated. It doesn't exist. But can be described using ultimate terms.
+
+## Two Opposite Movements
+
+We traced two opposite movements:
+
+1. **From reality to abstraction** — observe, describe, give definition, assign term.
+2. **From abstraction to reality** — take term, seek suitable objects in world.
+
+**Essence of education** — ability to move freely in both directions. This is what we must teach child.
+
+**Fundament of thinking** — ability to see invisible behind visible and find visible embodiment of invisible ideas!`,
 ];
 
 // ElevenLabs Configuration
