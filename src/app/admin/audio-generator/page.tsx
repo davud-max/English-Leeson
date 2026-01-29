@@ -1,210 +1,196 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 
-// ElevenLabs voices
+// ElevenLabs voices from Russian site
 const ELEVENLABS_VOICES = {
-  ADAM: { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam (Male, Deep) ⭐' },
-  CUSTOM: { id: 'kFVUJfjBCiv9orAbWhZN', name: 'Your Custom Voice (Male)' },
+  CUSTOM: { id: 'kFVUJfjBCiv9orAbWhZN', name: 'Your Custom Voice (Male) ⭐' },
   DZULU: { id: '8Hdxm8QJKOFknq47BhTz', name: 'dZulu Custom (Male)' },
   DZULU2: { id: 'ma4IY0Z4IUybdEpvYzBW', name: 'dZulu2 Custom (Male)' },
   NEW: { id: 'erDx71FK2teMZ7g6khzw', name: 'New Voice (Male)' },
-  JOSH: { id: 'TxGEqnHWrfWFTfGW9XjX', name: 'Josh (Male, Strong)' },
-  SAM: { id: 'yoZ06aMxZJJ28mfd3POQ', name: 'Sam (Male, Low)' },
-  ANTONI: { id: 'ErXwobaYiN019PkySvjV', name: 'Antoni (Male, Soft)' },
   BELLA: { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Bella (Female, Russian)' },
   RACHEL: { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel (Female, Calm)' },
   DOMI: { id: 'AZnzlk1XvdvUeBnXmlld', name: 'Domi (Female, Energetic)' },
   ELLI: { id: 'MF3mGyEYCl7XYWbV9V6O', name: 'Elli (Female, Young)' },
-}
-
-interface Slide {
-  id: number
-  text: string
-  generating?: boolean
-  audioUrl?: string
-  error?: string
+  ADAM: { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam (Male, Deep)' },
+  JOSH: { id: 'TxGEqnHWrfWFTfGW9XjX', name: 'Josh (Male, Strong)' },
+  SAM: { id: 'yoZ06aMxZJJ28mfd3POQ', name: 'Sam (Male, Low)' },
+  ANTONI: { id: 'ErXwobaYiN019PkySvjV', name: 'Antoni (Male, Soft)' },
 }
 
 export default function AudioGeneratorPage() {
-  const [mode, setMode] = useState<'manual' | 'load'>('load')
-  const [lessonNumber, setLessonNumber] = useState(1)
-  const [slides, setSlides] = useState<Slide[]>([])
+  const [lessonNumber, setLessonNumber] = useState(9)
+  const [slides, setSlides] = useState<{ text: string }[]>([{ text: '' }])
+  const [generatedScript, setGeneratedScript] = useState('')
+  const [provider, setProvider] = useState<'edge-tts' | 'elevenlabs'>('elevenlabs')
   const [voiceId, setVoiceId] = useState(ELEVENLABS_VOICES.ADAM.id)
-  const [loading, setLoading] = useState(false)
-  const [generating, setGenerating] = useState(false)
 
-  // Load lesson data
-  const loadLesson = async () => {
-    setLoading(true)
+  const addSlide = () => {
+    setSlides([...slides, { text: '' }])
+  }
+
+  const updateSlide = (index: number, text: string) => {
+    const newSlides = [...slides]
+    newSlides[index].text = text
+    setSlides(newSlides)
+  }
+
+  const removeSlide = (index: number) => {
+    if (slides.length > 1) {
+      setSlides(slides.filter((_, i) => i !== index))
+    }
+  }
+
+  const generateScript = () => {
+    const texts = slides
+      .map((s, i) => `  // Slide ${i + 1}\n  \`${s.text.replace(/`/g, '\\`')}\`,`)
+      .join('\n\n')
+
+    if (provider === 'elevenlabs') {
+      // ElevenLabs script
+      const script = `const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+
+// Lesson ${lessonNumber} Audio texts
+const LESSON_${lessonNumber}_TEXTS = [
+${texts}
+];
+
+// ElevenLabs Configuration
+const ELEVENLABS_API_KEY = 'sk_24708aff82ec3e2fe533c19311a9a159326917faabf53274';
+const VOICE_ID = '${voiceId}';
+const PROXY_URL = 'https://elevenlabs-proxy-two.vercel.app/api/elevenlabs';
+
+async function generateAudioElevenLabs(text, outputPath) {
+  try {
+    const response = await axios.post(PROXY_URL, {
+      apiKey: ELEVENLABS_API_KEY,
+      voiceId: VOICE_ID,
+      text: text,
+      stability: 0.5,
+      similarity_boost: 0.75
+    }, {
+      timeout: 180000
+    });
+
+    if (response.data.success && response.data.audio) {
+      const audioBuffer = Buffer.from(response.data.audio, 'base64');
+      fs.writeFileSync(outputPath, audioBuffer);
+      return true;
+    } else {
+      throw new Error(response.data.error || 'Failed to generate audio');
+    }
+  } catch (error) {
+    throw new Error(\`ElevenLabs API error: \${error.message}\`);
+  }
+}
+
+async function main() {
+  console.log('🎬 Starting ElevenLabs audio generation for Lesson ${lessonNumber}...');
+  console.log(\`📝 Total slides: \${LESSON_${lessonNumber}_TEXTS.length}\`);
+  console.log(\`🎙️ Voice ID: \${VOICE_ID}\`);
+  
+  const audioDir = path.join(__dirname, '..', 'public', 'audio', 'lesson${lessonNumber}');
+  if (!fs.existsSync(audioDir)) {
+    fs.mkdirSync(audioDir, { recursive: true });
+  }
+  
+  for (let i = 0; i < LESSON_${lessonNumber}_TEXTS.length; i++) {
+    const filename = \`slide\${i + 1}.mp3\`;
+    const filepath = path.join(audioDir, filename);
+    
+    console.log(\`🔊 Generating slide \${i + 1}/\${LESSON_${lessonNumber}_TEXTS.length}...\`);
+    
     try {
-      const response = await fetch(`/api/lessons/${lessonNumber}`)
-      if (response.ok) {
-        const data = await response.json()
-        
-        // Parse slides from content
-        const slideTexts = parseSlides(data.content || '')
-        
-        if (slideTexts.length === 0) {
-          alert('No slides found in this lesson')
-          return
-        }
-        
-        const newSlides = slideTexts.map((text, index) => ({
-          id: index + 1,
-          text: text
-        }))
-        
-        setSlides(newSlides)
-      } else {
-        alert('Lesson not found')
+      await generateAudioElevenLabs(LESSON_${lessonNumber}_TEXTS[i], filepath);
+      const stats = fs.statSync(filepath);
+      console.log(\`✅ Generated: \${filename} (\${Math.round(stats.size / 1024)}KB)\`);
+      
+      // Pause between requests
+      if (i < LESSON_${lessonNumber}_TEXTS.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     } catch (error) {
-      console.error('Error loading lesson:', error)
-      alert('Error loading lesson')
-    } finally {
-      setLoading(false)
+      console.error(\`❌ Failed: \${filename} - \${error.message}\`);
     }
   }
+  
+  console.log('🎉 Audio generation complete!');
+}
 
-  // Parse slides from text
-  const parseSlides = (text: string): string[] => {
-    // Try to split by [SLIDE:N] markers
-    const slideMarkers = text.match(/\[SLIDE:\d+\]/g)
-    
-    if (slideMarkers && slideMarkers.length > 0) {
-      const slides: string[] = []
-      const parts = text.split(/\[SLIDE:\d+\]/)
+main().catch(console.error);`
       
-      // Skip first empty part
-      for (let i = 1; i < parts.length; i++) {
-        const slideText = parts[i].trim()
-        if (slideText) {
-          slides.push(slideText)
-        }
-      }
-      
-      return slides
-    }
-    
-    // Fallback: split by double newlines (paragraphs)
-    const paragraphs = text
-      .split(/\n\s*\n/)
-      .map(p => p.trim())
-      .filter(p => p.length > 0)
-    
-    return paragraphs.length > 0 ? paragraphs : [text]
+      setGeneratedScript(script)
+    } else {
+      // Edge-TTS script (original)
+      const script = `const { exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const util = require('util');
+const execPromise = util.promisify(exec);
+
+// Lesson ${lessonNumber} Audio texts
+const LESSON_${lessonNumber}_TEXTS = [
+${texts}
+];
+
+const VOICE = 'en-US-GuyNeural';
+const RATE = '-5%';
+
+async function generateAudio(text, outputPath) {
+  const escapedText = text.replace(/"/g, '\\\\"').replace(/'/g, "'\\\\''");
+  const command = \`edge-tts --voice "\${VOICE}" --rate="\${RATE}" --text "\${escapedText}" --write-media "\${outputPath}"\`;
+  await execPromise(command);
+}
+
+async function main() {
+  console.log('🎬 Starting audio generation for Lesson ${lessonNumber}...');
+  console.log(\`📝 Total slides: \${LESSON_${lessonNumber}_TEXTS.length}\`);
+  
+  const audioDir = path.join(__dirname, '..', 'public', 'audio', 'lesson${lessonNumber}');
+  if (!fs.existsSync(audioDir)) {
+    fs.mkdirSync(audioDir, { recursive: true });
   }
-
-  // Generate audio for single slide
-  const generateSlideAudio = async (slideId: number) => {
-    const slide = slides.find(s => s.id === slideId)
-    if (!slide || !slide.text) return
-
-    // Update slide state
-    setSlides(prev => prev.map(s => 
-      s.id === slideId 
-        ? { ...s, generating: true, error: undefined, audioUrl: undefined }
-        : s
-    ))
-
+  
+  for (let i = 0; i < LESSON_${lessonNumber}_TEXTS.length; i++) {
+    const filename = \`slide\${i + 1}.mp3\`;
+    const filepath = path.join(audioDir, filename);
+    
+    console.log(\`🔊 Generating slide \${i + 1}/\${LESSON_${lessonNumber}_TEXTS.length}...\`);
+    
     try {
-      const response = await fetch('/api/tts/elevenlabs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: slide.text,
-          voiceId: voiceId
-        })
-      })
+      await generateAudio(LESSON_${lessonNumber}_TEXTS[i], filepath);
+      const stats = fs.statSync(filepath);
+      console.log(\`✅ Generated: \${filename} (\${Math.round(stats.size / 1024)}KB)\`);
+    } catch (error) {
+      console.error(\`❌ Failed: \${filename} - \${error.message}\`);
+    }
+  }
+  
+  console.log('🎉 Audio generation complete!');
+}
 
-      const data = await response.json()
+main().catch(console.error);`
 
-      if (data.success && data.audio) {
-        // Create blob URL from base64
-        const audioBlob = base64ToBlob(data.audio, 'audio/mpeg')
-        const audioUrl = URL.createObjectURL(audioBlob)
-        
-        setSlides(prev => prev.map(s => 
-          s.id === slideId 
-            ? { ...s, generating: false, audioUrl: audioUrl }
-            : s
-        ))
-      } else {
-        throw new Error(data.error || 'Failed to generate audio')
-      }
-    } catch (error: any) {
-      console.error('Error generating audio:', error)
-      setSlides(prev => prev.map(s => 
-        s.id === slideId 
-          ? { ...s, generating: false, error: error.message }
-          : s
-      ))
+      setGeneratedScript(script)
     }
   }
 
-  // Generate all slides
-  const generateAllAudio = async () => {
-    setGenerating(true)
-    
-    for (const slide of slides) {
-      if (slide.text) {
-        await generateSlideAudio(slide.id)
-        // Pause between requests
-        await new Promise(resolve => setTimeout(resolve, 1000))
-      }
-    }
-    
-    setGenerating(false)
+  const copyScript = () => {
+    navigator.clipboard.writeText(generatedScript)
+    alert('Script copied to clipboard!')
   }
 
-  // Download all audio as ZIP
-  const downloadAll = async () => {
-    if (slides.filter(s => s.audioUrl).length === 0) {
-      alert('No audio generated yet')
-      return
-    }
-
-    // Create ZIP or download individually
-    for (const slide of slides) {
-      if (slide.audioUrl) {
-        const link = document.createElement('a')
-        link.href = slide.audioUrl
-        link.download = `lesson${lessonNumber}_slide${slide.id}.mp3`
-        link.click()
-        await new Promise(resolve => setTimeout(resolve, 500))
-      }
-    }
-  }
-
-  // Helper: Convert base64 to Blob
-  const base64ToBlob = (base64: string, type: string): Blob => {
-    const byteCharacters = atob(base64)
-    const byteNumbers = new Array(byteCharacters.length)
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i)
-    }
-    const byteArray = new Uint8Array(byteNumbers)
-    return new Blob([byteArray], { type: type })
-  }
-
-  // Add manual slide
-  const addSlide = () => {
-    const newId = slides.length > 0 ? Math.max(...slides.map(s => s.id)) + 1 : 1
-    setSlides([...slides, { id: newId, text: '' }])
-  }
-
-  // Update slide text
-  const updateSlide = (id: number, text: string) => {
-    setSlides(prev => prev.map(s => s.id === id ? { ...s, text } : s))
-  }
-
-  // Remove slide
-  const removeSlide = (id: number) => {
-    if (slides.length > 1) {
-      setSlides(prev => prev.filter(s => s.id !== id))
-    }
+  const downloadScript = () => {
+    const blob = new Blob([generatedScript], { type: 'text/javascript' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `generate-lesson${lessonNumber}-audio-${provider}.js`
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   return (
@@ -214,8 +200,8 @@ export default function AudioGeneratorPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">🔊 Audio Generator Pro</h1>
-              <p className="text-gray-600 text-sm">Generate audio directly with ElevenLabs</p>
+              <h1 className="text-2xl font-bold text-gray-900">🔊 Audio Generator</h1>
+              <p className="text-gray-600 text-sm">Generate TTS audio scripts for lessons with Edge-TTS or ElevenLabs</p>
             </div>
             <Link href="/admin" className="px-4 py-2 text-gray-600 hover:text-gray-900">
               ← Dashboard
@@ -225,215 +211,208 @@ export default function AudioGeneratorPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6">
-        {/* Mode Selection */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            Mode
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => setMode('load')}
-              className={`px-4 py-3 rounded-lg border-2 font-medium transition-all ${
-                mode === 'load'
-                  ? 'border-purple-500 bg-purple-50 text-purple-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="text-lg mb-1">📚</div>
-              <div className="text-sm">Load from Lesson</div>
-              <div className="text-xs text-gray-500">Auto-load slides</div>
-            </button>
-            <button
-              onClick={() => setMode('manual')}
-              className={`px-4 py-3 rounded-lg border-2 font-medium transition-all ${
-                mode === 'manual'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="text-lg mb-1">✏️</div>
-              <div className="text-sm">Manual Entry</div>
-              <div className="text-xs text-gray-500">Type slides</div>
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Settings */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Input */}
           <div className="space-y-4">
             {/* Lesson Number */}
-            {mode === 'load' && (
-              <div className="bg-white rounded-lg shadow p-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Lesson Number
-                </label>
-                <input
-                  type="number"
-                  value={lessonNumber}
-                  onChange={(e) => setLessonNumber(parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2 border rounded-lg mb-3"
-                  min="1"
-                />
-                <button
-                  onClick={loadLesson}
-                  disabled={loading}
-                  className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300"
-                >
-                  {loading ? '⏳ Loading...' : '📥 Load Lesson'}
-                </button>
-              </div>
-            )}
-
-            {/* Voice Selection */}
             <div className="bg-white rounded-lg shadow p-4">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Voice Selection
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Lesson Number
               </label>
-              <select
-                value={voiceId}
-                onChange={(e) => setVoiceId(e.target.value)}
+              <input
+                type="number"
+                value={lessonNumber}
+                onChange={(e) => setLessonNumber(parseInt(e.target.value) || 1)}
                 className="w-full px-3 py-2 border rounded-lg"
-              >
-                <optgroup label="Recommended">
-                  <option value={ELEVENLABS_VOICES.ADAM.id}>
-                    {ELEVENLABS_VOICES.ADAM.name}
-                  </option>
-                </optgroup>
-                <optgroup label="Custom Voices">
-                  {['CUSTOM', 'DZULU', 'DZULU2', 'NEW'].map(key => (
-                    <option key={key} value={ELEVENLABS_VOICES[key as keyof typeof ELEVENLABS_VOICES].id}>
-                      {ELEVENLABS_VOICES[key as keyof typeof ELEVENLABS_VOICES].name}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Male Voices">
-                  {['JOSH', 'SAM', 'ANTONI'].map(key => (
-                    <option key={key} value={ELEVENLABS_VOICES[key as keyof typeof ELEVENLABS_VOICES].id}>
-                      {ELEVENLABS_VOICES[key as keyof typeof ELEVENLABS_VOICES].name}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Female Voices">
-                  {['BELLA', 'RACHEL', 'DOMI', 'ELLI'].map(key => (
-                    <option key={key} value={ELEVENLABS_VOICES[key as keyof typeof ELEVENLABS_VOICES].id}>
-                      {ELEVENLABS_VOICES[key as keyof typeof ELEVENLABS_VOICES].name}
-                    </option>
-                  ))}
-                </optgroup>
-              </select>
+                min="1"
+              />
             </div>
 
-            {/* Actions */}
-            {slides.length > 0 && (
+            {/* Provider Selection */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                TTS Provider
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setProvider('edge-tts')}
+                  className={`px-4 py-3 rounded-lg border-2 font-medium transition-all ${
+                    provider === 'edge-tts'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="text-lg mb-1">🎤</div>
+                  <div className="text-sm">Edge-TTS</div>
+                  <div className="text-xs text-gray-500">Free, fast</div>
+                </button>
+                <button
+                  onClick={() => setProvider('elevenlabs')}
+                  className={`px-4 py-3 rounded-lg border-2 font-medium transition-all ${
+                    provider === 'elevenlabs'
+                      ? 'border-purple-500 bg-purple-50 text-purple-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="text-lg mb-1">⭐</div>
+                  <div className="text-sm">ElevenLabs</div>
+                  <div className="text-xs text-gray-500">High quality</div>
+                </button>
+              </div>
+            </div>
+
+            {/* ElevenLabs Voice Selection */}
+            {provider === 'elevenlabs' && (
               <div className="bg-white rounded-lg shadow p-4">
-                <h3 className="font-semibold mb-3">Actions</h3>
-                <div className="space-y-2">
-                  <button
-                    onClick={generateAllAudio}
-                    disabled={generating}
-                    className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 font-medium"
-                  >
-                    {generating ? '⏳ Generating...' : '🎙️ Generate All Audio'}
-                  </button>
-                  <button
-                    onClick={downloadAll}
-                    disabled={slides.filter(s => s.audioUrl).length === 0}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300"
-                  >
-                    💾 Download All
-                  </button>
-                </div>
-                <p className="text-xs text-gray-500 mt-3">
-                  {slides.filter(s => s.audioUrl).length} / {slides.length} generated
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Voice Selection
+                </label>
+                <select
+                  value={voiceId}
+                  onChange={(e) => setVoiceId(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <optgroup label="Custom Voices">
+                    {['CUSTOM', 'DZULU', 'DZULU2', 'NEW'].map(key => (
+                      <option key={key} value={ELEVENLABS_VOICES[key as keyof typeof ELEVENLABS_VOICES].id}>
+                        {ELEVENLABS_VOICES[key as keyof typeof ELEVENLABS_VOICES].name}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Built-in Voices">
+                    {['ADAM', 'JOSH', 'SAM', 'ANTONI', 'BELLA', 'RACHEL', 'DOMI', 'ELLI'].map(key => (
+                      <option key={key} value={ELEVENLABS_VOICES[key as keyof typeof ELEVENLABS_VOICES].id}>
+                        {ELEVENLABS_VOICES[key as keyof typeof ELEVENLABS_VOICES].name}
+                      </option>
+                    ))}
+                  </optgroup>
+                </select>
+                <p className="text-xs text-gray-500 mt-2">
+                  Voice ID: <code className="bg-gray-100 px-1 py-0.5 rounded">{voiceId}</code>
                 </p>
               </div>
             )}
-          </div>
 
-          {/* Right Panel - Slides */}
-          <div className="lg:col-span-2">
+            {/* Slides */}
             <div className="bg-white rounded-lg shadow p-4">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="font-semibold text-gray-900">
-                  Slides ({slides.length})
-                </h2>
-                {mode === 'manual' && (
-                  <button
-                    onClick={addSlide}
-                    className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
-                  >
-                    + Add Slide
-                  </button>
-                )}
+                <h2 className="font-semibold text-gray-900">Slide Texts ({slides.length})</h2>
+                <button
+                  onClick={addSlide}
+                  className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
+                >
+                  + Add Slide
+                </button>
               </div>
 
-              {slides.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  {mode === 'load' 
-                    ? 'Load a lesson to see slides'
-                    : 'Add slides manually to generate audio'}
-                </div>
-              ) : (
-                <div className="space-y-4 max-h-[70vh] overflow-y-auto">
-                  {slides.map((slide) => (
-                    <div key={slide.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="text-sm font-medium text-gray-700">
-                          Slide {slide.id}
-                        </label>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => generateSlideAudio(slide.id)}
-                            disabled={slide.generating || !slide.text}
-                            className="px-3 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-700 disabled:bg-gray-300"
-                          >
-                            {slide.generating ? '⏳' : '🔊'} Generate
-                          </button>
-                          {mode === 'manual' && slides.length > 1 && (
-                            <button
-                              onClick={() => removeSlide(slide.id)}
-                              className="px-2 py-1 text-red-500 hover:text-red-700 text-sm"
-                            >
-                              🗑️
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      <textarea
-                        value={slide.text}
-                        onChange={(e) => updateSlide(slide.id, e.target.value)}
-                        className="w-full px-3 py-2 border rounded-lg text-sm mb-2"
-                        rows={4}
-                        placeholder="Enter text for this slide..."
-                        disabled={mode === 'load'}
-                      />
-
-                      <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>{slide.text.length} characters</span>
-                        {slide.generating && <span className="text-orange-600">Generating...</span>}
-                        {slide.error && <span className="text-red-600">Error: {slide.error}</span>}
-                        {slide.audioUrl && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-green-600">✓ Ready</span>
-                            <audio controls className="h-8">
-                              <source src={slide.audioUrl} type="audio/mpeg" />
-                            </audio>
-                            <a
-                              href={slide.audioUrl}
-                              download={`lesson${lessonNumber}_slide${slide.id}.mp3`}
-                              className="text-blue-600 hover:text-blue-800"
-                            >
-                              💾
-                            </a>
-                          </div>
-                        )}
-                      </div>
+              <div className="space-y-4 max-h-[50vh] overflow-y-auto">
+                {slides.map((slide, index) => (
+                  <div key={index} className="relative">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-sm font-medium text-gray-700">
+                        Slide {index + 1}
+                      </label>
+                      {slides.length > 1 && (
+                        <button
+                          onClick={() => removeSlide(index)}
+                          className="text-red-500 hover:text-red-700 text-sm"
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
-                  ))}
+                    <textarea
+                      value={slide.text}
+                      onChange={(e) => updateSlide(index, e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg text-sm"
+                      rows={4}
+                      placeholder="Enter the text to be spoken for this slide..."
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {slide.text.length} characters
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={generateScript}
+                className={`w-full mt-4 px-4 py-3 text-white rounded-lg font-medium ${
+                  provider === 'elevenlabs'
+                    ? 'bg-purple-600 hover:bg-purple-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+              >
+                🔧 Generate {provider === 'elevenlabs' ? 'ElevenLabs' : 'Edge-TTS'} Script
+              </button>
+            </div>
+          </div>
+
+          {/* Output */}
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-semibold text-gray-900">Generated Script</h2>
+              {generatedScript && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={copyScript}
+                    className="px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300"
+                  >
+                    📋 Copy
+                  </button>
+                  <button
+                    onClick={downloadScript}
+                    className="px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300"
+                  >
+                    💾 Download
+                  </button>
                 </div>
               )}
             </div>
+
+            {generatedScript ? (
+              <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-xs max-h-[60vh]">
+                {generatedScript}
+              </pre>
+            ) : (
+              <div className="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
+                <p>Select provider, enter slide texts and click Generate Script</p>
+              </div>
+            )}
+
+            {generatedScript && (
+              <div className={`mt-4 p-4 rounded-lg ${
+                provider === 'elevenlabs' ? 'bg-purple-50' : 'bg-blue-50'
+              }`}>
+                <h3 className={`font-medium mb-2 ${
+                  provider === 'elevenlabs' ? 'text-purple-900' : 'text-blue-900'
+                }`}>
+                  📖 How to use:
+                </h3>
+                <ol className={`text-sm space-y-1 list-decimal list-inside ${
+                  provider === 'elevenlabs' ? 'text-purple-800' : 'text-blue-800'
+                }`}>
+                  <li>Copy or download the script</li>
+                  <li>Save it to <code className={`px-1 rounded ${
+                    provider === 'elevenlabs' ? 'bg-purple-100' : 'bg-blue-100'
+                  }`}>scripts/generate-lesson{lessonNumber}-audio-{provider}.js</code></li>
+                  {provider === 'elevenlabs' ? (
+                    <>
+                      <li>Make sure axios is installed: <code className="bg-purple-100 px-1 rounded">npm install axios</code></li>
+                      <li>Run: <code className="bg-purple-100 px-1 rounded">node scripts/generate-lesson{lessonNumber}-audio-elevenlabs.js</code></li>
+                    </>
+                  ) : (
+                    <>
+                      <li>Make sure edge-tts is installed: <code className="bg-blue-100 px-1 rounded">pip3 install edge-tts</code></li>
+                      <li>Run: <code className="bg-blue-100 px-1 rounded">node scripts/generate-lesson{lessonNumber}-audio-edge-tts.js</code></li>
+                    </>
+                  )}
+                  <li>Push to git: <code className={`px-1 rounded ${
+                    provider === 'elevenlabs' ? 'bg-purple-100' : 'bg-blue-100'
+                  }`}>git add . && git commit -m &quot;Add lesson{lessonNumber} audio&quot; && git push</code></li>
+                </ol>
+              </div>
+            )}
           </div>
         </div>
       </main>
