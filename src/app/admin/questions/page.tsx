@@ -373,7 +373,7 @@ main().catch(console.error);`
                           🎉 <strong>Audio files are ready!</strong> Now commit and push:
                         </p>
                         <code className="text-xs bg-blue-100 px-2 py-1 rounded block mt-2">
-                          git add . && git commit -m "Add lesson{selectedLesson} question audio" && git push
+                          git add . && git commit -m &quot;Add lesson{selectedLesson} question audio&quot; && git push
                         </code>
                       </div>
                     )}
