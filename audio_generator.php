@@ -264,7 +264,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate'])) {
             }
             $audioFile = $audioDir . '/lesson_' . $lessonId . '.mp3';
             
-            // Delete old file if exists
+            // Delete ALL old audio files for this lesson
+            $deletedFiles = deleteOldLessonAudio($lessonId);
+            if ($deletedFiles > 0) {
+                echo '<div class="status" style="background: #fff3cd; color: #856404; border-left: 4px solid #ffc107;">🗑️ Deleted ' . $deletedFiles . ' old audio file(s)</div>';
+                flush(); ob_flush();
+            }
+            
+            // Delete old main file if exists
             if (file_exists($audioFile)) {
                 unlink($audioFile);
             }
@@ -539,6 +546,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate'])) {
     </script>
     
     <?php
+}
+
+/**
+ * Delete all old audio files for a lesson
+ * Cleans up: public/audio/lessonX/, public/audio/lessons/X/, public/audio/questions/lessonX/
+ */
+function deleteOldLessonAudio($lessonId) {
+    $deletedCount = 0;
+    $basePath = __DIR__ . '/public/audio';
+    
+    // Directories to clean
+    $dirsToClean = [
+        $basePath . '/lesson' . $lessonId,           // public/audio/lesson1/
+        $basePath . '/lessons/' . $lessonId,         // public/audio/lessons/1/
+        $basePath . '/questions/lesson' . $lessonId  // public/audio/questions/lesson1/
+    ];
+    
+    foreach ($dirsToClean as $dir) {
+        if (is_dir($dir)) {
+            $files = glob($dir . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                    // Delete audio files, text files, and manifests
+                    if (in_array($ext, ['mp3', 'wav', 'ogg', 'txt', 'json'])) {
+                        if (unlink($file)) {
+                            $deletedCount++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Also check audio_lessons folder
+    $audioLessonsDir = __DIR__ . '/audio_lessons';
+    $pattern = $audioLessonsDir . '/lesson_' . $lessonId . '*';
+    $oldFiles = glob($pattern);
+    foreach ($oldFiles as $file) {
+        if (is_file($file) && unlink($file)) {
+            $deletedCount++;
+        }
+    }
+    
+    return $deletedCount;
 }
 
 /**

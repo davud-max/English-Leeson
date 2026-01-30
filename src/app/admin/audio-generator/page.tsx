@@ -93,7 +93,18 @@ async function main() {
   console.log(\`🎙️ Voice ID: \${VOICE_ID}\`);
   
   const audioDir = path.join(__dirname, '..', 'public', 'audio', 'lesson${lessonNumber}');
-  if (!fs.existsSync(audioDir)) {
+  
+  // Delete old audio files first
+  if (fs.existsSync(audioDir)) {
+    console.log('🗑️  Cleaning old audio files...');
+    const files = fs.readdirSync(audioDir);
+    files.forEach(file => {
+      if (file.endsWith('.mp3')) {
+        fs.unlinkSync(path.join(audioDir, file));
+        console.log(\`   Deleted: \${file}\`);
+      }
+    });
+  } else {
     fs.mkdirSync(audioDir, { recursive: true });
   }
   
@@ -150,7 +161,18 @@ async function main() {
   console.log(\`📝 Total slides: \${LESSON_${lessonNumber}_TEXTS.length}\`);
   
   const audioDir = path.join(__dirname, '..', 'public', 'audio', 'lesson${lessonNumber}');
-  if (!fs.existsSync(audioDir)) {
+  
+  // Delete old audio files first
+  if (fs.existsSync(audioDir)) {
+    console.log('🗑️  Cleaning old audio files...');
+    const files = fs.readdirSync(audioDir);
+    files.forEach(file => {
+      if (file.endsWith('.mp3')) {
+        fs.unlinkSync(path.join(audioDir, file));
+        console.log(\`   Deleted: \${file}\`);
+      }
+    });
+  } else {
     fs.mkdirSync(audioDir, { recursive: true });
   }
   
