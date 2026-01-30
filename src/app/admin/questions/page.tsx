@@ -40,6 +40,8 @@ export default function AdminQuestionsPage() {
   const [result, setResult] = useState<{ success: boolean; message: string; questions?: Question[] } | null>(null)
   const [audioScript, setAudioScript] = useState('')
   const [showAudioScript, setShowAudioScript] = useState(false)
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
+  const [audioResult, setAudioResult] = useState<{ success: boolean; message: string; results?: any[] } | null>(null)
 
   const generateQuestions = async () => {
     if (!selectedLesson || !adminKey) {
@@ -158,6 +160,51 @@ main().catch(console.error);`
     alert('Скопировано!')
   }
 
+  // NEW: Auto-generate audio on server
+  const generateAudioNow = async () => {
+    if (!selectedLesson || !adminKey || !result?.questions) {
+      alert('Please generate questions first')
+      return
+    }
+
+    setIsGeneratingAudio(true)
+    setAudioResult(null)
+
+    try {
+      const response = await fetch('/api/admin/generate-question-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lessonId: selectedLesson,
+          questions: result.questions,
+          adminKey,
+        }),
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        setAudioResult({
+          success: true,
+          message: data.message,
+          results: data.results,
+        })
+      } else {
+        setAudioResult({
+          success: false,
+          message: data.error || 'Failed to generate audio',
+        })
+      }
+    } catch (error) {
+      setAudioResult({
+        success: false,
+        message: 'Connection error: ' + (error instanceof Error ? error.message : 'Unknown'),
+      })
+    } finally {
+      setIsGeneratingAudio(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-stone-100 py-10 px-4">
       <div className="max-w-4xl mx-auto">
@@ -264,6 +311,72 @@ main().catch(console.error);`
                         </p>
                       </div>
                     ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Auto Audio Generation Button */}
+            {result?.success && result.questions && (
+              <div className="border-t pt-6">
+                <div className="bg-gradient-to-r from-green-600 to-green-800 rounded-lg shadow-lg p-6 text-center">
+                  <h3 className="text-xl font-bold text-white mb-2">🎵 Automatic Audio Generation</h3>
+                  <p className="text-green-100 mb-4">
+                    Generate audio files directly on server with ElevenLabs (no manual steps!)
+                  </p>
+                  <button
+                    onClick={generateAudioNow}
+                    disabled={isGeneratingAudio}
+                    className="px-8 py-3 bg-white text-green-700 rounded-lg font-bold hover:bg-green-50 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isGeneratingAudio ? '⏳ Generating Audio...' : '🎙️ Generate Audio Now'}
+                  </button>
+                  <p className="text-xs text-green-100 mt-3">
+                    ✨ Audio will be generated and saved automatically - no scripts needed!
+                  </p>
+                </div>
+
+                {/* Audio Generation Result */}
+                {audioResult && (
+                  <div className={`mt-4 p-4 rounded-lg ${
+                    audioResult.success 
+                      ? 'bg-green-50 border border-green-500' 
+                      : 'bg-red-50 border border-red-500'
+                  }`}>
+                    <p className={`font-semibold ${
+                      audioResult.success ? 'text-green-700' : 'text-red-700'
+                    }`}>
+                      {audioResult.success ? '✅ ' : '❌ '}{audioResult.message}
+                    </p>
+                    
+                    {audioResult.results && (
+                      <div className="mt-3 space-y-2">
+                        {audioResult.results.map((r: any, i: number) => (
+                          <div key={i} className="text-sm">
+                            {r.success ? (
+                              <span className="text-green-600">
+                                ✅ Question {r.question}: {r.filename} ({r.size}KB)
+                              </span>
+                            ) : (
+                              <span className="text-red-600">
+                                ❌ Question {r.question}: {r.error}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {audioResult.success && (
+                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                        <p className="text-sm text-blue-800">
+                          🎉 <strong>Audio files are ready!</strong> Now commit and push:
+                        </p>
+                        <code className="text-xs bg-blue-100 px-2 py-1 rounded block mt-2">
+                          git add . && git commit -m "Add lesson{selectedLesson} question audio" && git push
+                        </code>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
