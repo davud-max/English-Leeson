@@ -1,0 +1,42 @@
+{
+  "lessonId": 27,
+  "lessonTitle": "THREE STEPS TO HEAVEN AND THE SIXTH LEVEL OF MAN",
+  "generatedAt": "2026-01-31T22:25:20.921Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "According to the lesson, what is the key difference between how animals and humans perceive the world?",
+      "correct_answer": "An animal sees, but does not observe. A human observes, distinguishes, and abstracts.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What is Minus-space and how does it differ from ordinary space and points?",
+      "correct_answer": "Minus-space is that which possesses neither extension nor position. It is the absence of the container itself, the cancellation of distinguishing between 'here' and 'there,' unlike space (which has extension) and points (which have position but not extension).",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 3,
+      "question": "In the Theory of Cognitive Resonance, what are the two circuits of consciousness?",
+      "correct_answer": "The analog circuit (sensory experience and lived feelings) and the digital circuit (abstractions, symbols, and concepts).",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 4,
+      "question": "Explain the Biblical narrative of creation as interpreted through the theory of abstraction, including the symbolic meaning of Water, Light, firmament, and Man.",
+      "correct_answer": "Water represents primordial Being (indistinguishable unity), Light is the capacity to abstract (gift of discernment), the firmament is the boundary between World and Nothingness, and Man is the observer born from water through light - representing the awakening of human consciousness.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 5,
+      "question": "What is the fundamental difference between creation and imitation in human activity?",
+      "correct_answer": "Creation involves voluntary exchange and legitimate activity, while imitation is coercive activity that masquerades as legitimate - the key difference lies in voluntary versus forced nature.",
+      "difficulty": "easy",
+      "points": 5
+    }
+  ]
+}
