@@ -11,10 +11,10 @@ export async function GET(
       where: { id: params.id },
       select: {
         id: true,
-        number: true,
+        order: true,
         title: true,
         content: true,
-        audioText: true, // Поле для текста озвучки (если есть)
+        description: true,
       },
     });
 
@@ -25,7 +25,17 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ lesson });
+    // Преобразуем для совместимости с фронтендом
+    // Используем content как audioText (текст для озвучки)
+    return NextResponse.json({ 
+      lesson: {
+        id: lesson.id,
+        number: lesson.order,
+        title: lesson.title,
+        content: lesson.content,
+        audioText: lesson.content, // Используем content как текст для озвучки
+      }
+    });
   } catch (error) {
     console.error('Error fetching lesson:', error);
     return NextResponse.json(

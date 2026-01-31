@@ -1,7 +1,4 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
 
 // ElevenLabs API через прокси
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || 'sk_24708aff82ec3e2fe533c19311a9a159326917faabf53274';
@@ -20,7 +17,7 @@ interface GenerateAudioRequest {
 export async function POST(request: Request) {
   try {
     const body: GenerateAudioRequest = await request.json();
-    const { text, voiceId, slideNumber, lessonId } = body;
+    const { text, voiceId, slideNumber } = body;
 
     if (!text || !voiceId) {
       return NextResponse.json(
@@ -35,6 +32,16 @@ export async function POST(request: Request) {
     // Удаляем маркеры слайдов если есть
     cleanText = cleanText.replace(/\[SLIDE:\d+\]\s*/g, '');
     
+    // Удаляем Markdown разметку
+    cleanText = cleanText
+      .replace(/#{1,6}\s/g, '') // заголовки
+      .replace(/\*\*([^*]+)\*\*/g, '$1') // bold
+      .replace(/\*([^*]+)\*/g, '$1') // italic
+      .replace(/`([^`]+)`/g, '$1') // code
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // links
+      .replace(/^\s*[-*+]\s/gm, '') // lists
+      .replace(/^\s*\d+\.\s/gm, ''); // numbered lists
+    
     // Добавляем паузы для лучшей интонации
     cleanText = addPauses(cleanText);
 
@@ -42,6 +49,13 @@ export async function POST(request: Request) {
     if (cleanText.length > 5000) {
       return NextResponse.json(
         { error: 'Text is too long. Maximum 5000 characters.' },
+        { status: 400 }
+      );
+    }
+
+    if (cleanText.length < 10) {
+      return NextResponse.json(
+        { error: 'Text is too short. Minimum 10 characters.' },
         { status: 400 }
       );
     }
@@ -55,41 +69,33 @@ export async function POST(request: Request) {
       audioBase64 = await generateViaProxy(cleanText, voiceId);
     } catch (proxyError) {
       console.log('Proxy failed, trying direct API...', proxyError);
-      audioBase64 = await generateViaDirect(cleanText, voiceId);
+      try {
+        audioBase64 = await generateViaDirect(cleanText, voiceId);
+      } catch (directError) {
+        console.error('Direct API also failed:', directError);
+        return NextResponse.json(
+          { error: 'Failed to generate audio: ' + (directError as Error).message },
+          { status: 500 }
+        );
+      }
     }
 
     if (!audioBase64) {
       return NextResponse.json(
-        { error: 'Failed to generate audio' },
+        { error: 'Failed to generate audio - no data returned' },
         { status: 500 }
       );
     }
 
-    // Сохраняем файл
-    const audioBuffer = Buffer.from(audioBase64, 'base64');
-    
-    // Определяем путь для сохранения
-    const lessonDir = lessonId ? `lesson${lessonId}` : 'manual';
-    const audioDir = path.join(process.cwd(), 'public', 'audio', lessonDir);
-    
-    // Создаём директорию если не существует
-    if (!existsSync(audioDir)) {
-      await mkdir(audioDir, { recursive: true });
-    }
+    // Возвращаем base64 аудио напрямую (Railway не позволяет записывать файлы)
+    const audioUrl = `data:audio/mpeg;base64,${audioBase64}`;
 
-    const filename = `slide${slideNumber || Date.now()}.mp3`;
-    const filepath = path.join(audioDir, filename);
-    
-    await writeFile(filepath, audioBuffer);
-
-    const audioUrl = `/audio/${lessonDir}/${filename}`;
-
-    console.log(`Audio saved: ${audioUrl}`);
+    console.log(`Audio generated successfully, size: ${audioBase64.length} chars`);
 
     return NextResponse.json({
       success: true,
       audioUrl,
-      filename,
+      audioBase64,
       textLength: cleanText.length,
     });
   } catch (error) {

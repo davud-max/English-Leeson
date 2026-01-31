@@ -7,15 +7,22 @@ export async function GET() {
     const lessons = await prisma.lesson.findMany({
       select: {
         id: true,
-        number: true,
+        order: true,
         title: true,
       },
       orderBy: {
-        number: 'asc',
+        order: 'asc',
       },
     });
 
-    return NextResponse.json({ lessons });
+    // Преобразуем order в number для совместимости с фронтендом
+    const formattedLessons = lessons.map(lesson => ({
+      id: lesson.id,
+      number: lesson.order,
+      title: lesson.title,
+    }));
+
+    return NextResponse.json({ lessons: formattedLessons });
   } catch (error) {
     console.error('Error fetching lessons:', error);
     return NextResponse.json(
