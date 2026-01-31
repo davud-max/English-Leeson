@@ -1,9 +1,11 @@
-// Admin API: Generate quiz questions using Claude AI and save to JSON
+// Admin API: Generate quiz questions using Claude AI and save to GitHub
 // Only accessible by admin
 
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
+
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = 'davud-max/English-Leeson';
+const GITHUB_BRANCH = 'main';
 
 export async function POST(request: NextRequest) {
   try {
@@ -114,29 +116,103 @@ RESPONSE FORMAT (STRICTLY JSON, no text before or after):
       points: q.points || (q.difficulty === 'hard' ? 15 : 5),
     }))
 
-    // Save to JSON file
-    const questionsDir = path.join(process.cwd(), 'public', 'data', 'questions')
-    
-    try {
-      await mkdir(questionsDir, { recursive: true })
-    } catch {
-      // Directory exists
-    }
-
-    const filePath = path.join(questionsDir, `lesson${lessonId}.json`)
-    await writeFile(filePath, JSON.stringify({
+    // Save to GitHub
+    const jsonContent = JSON.stringify({
       lessonId,
       lessonTitle,
       generatedAt: new Date().toISOString(),
       questions,
-    }, null, 2))
+    }, null, 2);
 
-    return NextResponse.json({
-      success: true,
-      message: `Generated and saved ${questions.length} questions for lesson ${lessonId}`,
-      questions,
-      count: questions.length,
-    })
+    const filePath = `public/data/questions/lesson${lessonId}.json`;
+    
+    // Check if GITHUB_TOKEN is configured
+    if (!GITHUB_TOKEN) {
+      console.warn('GITHUB_TOKEN not configured, skipping file save to GitHub');
+      return NextResponse.json({
+        success: true,
+        message: `Generated ${questions.length} questions (not saved - GITHUB_TOKEN missing)`,
+        questions,
+        count: questions.length,
+        savedToGitHub: false,
+      });
+    }
+
+    try {
+      // Check if file exists to get SHA
+      let existingSha: string | null = null;
+      try {
+        const checkResponse = await fetch(
+          `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json',
+            },
+          }
+        );
+        
+        if (checkResponse.ok) {
+          const fileData = await checkResponse.json();
+          existingSha = fileData.sha;
+        }
+      } catch {
+        // File doesn't exist - that's OK
+      }
+
+      // Upload to GitHub
+      const uploadBody: Record<string, string> = {
+        message: `Update questions for lesson ${lessonId}`,
+        content: Buffer.from(jsonContent).toString('base64'),
+        branch: GITHUB_BRANCH,
+      };
+
+      if (existingSha) {
+        uploadBody.sha = existingSha;
+      }
+
+      const uploadResponse = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${GITHUB_TOKEN}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(uploadBody),
+        }
+      );
+
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        console.error('GitHub upload failed:', errorText);
+        throw new Error(`GitHub API error: ${uploadResponse.status}`);
+      }
+
+      console.log(`✅ Questions saved to GitHub: ${filePath}`);
+
+      return NextResponse.json({
+        success: true,
+        message: `Generated and saved ${questions.length} questions for lesson ${lessonId}`,
+        questions,
+        count: questions.length,
+        savedToGitHub: true,
+        filePath,
+      });
+
+    } catch (githubError) {
+      console.error('GitHub save error:', githubError);
+      // Return questions even if GitHub save failed
+      return NextResponse.json({
+        success: true,
+        message: `Generated ${questions.length} questions (GitHub save failed)`,
+        questions,
+        count: questions.length,
+        savedToGitHub: false,
+        githubError: (githubError as Error).message,
+      });
+    }
 
   } catch (error) {
     console.error('Error generating questions:', error)
