@@ -1,0 +1,42 @@
+{
+  "lessonId": 25,
+  "lessonTitle": "THINKING AS RESONANCE AND THE BIRTH OF THE WORLD",
+  "generatedAt": "2026-01-31T17:28:17.258Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "According to the lesson, what are the two main circuits that make up consciousness?",
+      "correct_answer": "The analog circuit (immediate, embodied, sensory experience) and the digital circuit (abstractions, signs, and concepts).",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "In the radio analogy, what does 'resonance' represent in the thinking process?",
+      "correct_answer": "The moment when a thought's frequency matches our local oscillator, allowing us to 'catch' or become aware of that thought.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "How does thinking as resonance challenge the traditional approach to education, and what alternative method does the lesson propose?",
+      "correct_answer": "Traditional rote learning loads empty symbols without experience, preventing resonance. The effective approach is learning through experience first, then providing abstract labels at peak experience moments to create resonance.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 4,
+      "question": "What are the three factors that tune our 'analog core' or cognitive profile?",
+      "correct_answer": "Heredity (factory settings), cultural code (language, values, concepts of society), and personal experience (the most important factor).",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "Analyze the philosophical interpretation of 'light' in the Genesis creation story presented in the lesson. What does this light represent and why is it significant for human consciousness?",
+      "correct_answer": "Light represents the ability to abstract and observe - the capacity to distinguish boundaries between the observable (World) and unobservable (Nothingness). It's what allows humans to look from outside and observe, unlike animals who merely react to physical light.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}
