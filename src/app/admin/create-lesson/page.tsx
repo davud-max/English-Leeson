@@ -52,8 +52,19 @@ export default function LessonCreatorPage() {
   const [adminKey, setAdminKey] = useState('')
   const [isTranslating, setIsTranslating] = useState(false)
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false)
+  const [isPublishing, setIsPublishing] = useState(false)
+  const [publishProgress, setPublishProgress] = useState('')
+  const [selectedVoice, setSelectedVoice] = useState('TxGEqnHWrfWFTfGW9XjX')
   const [translatingSlide, setTranslatingSlide] = useState<number | null>(null)
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
+
+  // ElevenLabs voices
+  const voiceOptions = [
+    { id: 'TxGEqnHWrfWFTfGW9XjX', name: 'Josh (Male, Young)' },
+    { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam (Male, Deep)' },
+    { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel (Female)' },
+    { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Bella (Female)' },
+  ]
 
   // Color options
   const colorOptions = [
@@ -233,6 +244,68 @@ export default function LessonCreatorPage() {
       setStatus({ type: 'error', message: 'Error: ' + (error instanceof Error ? error.message : 'Unknown') })
     } finally {
       setIsGeneratingQuestions(false)
+    }
+  }
+
+  // ===== PUBLISH LESSON =====
+  const publishLesson = async () => {
+    if (!adminKey) {
+      setStatus({ type: 'error', message: 'Enter Admin Key first' })
+      return
+    }
+
+    if (slides.length === 0) {
+      setStatus({ type: 'error', message: 'Add slides first' })
+      return
+    }
+
+    const hasEnglishContent = slides.some(s => s.contentEn?.trim())
+    if (!hasEnglishContent) {
+      setStatus({ type: 'error', message: 'Translate slides to English first' })
+      return
+    }
+
+    setIsPublishing(true)
+    setPublishProgress('Starting...')
+    setStatus({ type: 'info', message: '🚀 Publishing lesson to GitHub...' })
+
+    try {
+      setPublishProgress('Uploading page.tsx, questions.json, and generating audio...')
+      
+      const response = await fetch('/api/admin/publish-lesson', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lessonNumber,
+          lessonTitle,
+          lessonTitleEn,
+          lessonDescription,
+          lessonDuration,
+          lessonEmoji,
+          lessonColor,
+          slides,
+          questions,
+          voiceId: selectedVoice,
+          adminKey,
+        }),
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        setPublishProgress('')
+        setStatus({ 
+          type: 'success', 
+          message: `🎉 ${data.message} Check results: ${JSON.stringify(data.results)}` 
+        })
+      } else {
+        throw new Error(data.error || 'Publishing failed')
+      }
+    } catch (error) {
+      setStatus({ type: 'error', message: 'Publish error: ' + (error instanceof Error ? error.message : 'Unknown') })
+    } finally {
+      setIsPublishing(false)
+      setPublishProgress('')
     }
   }
 
@@ -1005,16 +1078,66 @@ main().catch(console.error);
         {/* TAB: FILES */}
         {activeTab === 'files' && (
           <div className="bg-white rounded-b-lg shadow p-6">
+            {/* AUTO PUBLISH SECTION */}
+            <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 mb-6 text-white">
+              <h3 className="text-xl font-bold mb-2">🚀 Auto-Publish to GitHub</h3>
+              <p className="text-green-100 mb-4 text-sm">One click to create page.tsx, questions.json, generate audio, and deploy!</p>
+              
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-xs text-green-200 mb-1">🎤 Voice for Audio</label>
+                  <select
+                    value={selectedVoice}
+                    onChange={(e) => setSelectedVoice(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg text-gray-800 text-sm"
+                    disabled={isPublishing}
+                  >
+                    {voiceOptions.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+                  </select>
+                </div>
+                <div className="flex items-end">
+                  <button
+                    onClick={publishLesson}
+                    disabled={isPublishing || slides.length === 0 || !adminKey}
+                    className="w-full px-6 py-2 bg-white text-green-700 rounded-lg font-bold hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  >
+                    {isPublishing ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Publishing...
+                      </span>
+                    ) : '🚀 Publish Lesson'}
+                  </button>
+                </div>
+              </div>
+              
+              {publishProgress && (
+                <div className="bg-white/20 rounded-lg p-3 text-sm">
+                  ⏳ {publishProgress}
+                </div>
+              )}
+              
+              <div className="text-xs text-green-200 mt-3">
+                ℹ️ This will automatically: create page.tsx → upload to GitHub → create questions.json → generate audio with ElevenLabs → upload audio → trigger Railway redeploy
+              </div>
+            </div>
+
+            <hr className="my-6" />
+            
+            {/* MANUAL FILES SECTION */}
+            <h3 className="font-bold text-gray-600 mb-4">📝 Manual Files (alternative)</h3>
+            
             {!generatedFiles ? (
-              <div className="text-center py-12">
-                <div className="text-5xl mb-4">📁</div>
-                <p className="text-gray-500 mb-4">Generate all lesson files</p>
+              <div className="text-center py-8">
                 <button
                   onClick={generateAllFiles}
                   disabled={slides.length === 0}
-                  className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50"
+                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 disabled:opacity-50"
                 >
-                  🚀 Generate All Files
+                  Generate Files for Manual Copy
                 </button>
               </div>
             ) : (
