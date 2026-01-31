@@ -212,7 +212,23 @@ export default function AdminQuestionsPage() {
         }
       }
 
-      setSaveMessage(`✅ Saved ${uploadedCount}/${successfulAudios.length} audio files to repository! Railway will auto-deploy in 2-3 minutes.`)
+      // Step 3: Trigger Railway redeploy
+      try {
+        const deployRes = await fetch('/api/admin/trigger-deploy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminKey }),
+        });
+        
+        if (deployRes.ok) {
+          setSaveMessage(`✅ Saved ${uploadedCount} audio files! 🚀 Railway deploy started automatically.`);
+        } else {
+          setSaveMessage(`✅ Saved ${uploadedCount} audio files! ⚠️ Auto-deploy failed. Run git pull && git push manually.`);
+        }
+      } catch (deployErr) {
+        console.error('Deploy trigger failed:', deployErr);
+        setSaveMessage(`✅ Saved ${uploadedCount} audio files! ⚠️ Auto-deploy unavailable. Run git pull && git push manually.`);
+      }
     } catch (error) {
       setSaveMessage('❌ Error: ' + (error instanceof Error ? error.message : 'Unknown'))
     } finally {

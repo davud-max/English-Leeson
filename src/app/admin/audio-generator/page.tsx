@@ -277,7 +277,23 @@ export default function AudioGeneratorPage() {
         }
       }
 
-      setSuccessMessage(`✅ Успешно сохранено ${uploadedCount} аудио файлов в репозиторий! Railway автоматически задеплоит изменения через 2-3 минуты.`);
+      // Шаг 3: Триггерим редеплой Railway
+      try {
+        const deployRes = await fetch('/api/admin/trigger-deploy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        });
+        
+        if (deployRes.ok) {
+          setSuccessMessage(`✅ Сохранено ${uploadedCount} аудио файлов! 🚀 Railway деплой запущен автоматически.`);
+        } else {
+          setSuccessMessage(`✅ Сохранено ${uploadedCount} аудио файлов! ⚠️ Не удалось запустить автодеплой. Выполните git pull && git push вручную.`);
+        }
+      } catch (deployErr) {
+        console.error('Deploy trigger failed:', deployErr);
+        setSuccessMessage(`✅ Сохранено ${uploadedCount} аудио файлов! ⚠️ Автодеплой недоступен. Выполните git pull && git push вручную.`);
+      }
     } catch (err) {
       setError('Ошибка сохранения: ' + (err as Error).message);
     } finally {
