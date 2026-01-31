@@ -488,14 +488,6 @@ export default function Lesson4Page() {
                   ))}
                 </div>
               </div>
-
-                <div className="w-full bg-gradient-to-r from-gray-200 to-gray-300 rounded-full h-3 shadow-inner">
-                  <div 
-                    className="bg-gradient-to-r from-purple-400 to-indigo-500 h-3 rounded-full transition-all duration-500 shadow-md"
-                    style={{ width: `${progress * 100}%` }}
-                  ></div>
-                </div>
-              </div>
             </div>
 
             {/* Controls */}

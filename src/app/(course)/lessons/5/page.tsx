@@ -388,15 +388,6 @@ export default function Lesson5Page() {
                 </div>
               </div>
 
-              <div className="mt-8 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4">
-                <div className="flex justify-between items-center mb-3">
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div 
-                    className="bg-gradient-to-r from-orange-400 to-amber-500 h-3 rounded-full transition-all"
-                    style={{ width: `${progress * 100}%` }}
-                  ></div>
-                </div>
-              </div>
             </div>
 
             <div className="bg-gradient-to-r from-gray-50 to-orange-50 px-8 py-6 border-t border-orange-200">
