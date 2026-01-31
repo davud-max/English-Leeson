@@ -1,39 +1,42 @@
 {
+  "lessonId": 6,
+  "lessonTitle": "Conditional Reflexes and Behavior",
+  "generatedAt": "2026-01-31T16:33:11.697Z",
   "questions": [
     {
       "id": 1,
-      "question": "What is the fundamental basis that allows people to unite in groups and act together?",
-      "correct_answer": "Communication through language that enables exchanging knowledge",
+      "question": "What is the difference between an unconditioned stimulus and a conditioned stimulus?",
+      "correct_answer": "An unconditioned stimulus naturally produces a response (like food causing salivation), while a conditioned stimulus is a neutral stimulus that learns to trigger the same response through repeated pairing with the unconditioned stimulus.",
       "difficulty": "easy",
-      "points": 10
+      "points": 5
     },
     {
       "id": 2,
-      "question": "What is the main rule that crystallized over millennia of human development?",
-      "correct_answer": "Prohibition of violence against persons",
-      "difficulty": "easy", 
-      "points": 15
+      "question": "In Pavlov's experiment, what happened when the bell was rung repeatedly without presenting food?",
+      "correct_answer": "The bell became a conditioned stimulus that triggered salivation even without the presence of food.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 3,
-      "question": "What is the definition of law according to this lesson?",
-      "correct_answer": "Formal prohibition on the use of violence against a person",
+      "question": "How does understanding conditional reflexes create a bridge between mechanical behavior and conscious development?",
+      "correct_answer": "Awareness of our conditioning mechanisms reveals the boundaries of free will and creates space for genuine choice, allowing us to potentially recondition ourselves deliberately rather than being purely reactive.",
       "difficulty": "hard",
-      "points": 20
+      "points": 15
     },
     {
       "id": 4,
-      "question": "What are the four levels of civilization described in the lesson?",
-      "correct_answer": "Family, tribe, nation, and civil society",
-      "difficulty": "hard",
-      "points": 25
+      "question": "According to the lesson, what role do conditioning processes play in human emotions, preferences, and habits?",
+      "correct_answer": "Much of what we consider conscious choice, including our emotional reactions, preferences, and habits, are actually conditioned responses formed through similar conditioning processes as Pavlov's reflexes.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 5,
-      "question": "What is the definition of economics given in this lesson?",
-      "correct_answer": "Human activity aimed at obtaining goods and distributing them among goals by rank of importance",
+      "question": "Analyze the paradox presented in the lesson regarding awareness of conditioning and free will. How does knowledge of our mechanical nature potentially enhance rather than diminish human agency?",
+      "correct_answer": "While understanding conditioning reveals that much of our behavior is mechanical rather than freely chosen, this awareness creates the possibility for deliberate reconditioning. Knowledge of our conditioning mechanisms provides the foundation for conscious choice by revealing where genuine agency can be exercised.",
       "difficulty": "hard",
-      "points": 30
+      "points": 15
     }
   ]
 }
