@@ -211,6 +211,14 @@ const LESSONS = [
     available: true,
     color: 'from-blue-500 to-indigo-600'
   },
+  { 
+    order: 27, 
+    title: '📖 THREE STEPS TO HEAVEN AND THE SIXTH LEVEL OF MAN', 
+    description: '',
+    duration: 25,
+    available: true,
+    color: 'from-blue-500 to-indigo-600'
+  },
 ]
 
 export default function LessonsPage() {
@@ -240,11 +248,11 @@ export default function LessonsPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Your Progress</h2>
-              <p className="text-gray-600">21 of 26 lessons available • Complete all lessons to earn your certificate</p>
+              <p className="text-gray-600">22 of 27 lessons available • Complete all lessons to earn your certificate</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">21</div>
+                <div className="text-3xl font-bold text-blue-600">22</div>
                 <div className="text-sm text-gray-500">Available</div>
               </div>
               <div className="text-center">
