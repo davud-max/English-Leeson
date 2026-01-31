@@ -171,8 +171,6 @@ const LESSONS = [
     available: true,
     color: 'from-emerald-500 to-green-600'
   },
-// Add this to the LESSONS array in src/app/(course)/lessons/page.tsx:
-
   { 
     order: 22, 
     title: '📖 FORMULAS, ABSTRACTION AND RULES', 
@@ -181,7 +179,7 @@ const LESSONS = [
     available: true,
     color: 'from-blue-500 to-indigo-600'
   },
-{ 
+  { 
     order: 23, 
     title: '📖 HUMAN ACTIVITY, LAW AND CIVILIZATION', 
     description: '',
@@ -197,11 +195,14 @@ const LESSONS = [
     available: true,
     color: 'from-blue-500 to-indigo-600'
   },
-
-// Don't forget to update the statistics at the top of the page:
-// - Change "X of Y lessons available" 
-// - Update the Available/Locked counts
-// - Adjust the progress bar width percentage
+  { 
+    order: 25, 
+    title: '📖 Lesson 25', 
+    description: 'New lesson content',
+    duration: 25,
+    available: true,
+    color: 'from-purple-500 to-violet-600'
+  },
 ]
 
 export default function LessonsPage() {
