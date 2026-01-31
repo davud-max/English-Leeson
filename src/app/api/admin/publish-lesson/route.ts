@@ -1,5 +1,5 @@
 // Admin API: Publish complete lesson to GitHub
-// Creates page.tsx, questions.json, generates audio, uploads all to GitHub
+// Creates page.tsx, questions.json, generates audio, uploads all to GitHub, updates lessons list
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -40,32 +40,60 @@ interface PublishRequest {
   adminKey: string;
 }
 
+// Get file from GitHub
+async function getFileFromGitHub(filePath: string): Promise<{ content: string; sha: string } | null> {
+  if (!GITHUB_TOKEN) return null;
+
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${GITHUB_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json',
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      const content = Buffer.from(data.content, 'base64').toString('utf-8');
+      return { content, sha: data.sha };
+    }
+  } catch (error) {
+    console.error(`Error getting ${filePath}:`, error);
+  }
+  return null;
+}
+
 // Upload file to GitHub
-async function uploadToGitHub(filePath: string, content: string, message: string): Promise<boolean> {
+async function uploadToGitHub(filePath: string, content: string, message: string, existingSha?: string): Promise<boolean> {
   if (!GITHUB_TOKEN) {
     console.error('GITHUB_TOKEN not configured');
     return false;
   }
 
   try {
-    // Check if file exists
-    let existingSha: string | null = null;
-    try {
-      const checkResponse = await fetch(
-        `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${GITHUB_TOKEN}`,
-            'Accept': 'application/vnd.github.v3+json',
-          },
+    // Check if file exists (if sha not provided)
+    let sha = existingSha;
+    if (!sha) {
+      try {
+        const checkResponse = await fetch(
+          `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json',
+            },
+          }
+        );
+        if (checkResponse.ok) {
+          const data = await checkResponse.json();
+          sha = data.sha;
         }
-      );
-      if (checkResponse.ok) {
-        const data = await checkResponse.json();
-        existingSha = data.sha;
+      } catch {
+        // File doesn't exist
       }
-    } catch {
-      // File doesn't exist
     }
 
     // Upload
@@ -74,7 +102,7 @@ async function uploadToGitHub(filePath: string, content: string, message: string
       content: Buffer.from(content).toString('base64'),
       branch: GITHUB_BRANCH,
     };
-    if (existingSha) uploadBody.sha = existingSha;
+    if (sha) uploadBody.sha = sha;
 
     const response = await fetch(
       `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`,
@@ -183,6 +211,107 @@ async function generateAudio(text: string, voiceId: string): Promise<string | nu
   } catch (error) {
     console.error('Audio generation error:', error);
     return null;
+  }
+}
+
+// Update lessons list page to add new lesson
+async function updateLessonsList(data: PublishRequest): Promise<boolean> {
+  const lessonsPagePath = 'src/app/(course)/lessons/page.tsx';
+  
+  try {
+    // Get current file
+    const file = await getFileFromGitHub(lessonsPagePath);
+    if (!file) {
+      console.error('Could not get lessons page');
+      return false;
+    }
+
+    const { content, sha } = file;
+    
+    // Check if lesson already exists
+    const lessonPattern = new RegExp(`order:\\s*${data.lessonNumber}\\s*,`);
+    if (lessonPattern.test(content)) {
+      console.log(`Lesson ${data.lessonNumber} already in list, skipping update`);
+      return true;
+    }
+
+    // Create new lesson entry
+    const newLessonEntry = `  { 
+    order: ${data.lessonNumber}, 
+    title: '${data.lessonEmoji} ${(data.lessonTitleEn || data.lessonTitle).replace(/'/g, "\\'")}', 
+    description: '${(data.lessonDescription || '').replace(/'/g, "\\'")}',
+    duration: ${data.lessonDuration},
+    available: true,
+    color: '${data.lessonColor}'
+  },`;
+
+    // Find the LESSONS array and add new lesson before the closing bracket
+    // Look for the pattern where we can insert (before the last lesson or at end of array)
+    let updatedContent = content;
+    
+    // Strategy: Find "const LESSONS = [" and then find appropriate place to insert
+    // We'll insert before the closing "]" of the LESSONS array
+    
+    // Find where LESSONS array ends - look for "]" followed by newlines and "export default"
+    const lessonsEndPattern = /(\n\s*\]\s*)\n\nexport default/;
+    const match = content.match(lessonsEndPattern);
+    
+    if (match) {
+      // Insert new lesson before the closing ]
+      const insertPosition = content.indexOf(match[0]);
+      updatedContent = content.slice(0, insertPosition) + 
+        '\n' + newLessonEntry + 
+        content.slice(insertPosition);
+    } else {
+      // Fallback: try to find any lesson entry and insert after it
+      // Find the last occurrence of "color: '" followed by "'\n  },"
+      const lastLessonPattern = /(color: '[^']+'\s*\n\s*\},?)(\s*\n)/g;
+      let lastMatch = null;
+      let tempMatch;
+      while ((tempMatch = lastLessonPattern.exec(content)) !== null) {
+        lastMatch = tempMatch;
+      }
+      
+      if (lastMatch) {
+        const insertPosition = lastMatch.index + lastMatch[0].length;
+        updatedContent = content.slice(0, insertPosition) + 
+          '\n' + newLessonEntry + 
+          content.slice(insertPosition);
+      } else {
+        console.error('Could not find place to insert lesson');
+        return false;
+      }
+    }
+
+    // Also update the statistics comment if present
+    // Update "X of Y lessons available" 
+    const availableCount = (updatedContent.match(/available:\s*true/g) || []).length;
+    const totalCount = (updatedContent.match(/order:\s*\d+/g) || []).length;
+    
+    // Update progress text
+    updatedContent = updatedContent.replace(
+      /\d+ of \d+ lessons available/g, 
+      `${availableCount} of ${totalCount} lessons available`
+    );
+    
+    // Update Available count
+    updatedContent = updatedContent.replace(
+      /(<div className="text-3xl font-bold text-blue-600">)\d+(<\/div>\s*<div className="text-sm text-gray-500">Available<\/div>)/,
+      `$1${availableCount}$2`
+    );
+
+    // Upload updated file
+    const success = await uploadToGitHub(
+      lessonsPagePath,
+      updatedContent,
+      `Add lesson ${data.lessonNumber} to lessons list`,
+      sha
+    );
+
+    return success;
+  } catch (error) {
+    console.error('Error updating lessons list:', error);
+    return false;
   }
 }
 
@@ -435,7 +564,12 @@ export async function POST(request: NextRequest) {
     );
     results.push({ step: 'questions.json', success: questionsSuccess });
 
-    // Step 3: Generate and upload audio for each slide
+    // Step 3: Update lessons list page
+    console.log('📋 Updating lessons list...');
+    const listSuccess = await updateLessonsList(data);
+    results.push({ step: 'lessons-list', success: listSuccess });
+
+    // Step 4: Generate and upload audio for each slide
     console.log('🎤 Generating audio...');
     let audioSuccessCount = 0;
     for (let i = 0; i < slides.length; i++) {
@@ -471,7 +605,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: allSuccess,
       message: allSuccess 
-        ? `Lesson ${lessonNumber} published! Railway will redeploy automatically.`
+        ? `Lesson ${lessonNumber} published and added to list! Railway will redeploy automatically.`
         : `Lesson ${lessonNumber} partially published. Check results.`,
       results,
       lessonNumber,
