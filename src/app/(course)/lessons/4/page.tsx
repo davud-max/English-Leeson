@@ -489,14 +489,6 @@ export default function Lesson4Page() {
                 </div>
               </div>
 
-              {/* Slide Progress */}
-              <div className="mt-8 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 animate-fadeInUp">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm font-bold text-purple-800">📊 Slide Progress</span>
-                  <span className="text-sm font-semibold text-purple-600 bg-white px-3 py-1 rounded-full shadow-sm">
-                    {Math.round(progress * 100)}%
-                  </span>
-                </div>
                 <div className="w-full bg-gradient-to-r from-gray-200 to-gray-300 rounded-full h-3 shadow-inner">
                   <div 
                     className="bg-gradient-to-r from-purple-400 to-indigo-500 h-3 rounded-full transition-all duration-500 shadow-md"

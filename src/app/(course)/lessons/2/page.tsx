@@ -580,14 +580,6 @@ export default function Lesson2Page() {
                 </div>
               )}
 
-              {/* Enhanced Slide Progress */}
-              <div className="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 animate-fadeInUp">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm font-bold text-green-800">📊 Slide Progress</span>
-                  <span className="text-sm font-semibold text-green-600 bg-white px-3 py-1 rounded-full shadow-sm">
-                    {Math.round(progress * 100)}%
-                  </span>
-                </div>
                 <div className="w-full bg-gradient-to-r from-gray-200 to-gray-300 rounded-full h-3 shadow-inner">
                   <div 
                     className="bg-gradient-to-r from-green-400 to-emerald-500 h-3 rounded-full transition-all duration-500 shadow-md"

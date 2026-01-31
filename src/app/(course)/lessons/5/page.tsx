@@ -390,11 +390,6 @@ export default function Lesson5Page() {
 
               <div className="mt-8 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4">
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm font-bold text-orange-800">📊 Slide Progress</span>
-                  <span className="text-sm font-semibold text-orange-600 bg-white px-3 py-1 rounded-full">
-                    {Math.round(progress * 100)}%
-                  </span>
-                </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
                   <div 
                     className="bg-gradient-to-r from-orange-400 to-amber-500 h-3 rounded-full transition-all"

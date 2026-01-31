@@ -375,9 +375,6 @@ export default function Lesson6Page() {
 
               <div className="mt-8 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl p-4">
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm font-bold text-teal-800">📊 Slide Progress</span>
-                  <span className="text-sm font-semibold text-teal-600 bg-white px-3 py-1 rounded-full">{Math.round(progress * 100)}%</span>
-                </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
                   <div className="bg-gradient-to-r from-teal-400 to-cyan-500 h-3 rounded-full transition-all" style={{ width: `${progress * 100}%` }}></div>
                 </div>
