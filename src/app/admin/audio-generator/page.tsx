@@ -47,6 +47,7 @@ export default function AudioGeneratorPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
@@ -71,6 +72,39 @@ export default function AudioGeneratorPage() {
       setError('Не удалось загрузить уроки: ' + (err as Error).message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Синхронизация контента уроков из статических файлов в БД
+  const syncLessonContent = async () => {
+    setIsSyncing(true);
+    setError(null);
+    setSuccessMessage(null);
+    
+    try {
+      const res = await fetch('/api/admin/sync-lesson-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to sync');
+      }
+      
+      const data = await res.json();
+      setSuccessMessage(`✅ ${data.message}`);
+      
+      // Перезагружаем уроки и выбранный урок
+      await fetchLessons();
+      if (selectedLesson) {
+        await handleSelectLesson(selectedLesson.id);
+      }
+    } catch (err) {
+      setError('Ошибка синхронизации: ' + (err as Error).message);
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -388,6 +422,35 @@ export default function AudioGeneratorPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Panel - Settings */}
           <div className="lg:col-span-1 space-y-6">
+            {/* Sync Content Button */}
+            <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 backdrop-blur rounded-xl p-4 border border-amber-500/50">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-semibold text-amber-300">⚠️ Синхронизация</h3>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Перед генерацией синхронизируйте полный текст слайдов
+                  </p>
+                </div>
+                <button
+                  onClick={syncLessonContent}
+                  disabled={isSyncing || isGenerating || isUploading}
+                  className="bg-amber-600 hover:bg-amber-700 disabled:bg-slate-600 text-white font-medium py-2 px-4 rounded-lg transition-colors whitespace-nowrap text-sm"
+                >
+                  {isSyncing ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Синх...
+                    </span>
+                  ) : (
+                    '🔄 Синхронизировать'
+                  )}
+                </button>
+              </div>
+            </div>
+
             {/* Lesson Selection */}
             <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-slate-700">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
