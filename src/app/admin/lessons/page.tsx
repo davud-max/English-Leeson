@@ -41,7 +41,9 @@ export default function LessonsManagement() {
       const res = await fetch('/api/admin/lessons')
       if (res.ok) {
         const data = await res.json()
-        setLessons(data)
+        // API returns { lessons: [...] } or array directly
+        const lessonsArray = Array.isArray(data) ? data : (data.lessons || [])
+        setLessons(lessonsArray)
       }
     } catch (error) {
       console.error('Failed to fetch lessons:', error)
