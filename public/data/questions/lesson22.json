@@ -1,42 +1,42 @@
 {
   "lessonId": 22,
-  "lessonTitle": "FORMULAS, ABSTRACTION AND RULES",
-  "generatedAt": "2026-01-26T06:31:45.564Z",
+  "lessonTitle": "THINKING AS RESONANCE AND THE BIRTH OF THE WORLD",
+  "generatedAt": "2026-01-31T21:17:15.218Z",
   "questions": [
     {
       "id": 1,
-      "question": "What is a parameter and how does it relate to quantities?",
-      "correct_answer": "A parameter is a letter designation for a quantity. A quantity is the result of counting or measurement.",
+      "question": "According to the radio analogy, what role does the 'self' play in the thinking process?",
+      "correct_answer": "The 'self' is not the author of thoughts, but rather their radio receiver that captures thoughts through resonance.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What is the difference between measurement and calculation according to the lesson?",
-      "correct_answer": "Measurement is directly obtaining a value using tools like rulers. Calculation is obtaining the value of a parameter through its connections with other parameters using formulas.",
+      "question": "What are the two main circuits of consciousness described in the lesson, and what is their primary difference?",
+      "correct_answer": "The analog circuit handles direct, embodied experiences with small bandwidth but deep meaning, while the digital circuit processes abstractions and concepts with vast bandwidth but no inherent meaning.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "Explain the complete pathway from abstraction to rule formation and analyze why this sequence is essential for human thinking.",
-      "correct_answer": "The pathway is: abstraction → knowledge → thinking → goal → rule. This sequence is essential because it shows how humans isolate parts of reality, convert them to symbolic knowledge, operate on abstractions to form thoughts, create desired models as goals, and develop systematic action sequences to achieve those goals.",
+      "question": "Analyze how the three factors that tune our 'cognitive profile' interact to create individual differences in thinking patterns.",
+      "correct_answer": "Heredity provides the basic neural framework, cultural code shapes our conceptual language and values, while personal experience fine-tunes the resonator through successes and failures, creating a unique filter for which thoughts resonate with each individual.",
       "difficulty": "hard",
       "points": 15
     },
     {
       "id": 4,
-      "question": "How does the ability to abstract distinguish humans from animals, and what role does this play in purposeful action?",
-      "correct_answer": "Animals cannot abstract and exist in a unified system of signals and reactions, while humans can extract and distinguish parts of being as separate wholes. This abstraction ability allows humans to create models, set goals, and act purposefully rather than being bound by instincts.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "What does 'light' represent in the Genesis interpretation presented in the lesson?",
+      "correct_answer": "'Light' represents the ability to abstract - the capacity to distinguish boundaries between the observable (World) and unobservable (Nothingness), which enables true observation rather than mere animal vision.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 5,
-      "question": "What is the primary purpose of a formula according to the lesson?",
-      "correct_answer": "A formula allows us to calculate what is difficult or impossible to measure by using what is easy to measure.",
-      "difficulty": "easy",
-      "points": 5
+      "question": "Explain the paradox of God 'seeing' the light in Genesis and how this relates to the emergence of the observer (Man).",
+      "correct_answer": "The paradox is that God, being absolute and omniscient, shouldn't need to 'see' or distinguish good from bad. This seeing represents the birth of the observer (Man) through light (abstraction ability), who can distinguish World from Nothingness by existing outside both.",
+      "difficulty": "hard",
+      "points": 15
     }
   ]
 }
