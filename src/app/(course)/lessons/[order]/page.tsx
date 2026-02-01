@@ -235,7 +235,7 @@ export default function DynamicLessonPage() {
   useEffect(() => {
     if (!isPlaying || !lesson) return
 
-    const audioFile = `/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`
+    const audioFile = `/api/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`
     
     // Запуск воспроизведения
     playAudio(audioFile)
