@@ -49,6 +49,7 @@ export default function DynamicLessonPage() {
   const [progress, setProgress] = useState(0)
   const [audioError, setAudioError] = useState(false)
   const [showQuiz, setShowQuiz] = useState(false)
+  const [audioLoading, setAudioLoading] = useState(false)
   
   const audioRef = useRef<HTMLAudioElement>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -94,58 +95,125 @@ export default function DynamicLessonPage() {
 
   const totalSlides = slides.length
 
-  // Аудио проигрывание
+  // Улучшенная функция подготовки аудио
+  const prepareAudio = (audioFile: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if (!audioRef.current) {
+        reject(new Error('Audio element not available'))
+        return
+      }
+
+      // Очистка предыдущего состояния
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+      
+      // Установка нового источника
+      audioRef.current.src = audioFile
+      
+      // Таймер для предотвращения бесконечного ожидания
+      const timeout = setTimeout(() => {
+        reject(new Error('Audio preparation timeout (10s)'))
+      }, 10000)
+      
+      // Ожидание загрузки метаданных
+      audioRef.current.onloadedmetadata = () => {
+        clearTimeout(timeout)
+        resolve()
+      }
+      
+      // Обработка ошибок загрузки
+      audioRef.current.onerror = () => {
+        clearTimeout(timeout)
+        reject(new Error('Failed to load audio file'))
+      }
+    })
+  }
+
+  // Улучшенная функция воспроизведения
+  const playAudio = async (audioFile: string) => {
+    if (audioLoading) return
+    
+    setAudioLoading(true)
+    setAudioError(false)
+    
+    try {
+      // Подготовка аудио с ожиданием метаданных
+      await prepareAudio(audioFile)
+      
+      // Попытка воспроизведения
+      await audioRef.current!.play()
+      
+      setAudioLoading(false)
+      console.log('Audio playing successfully')
+      
+    } catch (error) {
+      setAudioLoading(false)
+      
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      console.error('Audio playback failed:', errorMessage)
+      
+      // Запуск резервного таймера
+      const duration = slides[currentSlide]?.duration || 20000
+      timerRef.current = setTimeout(() => {
+        if (currentSlide < totalSlides - 1) {
+          setCurrentSlide(prev => prev + 1)
+        } else {
+          setIsPlaying(false)
+          setProgress(100)
+        }
+      }, duration)
+      
+      // Устанавливаем флаг ошибки только если это не таймаут метаданных
+      if (!errorMessage.includes('timeout') && !errorMessage.includes('metadata')) {
+        setAudioError(true)
+      }
+    }
+  }
+
+  // Аудио проигрывание - улучшенная версия
   useEffect(() => {
     if (!isPlaying || !lesson) return
 
     const audioFile = `/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`
-    if (audioRef.current) {
-      audioRef.current.src = audioFile
-      audioRef.current.play().catch(() => {
-        setAudioError(true)
-        const duration = slides[currentSlide]?.duration || 20000
-        timerRef.current = setTimeout(() => {
-          if (currentSlide < totalSlides - 1) {
-            setCurrentSlide(prev => prev + 1)
-          } else {
-            setIsPlaying(false)
-          }
-        }, duration)
-      })
-    }
+    
+    // Запуск воспроизведения
+    playAudio(audioFile)
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
+      if (audioRef.current) {
+        audioRef.current.pause()
+        audioRef.current.src = ''
+      }
     }
-  }, [currentSlide, isPlaying, lesson, lessonOrder, slides, totalSlides])
+  }, [currentSlide, isPlaying, lesson, lessonOrder, slides, totalSlides, audioLoading])
 
-  // Прогресс бар
+  // Прогресс бар (резервный таймер)
   useEffect(() => {
-    if (!isPlaying || !audioError) return
+    if (!isPlaying || audioLoading) return
     
-    const duration = slides[currentSlide]?.duration || 20000
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) return 0
-        return prev + (100 / (duration / 100))
-      })
-    }, 100)
+    if (audioError) {
+      const duration = slides[currentSlide]?.duration || 20000
+      const interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 100) return 0
+          return prev + (100 / (duration / 100))
+        })
+      }, 100)
 
-    return () => clearInterval(interval)
-  }, [isPlaying, audioError, currentSlide, slides])
-
-  useEffect(() => {
-    if (!isPlaying || audioError) return
+      return () => clearInterval(interval)
+    }
     
+    // Прогресс на основе реального воспроизведения аудио
     const interval = setInterval(() => {
-      if (audioRef.current && audioRef.current.duration) {
+      if (audioRef.current && audioRef.current.duration && !audioLoading) {
         const percent = (audioRef.current.currentTime / audioRef.current.duration) * 100
         setProgress(percent)
       }
     }, 100)
 
     return () => clearInterval(interval)
-  }, [isPlaying, audioError])
+  }, [isPlaying, audioError, audioLoading, currentSlide, slides])
 
   const handleAudioEnded = () => {
     if (currentSlide < totalSlides - 1) {
@@ -165,6 +233,8 @@ export default function DynamicLessonPage() {
     } else {
       setIsPlaying(true)
       setProgress(0)
+      setAudioError(false)
+      setAudioLoading(false)
     }
   }
 
@@ -172,7 +242,8 @@ export default function DynamicLessonPage() {
     if (timerRef.current) clearTimeout(timerRef.current)
     setCurrentSlide(index)
     setProgress(0)
-    if (isPlaying) setAudioError(false)
+    setAudioError(false)
+    setAudioLoading(false)
   }
 
   // Loading state
@@ -278,6 +349,11 @@ export default function DynamicLessonPage() {
             />
           </div>
           
+          {audioLoading && (
+            <p className="text-xs text-blue-500 mt-2 text-center">
+              Loading audio...
+            </p>
+          )}
           {audioError && (
             <p className="text-xs text-stone-400 mt-2 text-center">
               Audio unavailable — using timed advancement
