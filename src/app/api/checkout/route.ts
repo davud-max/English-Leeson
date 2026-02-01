@@ -7,7 +7,7 @@ import bcrypt from 'bcryptjs'
 // Lazy load stripe to avoid build errors
 const getStripe = async () => {
   if (!process.env.STRIPE_SECRET_KEY) {
-    throw new Error('STRIPE_SECRET_KEY environment variable is required')
+    throw new Error('STRIPE_SECRET_KEY not configured')
   }
   const { stripe } = await import('@/lib/stripe')
   return stripe
@@ -15,8 +15,17 @@ const getStripe = async () => {
 
 export async function POST(req: NextRequest) {
   try {
+    // Check Stripe key first
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json(
+        { error: 'Stripe is not configured', details: 'STRIPE_SECRET_KEY missing' },
+        { status: 500 }
+      )
+    }
+
     const session = await getServerSession(authOptions)
-    const { email, name, phone, password } = await req.json()
+    const body = await req.json()
+    const { email, name, phone, password } = body
 
     let user
 
@@ -28,7 +37,7 @@ export async function POST(req: NextRequest) {
       
       if (!user) {
         return NextResponse.json(
-          { error: 'User not found' },
+          { error: 'User not found', details: 'Logged in user not in database' },
           { status: 404 }
         )
       }
@@ -67,7 +76,7 @@ export async function POST(req: NextRequest) {
 
     if (!course) {
       return NextResponse.json(
-        { error: 'Course not found' },
+        { error: 'Course not found', details: 'No published course in database. Run sync-lessons first.' },
         { status: 404 }
       )
     }
@@ -89,31 +98,49 @@ export async function POST(req: NextRequest) {
     }
 
     // Create Stripe checkout session
-    const stripe = await getStripe()
-    const stripeSession = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: course.currency.toLowerCase(),
-            product_data: {
-              name: course.title,
-              description: course.description,
+    let stripe
+    try {
+      stripe = await getStripe()
+    } catch (stripeError: any) {
+      return NextResponse.json(
+        { error: 'Stripe initialization failed', details: stripeError.message },
+        { status: 500 }
+      )
+    }
+
+    let stripeSession
+    try {
+      stripeSession = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: course.currency.toLowerCase(),
+              product_data: {
+                name: course.title,
+                description: course.description.substring(0, 500),
+              },
+              unit_amount: Math.round(course.price * 100),
             },
-            unit_amount: Math.round(course.price * 100), // Convert to cents
+            quantity: 1,
           },
-          quantity: 1,
+        ],
+        mode: 'payment',
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://english-leeson-production.up.railway.app'}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://english-leeson-production.up.railway.app'}/checkout`,
+        customer_email: user.email,
+        metadata: {
+          userId: user.id,
+          courseId: course.id,
         },
-      ],
-      mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout`,
-      customer_email: user.email,
-      metadata: {
-        userId: user.id,
-        courseId: course.id,
-      },
-    })
+      })
+    } catch (stripeError: any) {
+      console.error('Stripe session creation error:', stripeError)
+      return NextResponse.json(
+        { error: 'Stripe error', details: stripeError.message },
+        { status: 500 }
+      )
+    }
 
     // Create pending purchase
     await prisma.purchase.create({
@@ -128,10 +155,10 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json({ sessionId: stripeSession.id, url: stripeSession.url })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Checkout error:', error)
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
+      { error: 'Failed to create checkout session', details: error.message },
       { status: 500 }
     )
   }
