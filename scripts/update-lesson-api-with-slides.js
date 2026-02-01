@@ -1,15 +1,57 @@
-import { NextResponse } from 'next/server';
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * Скрипт для обновления API урока, чтобы оно возвращало информацию о слайдах
+ * на основе существующих аудио-файлов
+ */
+
+function updateLessonApiWithSlides() {
+  console.log('🔧 Updating lesson API to include dynamic slides based on audio files...\n');
+
+  // Путь к существующему API файлу
+  const apiFilePath = path.join(__dirname, '..', 'api', 'lessons', '[id]', 'route.ts');
+  
+  if (!fs.existsSync(apiFilePath)) {
+    console.error('❌ Original API file not found at:', apiFilePath);
+    console.log('Trying alternative path...');
+    
+    // Попробуем найти файл в другой возможной директории
+    const altApiFilePath = path.join(__dirname, '..', 'src', 'app', 'api', 'lessons', '[order]', 'route.ts');
+    
+    if (fs.existsSync(altApiFilePath)) {
+      updateApiFile(altApiFilePath, '[order]');
+    } else {
+      console.error('❌ No lesson API route file found in expected locations');
+      console.log('Expected paths:');
+      console.log('  -', apiFilePath);
+      console.log('  -', altApiFilePath);
+      return;
+    }
+  } else {
+    updateApiFile(apiFilePath, '[id]');
+  }
+}
+
+function updateApiFile(apiFilePath, paramPattern) {
+  console.log(`📝 Updating API file: ${apiFilePath}\n`);
+  
+  // Читаем существующий файл
+  const originalContent = fs.readFileSync(apiFilePath, 'utf-8');
+  
+  // Создаем обновленный контент с поддержкой динамических слайдов
+  const updatedContent = `import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// GET /api/lessons/[order] - получить урок по номеру с динамическими слайдами на основе аудио-файлов
+// GET /api/lessons/[${paramPattern}] - получить урок по номеру с динамическими слайдами на основе аудио-файлов
 export async function GET(
   request: Request,
-  { params }: { params: { order: string } }
+  { params }: { params: { ${paramPattern.replace('[', '').replace(']', '')}: string } }
 ) {
   try {
-    const orderNum = parseInt(params.order);
+    const orderNum = parseInt(params.${paramPattern.replace('[', '').replace(']', '')});
     
     if (isNaN(orderNum)) {
       return NextResponse.json(
@@ -46,16 +88,16 @@ export async function GET(
     }
 
     // Динамически определяем количество слайдов на основе аудио-файлов
-    const audioDir = path.join(process.cwd(), 'public', 'audio', `lesson${orderNum}`);
-    let slides: { id: number; title: string; content: string; emoji: string; duration: number }[] | null = null;
+    const audioDir = path.join(process.cwd(), 'public', 'audio', \`lesson\${orderNum}\`);
+    let slides = null;
     
     if (fs.existsSync(audioDir)) {
       const audioFiles = fs.readdirSync(audioDir)
         .filter(file => file.startsWith('slide') && file.endsWith('.mp3'))
         .sort((a, b) => {
           // Сортировка файлов по номеру слайда (slide1.mp3, slide2.mp3, и т.д.)
-          const numA = parseInt(a.match(/\d+/)?.[0] || '0');
-          const numB = parseInt(b.match(/\d+/)?.[0] || '0');
+          const numA = parseInt(a.match(/\\d+/)?.[0] || '0');
+          const numB = parseInt(b.match(/\\d+/)?.[0] || '0');
           return numA - numB;
         });
         
@@ -65,8 +107,8 @@ export async function GET(
           const slideNumber = index + 1;
           return {
             id: slideNumber,
-            title: `Slide ${slideNumber}`,
-            content: `Content for slide ${slideNumber} of lesson ${orderNum}`,
+            title: \`Slide \${slideNumber}\`,
+            content: \`Content for slide \${slideNumber} of lesson \${orderNum}\`,
             emoji: lesson.emoji || '📖',
             duration: 30000
           };
@@ -117,4 +159,15 @@ export async function GET(
       { status: 500 }
     );
   }
+}`;
+
+  // Записываем обновленный контент в файл
+  fs.writeFileSync(apiFilePath, updatedContent);
+  
+  console.log(`✅ Successfully updated lesson API to include dynamic slides`);
+  console.log(`📁 File: ${apiFilePath}`);
+  console.log(`🔄 The API will now dynamically generate slides based on existing audio files`);
 }
+
+// Запускаем функцию
+updateLessonApiWithSlides();
