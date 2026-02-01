@@ -253,12 +253,14 @@ export default function DynamicLessonPage() {
 
   // Аудио проигрывание - улучшенная версия
   // Сначала пробуем slideN.mp3, если не найден - используем slide1.mp3 для всего урока
+  // Используем статические файлы /audio/ вместо API route
   useEffect(() => {
     if (!isPlaying || !lesson) return
 
     // Если уже знаем что есть только 1 аудиофайл - используем его
     const slideNum = useSingleAudio ? 1 : currentSlide + 1
-    const audioFile = `/api/audio/lesson${lessonOrder}/slide${slideNum}.mp3`
+    // Статические файлы из /public/audio/
+    const audioFile = `/audio/lesson${lessonOrder}/slide${slideNum}.mp3`
     
     // Запуск воспроизведения
     playAudio(audioFile)
