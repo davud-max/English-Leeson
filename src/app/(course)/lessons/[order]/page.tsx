@@ -97,7 +97,7 @@ export default function DynamicLessonPage() {
 
   const totalSlides = slides.length
 
-  // Улучшенная функция подготовки аудио
+  // Улучшенная функция подготовки аудио с диагностикой
   const prepareAudio = (audioFile: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       if (!audioRef.current) {
@@ -105,6 +105,8 @@ export default function DynamicLessonPage() {
         return
       }
 
+      console.log('Preparing audio:', audioFile)
+      
       // Очистка предыдущего состояния
       audioRef.current.pause()
       audioRef.current.currentTime = 0
@@ -112,21 +114,34 @@ export default function DynamicLessonPage() {
       // Установка нового источника
       audioRef.current.src = audioFile
       
+      // Логируем попытку загрузки
+      console.log('Setting audio src, readyState:', audioRef.current.readyState)
+      
       // Таймер для предотвращения бесконечного ожидания
       const timeout = setTimeout(() => {
+        console.log('Audio preparation timeout after 10s')
         reject(new Error('Audio preparation timeout (10s)'))
       }, 10000)
       
       // Ожидание загрузки метаданных
       audioRef.current.onloadedmetadata = () => {
+        console.log('Audio metadata loaded successfully')
         clearTimeout(timeout)
         resolve()
       }
       
       // Обработка ошибок загрузки
-      audioRef.current.onerror = () => {
+      audioRef.current.onerror = (e) => {
+        console.error('Audio element error event:', e)
+        console.error('Audio network state:', audioRef.current?.networkState)
+        console.error('Audio source:', audioRef.current?.src)
         clearTimeout(timeout)
         reject(new Error('Failed to load audio file'))
+      }
+      
+      // Также ловим событие loadstart
+      audioRef.current.onloadstart = () => {
+        console.log('Audio load started')
       }
     })
   }
