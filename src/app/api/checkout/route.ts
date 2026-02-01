@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
@@ -13,31 +15,49 @@ const getStripe = async () => {
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
     const { email, name, phone, password } = await req.json()
 
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: 'Email and password are required' },
-        { status: 400 }
-      )
-    }
+    let user
 
-    // Check if user exists
-    let user = await prisma.user.findUnique({
-      where: { email },
-    })
-
-    // If user doesn't exist, create one
-    if (!user) {
-      const hashedPassword = await bcrypt.hash(password, 10)
-      user = await prisma.user.create({
-        data: {
-          email,
-          name: name || null,
-          phone: phone || null,
-          password: hashedPassword,
-        },
+    // If user is logged in, use their account
+    if (session?.user?.id) {
+      user = await prisma.user.findUnique({
+        where: { id: session.user.id },
       })
+      
+      if (!user) {
+        return NextResponse.json(
+          { error: 'User not found' },
+          { status: 404 }
+        )
+      }
+    } else {
+      // Not logged in - require email and password
+      if (!email || !password) {
+        return NextResponse.json(
+          { error: 'Email and password are required' },
+          { status: 400 }
+        )
+      }
+
+      // Check if user exists
+      user = await prisma.user.findUnique({
+        where: { email },
+      })
+
+      // If user doesn't exist, create one
+      if (!user) {
+        const hashedPassword = await bcrypt.hash(password, 10)
+        user = await prisma.user.create({
+          data: {
+            email,
+            name: name || null,
+            phone: phone || null,
+            password: hashedPassword,
+          },
+        })
+      }
     }
 
     // Get the course
@@ -70,7 +90,7 @@ export async function POST(req: NextRequest) {
 
     // Create Stripe checkout session
     const stripe = await getStripe()
-    const session = await stripe.checkout.sessions.create({
+    const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
@@ -88,7 +108,7 @@ export async function POST(req: NextRequest) {
       mode: 'payment',
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout`,
-      customer_email: email,
+      customer_email: user.email,
       metadata: {
         userId: user.id,
         courseId: course.id,
@@ -102,12 +122,12 @@ export async function POST(req: NextRequest) {
         courseId: course.id,
         amount: course.price,
         currency: course.currency,
-        stripeSessionId: session.id,
+        stripeSessionId: stripeSession.id,
         status: 'PENDING',
       },
     })
 
-    return NextResponse.json({ sessionId: session.id, url: session.url })
+    return NextResponse.json({ sessionId: stripeSession.id, url: stripeSession.url })
   } catch (error) {
     console.error('Checkout error:', error)
     return NextResponse.json(
