@@ -5,28 +5,32 @@ import * as path from 'path';
 // GET /api/audio/lesson1/slide1.mp3
 export async function GET(
   request: Request,
-  { params }: { params: { path: string[] } }
+  { params }: { params: { lesson: string; slide: string } }
 ) {
   try {
-    // Build the path from the URL segments
-    const audioPath = params.path.join('/');
+    const lesson = params.lesson;
+    const slide = params.slide; // e.g., "slide1.mp3"
     
     // Security: prevent directory traversal
-    if (audioPath.includes('..') || audioPath.includes('://')) {
+    if (lesson.includes('..') || slide.includes('..') || 
+        lesson.includes('://') || slide.includes('://')) {
       return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
     }
     
-    // Build the full path to the audio file
-    const audioFilePath = path.join(process.cwd(), 'public', 'audio', audioPath);
+    // Build the path to the audio file
+    const audioFilePath = path.join(process.cwd(), 'public', 'audio', lesson, slide);
+    
+    console.log('API: Looking for audio file:', audioFilePath);
     
     // Check if file exists
     if (!fs.existsSync(audioFilePath)) {
-      console.log('Audio file not found:', audioFilePath);
+      console.log('API: Audio file not found:', audioFilePath);
       return NextResponse.json({ error: 'Audio file not found' }, { status: 404 });
     }
     
     // Read the file
     const fileBuffer = fs.readFileSync(audioFilePath);
+    console.log('API: Serving audio file, size:', fileBuffer.length);
     
     // Return the file with proper headers
     return new NextResponse(fileBuffer, {
@@ -37,7 +41,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('Error serving audio file:', error);
+    console.error('API: Error serving audio file:', error);
     return NextResponse.json({ error: 'Failed to serve audio' }, { status: 500 });
   }
 }
