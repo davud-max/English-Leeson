@@ -174,7 +174,7 @@ export default function DashboardPage() {
                 <span className="text-2xl">🎉</span>
                 <div>
                   <div className="font-bold">Congratulations!</div>
-                  <div className="text-sm">You've completed all lessons. Download your certificate!</div>
+                  <div className="text-sm">You&apos;ve completed all lessons. Download your certificate!</div>
                 </div>
               </div>
             )}
