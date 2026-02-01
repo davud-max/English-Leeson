@@ -272,7 +272,7 @@ export default function DynamicLessonPage() {
         audioRef.current.src = ''
       }
     }
-  }, [currentSlide, isPlaying, lesson, lessonOrder, slides, totalSlides, audioLoading, useSingleAudio])
+  }, [currentSlide, isPlaying, lesson, lessonOrder, useSingleAudio])
 
   // Прогресс бар (резервный таймер)
   useEffect(() => {
