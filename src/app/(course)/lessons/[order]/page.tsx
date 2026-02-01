@@ -147,6 +147,7 @@ export default function DynamicLessonPage() {
   }
 
   // Улучшенная функция воспроизведения с диагностикой и повторными попытками
+  // API route: /api/audio/lessonX/slideY.mp3
   const playAudio = async (audioFile: string) => {
     if (audioLoading) {
       console.log('Audio already loading, skipping...')
