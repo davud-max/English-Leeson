@@ -255,7 +255,7 @@ export default function DynamicLessonPage() {
   // Сначала пробуем slideN.mp3, если не найден - используем slide1.mp3 для всего урока
   // Используем статические файлы /audio/ вместо API route
   useEffect(() => {
-    if (!isPlaying || !lesson) return
+    if (!isPlaying || !lesson || audioLoading) return
 
     // Если уже знаем что есть только 1 аудиофайл - используем его
     const slideNum = useSingleAudio ? 1 : currentSlide + 1
@@ -267,10 +267,6 @@ export default function DynamicLessonPage() {
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
-      if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current.src = ''
-      }
     }
   }, [currentSlide, isPlaying, lesson, lessonOrder, useSingleAudio])
 
