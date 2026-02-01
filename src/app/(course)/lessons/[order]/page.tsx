@@ -52,6 +52,7 @@ export default function DynamicLessonPage() {
   const [audioLoading, setAudioLoading] = useState(false)
   const [audioRetryCount, setAudioRetryCount] = useState(0)
   const [audioDebug, setAudioDebug] = useState<string | null>(null)
+  const [useSingleAudio, setUseSingleAudio] = useState(false)
   
   const audioRef = useRef<HTMLAudioElement>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -63,6 +64,12 @@ export default function DynamicLessonPage() {
       setLoading(false)
       return
     }
+    
+    // Сброс состояния аудио при смене урока
+    setUseSingleAudio(false)
+    setCurrentSlide(0)
+    setIsPlaying(false)
+    setAudioError(false)
     
     fetchLesson()
   }, [lessonOrder])
@@ -208,6 +215,18 @@ export default function DynamicLessonPage() {
       }
       
       // Если повторные попытки не помогли или ошибка не связана с таймаутом
+      // Проверяем - может есть только 1 аудиофайл для всего урока?
+      const isFileNotFound = errorMessage.includes('404') || 
+                             errorMessage.includes('not found') ||
+                             errorMessage.includes('Failed to load');
+      
+      // Если файл не найден и мы не на первом слайде - попробуем slide1.mp3
+      if (isFileNotFound && currentSlide > 0 && !useSingleAudio) {
+        console.log('File not found, trying single audio mode with slide1.mp3');
+        setUseSingleAudio(true);
+        return; // useEffect сработает снова с useSingleAudio=true
+      }
+      
       // Запуск резервного таймера только если это не ошибка автовоспроизведения
       const isAutoplayBlocked = errorMessage.includes('NotAllowedError') || 
                                 errorMessage.includes('autoplay')
@@ -233,10 +252,13 @@ export default function DynamicLessonPage() {
   }
 
   // Аудио проигрывание - улучшенная версия
+  // Сначала пробуем slideN.mp3, если не найден - используем slide1.mp3 для всего урока
   useEffect(() => {
     if (!isPlaying || !lesson) return
 
-    const audioFile = `/api/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`
+    // Если уже знаем что есть только 1 аудиофайл - используем его
+    const slideNum = useSingleAudio ? 1 : currentSlide + 1
+    const audioFile = `/api/audio/lesson${lessonOrder}/slide${slideNum}.mp3`
     
     // Запуск воспроизведения
     playAudio(audioFile)
@@ -248,7 +270,7 @@ export default function DynamicLessonPage() {
         audioRef.current.src = ''
       }
     }
-  }, [currentSlide, isPlaying, lesson, lessonOrder, slides, totalSlides, audioLoading])
+  }, [currentSlide, isPlaying, lesson, lessonOrder, slides, totalSlides, audioLoading, useSingleAudio])
 
   // Прогресс бар (резервный таймер)
   useEffect(() => {
