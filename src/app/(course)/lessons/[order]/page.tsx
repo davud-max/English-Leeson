@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
@@ -47,17 +47,9 @@ export default function DynamicLessonPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [audioError, setAudioError] = useState(false)
   const [showQuiz, setShowQuiz] = useState(false)
-  const [audioLoading, setAudioLoading] = useState(false)
-  const [audioRetryCount, setAudioRetryCount] = useState(0)
-  const [audioDebug, setAudioDebug] = useState<string | null>(null)
-  const [useSingleAudio, setUseSingleAudio] = useState(false)
   
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
-  const currentSlideRef = useRef(0)
-  const totalSlidesRef = useRef(0)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   // Загрузка урока
   useEffect(() => {
@@ -67,12 +59,8 @@ export default function DynamicLessonPage() {
       return
     }
     
-    // Сброс состояния аудио при смене урока
-    setUseSingleAudio(false)
     setCurrentSlide(0)
     setIsPlaying(false)
-    setAudioError(false)
-    
     fetchLesson()
   }, [lessonOrder])
 
@@ -105,243 +93,132 @@ export default function DynamicLessonPage() {
   }] : [])
 
   const totalSlides = slides.length
-  
-  // Синхронизация refs для использования в onended
-  useEffect(() => {
-    currentSlideRef.current = currentSlide
-    totalSlidesRef.current = totalSlides
-  }, [currentSlide, totalSlides])
 
-  // Улучшенная функция подготовки аудио с диагностикой
-  const prepareAudio = (audioFile: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      if (!audioRef.current) {
-        reject(new Error('Audio element not available'))
-        return
-      }
-
-      console.log('Preparing audio:', audioFile)
-      
-      // Очистка предыдущего состояния
+  // Простая функция воспроизведения слайда
+  const playSlide = useCallback((slideIndex: number) => {
+    console.log(`Playing slide ${slideIndex + 1} of ${totalSlides}`)
+    
+    // Останавливаем предыдущее аудио
+    if (audioRef.current) {
       audioRef.current.pause()
-      audioRef.current.currentTime = 0
+      audioRef.current = null
+    }
+    
+    // Создаём новый Audio объект
+    const audio = new Audio(`/audio/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`)
+    audioRef.current = audio
+    
+    // Обновление прогресса
+    audio.ontimeupdate = () => {
+      if (audio.duration) {
+        setProgress((audio.currentTime / audio.duration) * 100)
+      }
+    }
+    
+    // Когда аудио закончилось - переход к следующему слайду
+    audio.onended = () => {
+      console.log(`Slide ${slideIndex + 1} ended`)
+      if (slideIndex < totalSlides - 1) {
+        const nextSlide = slideIndex + 1
+        setCurrentSlide(nextSlide)
+        setProgress(0)
+        // Рекурсивно запускаем следующий слайд
+        playSlide(nextSlide)
+      } else {
+        // Конец урока
+        setIsPlaying(false)
+        setProgress(100)
+      }
+    }
+    
+    // Ошибка загрузки - пробуем slide1.mp3 или пропускаем
+    audio.onerror = () => {
+      console.log(`Error loading slide ${slideIndex + 1}, trying slide1.mp3`)
+      // Пробуем fallback на slide1.mp3
+      const fallbackAudio = new Audio(`/audio/lesson${lessonOrder}/slide1.mp3`)
+      audioRef.current = fallbackAudio
       
-      // Установка нового источника
-      audioRef.current.src = audioFile
-      
-      // Логируем попытку загрузки
-      console.log('Setting audio src, readyState:', audioRef.current.readyState)
-      
-      // Таймер для предотвращения бесконечного ожидания
-      const timeout = setTimeout(() => {
-        console.log('Audio preparation timeout after 10s')
-        reject(new Error('Audio preparation timeout (10s)'))
-      }, 10000)
-      
-      // Ожидание загрузки метаданных
-      audioRef.current.onloadedmetadata = () => {
-        console.log('Audio metadata loaded successfully')
-        clearTimeout(timeout)
-        resolve()
+      fallbackAudio.ontimeupdate = () => {
+        if (fallbackAudio.duration) {
+          setProgress((fallbackAudio.currentTime / fallbackAudio.duration) * 100)
+        }
       }
       
-      // Обработчик окончания воспроизведения
-      audioRef.current.onended = () => {
-        console.log('Audio ended, current slide:', currentSlideRef.current, 'total:', totalSlidesRef.current)
-        if (currentSlideRef.current < totalSlidesRef.current - 1) {
-          setCurrentSlide(prev => prev + 1)
+      fallbackAudio.onended = () => {
+        if (slideIndex < totalSlides - 1) {
+          const nextSlide = slideIndex + 1
+          setCurrentSlide(nextSlide)
           setProgress(0)
-          setAudioLoading(false) // Сбросим чтобы useEffect сработал
+          playSlide(nextSlide)
         } else {
           setIsPlaying(false)
           setProgress(100)
         }
       }
       
-      // Обработка ошибок загрузки
-      audioRef.current.onerror = (e) => {
-        console.error('Audio element error event:', e)
-        console.error('Audio network state:', audioRef.current?.networkState)
-        console.error('Audio source:', audioRef.current?.src)
-        clearTimeout(timeout)
-        reject(new Error('Failed to load audio file'))
-      }
-      
-      // Также ловим событие loadstart
-      audioRef.current.onloadstart = () => {
-        console.log('Audio load started')
-      }
-    })
-  }
-
-  // Улучшенная функция воспроизведения с диагностикой и повторными попытками
-  // API route: /api/audio/lessonX/slideY.mp3
-  const playAudio = async (audioFile: string) => {
-    if (audioLoading) {
-      console.log('Audio already loading, skipping...')
-      return
-    }
-    
-    setAudioLoading(true)
-    setAudioError(false)
-    setAudioDebug(null)
-    
-    const debugInfo = [`Attempting to play: ${audioFile}`, `Retry count: ${audioRetryCount}`]
-    
-    try {
-      debugInfo.push('Preparing audio...')
-      setAudioDebug(debugInfo.join('\n'))
-      
-      // Подготовка аудио с ожиданием метаданных
-      await prepareAudio(audioFile)
-      
-      debugInfo.push('Metadata loaded, starting playback...')
-      setAudioDebug(debugInfo.join('\n'))
-      
-      // Попытка воспроизведения
-      await audioRef.current!.play()
-      
-      debugInfo.push('✅ Playback started successfully!')
-      setAudioDebug(debugInfo.join('\n'))
-      setAudioLoading(false)
-      setAudioRetryCount(0)
-      console.log('Audio playing successfully')
-      
-    } catch (error) {
-      setAudioLoading(false)
-      
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      debugInfo.push(`❌ Error: ${errorMessage}`)
-      setAudioDebug(debugInfo.join('\n'))
-      console.error('Audio playback failed:', errorMessage)
-      
-      // Проверяем, стоит ли повторить попытку
-      const isTimeoutError = errorMessage.includes('timeout')
-      
-      if (isTimeoutError && audioRetryCount < 3) {
-        // Попробовать еще раз с небольшой задержкой
-        const nextRetry = audioRetryCount + 1
-        setAudioRetryCount(nextRetry)
-        debugInfo.push(`🔄 Retrying in ${nextRetry}s (attempt ${nextRetry}/3)...`)
-        setAudioDebug(debugInfo.join('\n'))
-        
+      fallbackAudio.onerror = () => {
+        // Нет аудио - используем таймер
+        console.log('No audio available, using timer')
         setTimeout(() => {
-          if (isPlaying) {
-            console.log(`Retrying audio playback (attempt ${nextRetry}/3)`)
-            playAudio(audioFile)
-          }
-        }, nextRetry * 1000)
-        
-        return
-      }
-      
-      // Если повторные попытки не помогли или ошибка не связана с таймаутом
-      // Проверяем - может есть только 1 аудиофайл для всего урока?
-      const isFileNotFound = errorMessage.includes('404') || 
-                             errorMessage.includes('not found') ||
-                             errorMessage.includes('Failed to load');
-      
-      // Если файл не найден и мы не на первом слайде - попробуем slide1.mp3
-      if (isFileNotFound && currentSlide > 0 && !useSingleAudio) {
-        console.log('File not found, trying single audio mode with slide1.mp3');
-        setUseSingleAudio(true);
-        return; // useEffect сработает снова с useSingleAudio=true
-      }
-      
-      // Запуск резервного таймера только если это не ошибка автовоспроизведения
-      const isAutoplayBlocked = errorMessage.includes('NotAllowedError') || 
-                                errorMessage.includes('autoplay')
-      
-      if (!isAutoplayBlocked) {
-        const duration = slides[currentSlide]?.duration || 20000
-        timerRef.current = setTimeout(() => {
-          if (currentSlide < totalSlides - 1) {
-            setCurrentSlide(prev => prev + 1)
-            setAudioRetryCount(0)
+          if (slideIndex < totalSlides - 1) {
+            const nextSlide = slideIndex + 1
+            setCurrentSlide(nextSlide)
+            setProgress(0)
+            playSlide(nextSlide)
           } else {
             setIsPlaying(false)
             setProgress(100)
           }
-        }, duration)
+        }, 20000)
       }
       
-      // Устанавливаем флаг ошибки
-      if (!isTimeoutError) {
-        setAudioError(true)
-      }
-    }
-  }
-
-  // Аудио проигрывание - улучшенная версия
-  // Сначала пробуем slideN.mp3, если не найден - используем slide1.mp3 для всего урока
-  // Используем статические файлы /audio/ вместо API route
-  useEffect(() => {
-    if (!isPlaying || !lesson || audioLoading) return
-
-    // Если уже знаем что есть только 1 аудиофайл - используем его
-    const slideNum = useSingleAudio ? 1 : currentSlide + 1
-    // Статические файлы из /public/audio/
-    const audioFile = `/audio/lesson${lessonOrder}/slide${slideNum}.mp3`
-    
-    // Запуск воспроизведения
-    playAudio(audioFile)
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [currentSlide, isPlaying, lesson, lessonOrder, useSingleAudio])
-
-  // Прогресс бар (резервный таймер)
-  useEffect(() => {
-    if (!isPlaying || audioLoading) return
-    
-    if (audioError) {
-      const duration = slides[currentSlide]?.duration || 20000
-      const interval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 100) return 0
-          return prev + (100 / (duration / 100))
-        })
-      }, 100)
-
-      return () => clearInterval(interval)
+      fallbackAudio.play().catch(console.error)
     }
     
-    // Прогресс на основе реального воспроизведения аудио
-    const interval = setInterval(() => {
-      if (audioRef.current && audioRef.current.duration && !audioLoading) {
-        const percent = (audioRef.current.currentTime / audioRef.current.duration) * 100
-        setProgress(percent)
-      }
-    }, 100)
-
-    return () => clearInterval(interval)
-  }, [isPlaying, audioError, audioLoading, currentSlide, slides])
-
-  const handleAudioEnded = () => {
-    // Обработка теперь в prepareAudio.onended
-  }
+    // Запускаем воспроизведение
+    audio.play().catch(console.error)
+  }, [lessonOrder, totalSlides])
 
   const togglePlay = () => {
     if (isPlaying) {
-      audioRef.current?.pause()
-      if (timerRef.current) clearTimeout(timerRef.current)
+      // Пауза
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
       setIsPlaying(false)
     } else {
+      // Запуск
       setIsPlaying(true)
       setProgress(0)
-      setAudioError(false)
-      setAudioLoading(false)
+      playSlide(currentSlide)
     }
   }
 
   const goToSlide = (index: number) => {
-    if (timerRef.current) clearTimeout(timerRef.current)
+    // Останавливаем текущее аудио
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current = null
+    }
+    
     setCurrentSlide(index)
     setProgress(0)
-    setAudioError(false)
-    setAudioLoading(false)
+    
+    // Если играем - запускаем новый слайд
+    if (isPlaying) {
+      playSlide(index)
+    }
   }
+
+  // Cleanup при размонтировании
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause()
+        audioRef.current = null
+      }
+    }
+  }, [])
 
   // Loading state
   if (loading) {
@@ -375,8 +252,6 @@ export default function DynamicLessonPage() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <audio ref={audioRef} onEnded={handleAudioEnded} onError={() => setAudioError(true)} />
-      
       {/* Header */}
       <header className="bg-stone-800 text-stone-100 border-b-4 border-amber-700">
         <div className="max-w-5xl mx-auto px-6 py-4">
@@ -445,34 +320,6 @@ export default function DynamicLessonPage() {
               style={{ width: `${progress}%` }}
             />
           </div>
-          
-          {audioLoading && (
-            <p className="text-xs text-blue-500 mt-2 text-center">
-              Loading audio...
-            </p>
-          )}
-          {audioDebug && (
-            <div className="mt-2 p-2 bg-gray-100 rounded text-xs text-left font-mono text-gray-600">
-              <pre className="whitespace-pre-wrap">{audioDebug}</pre>
-            </div>
-          )}
-          {audioError && (
-            <div className="text-center">
-              <p className="text-xs text-stone-400 mt-2 text-center">
-                Audio unavailable — using timed advancement
-              </p>
-              <button
-                onClick={() => {
-                  setAudioError(false)
-                  setAudioRetryCount(0)
-                  setIsPlaying(true)
-                }}
-                className="mt-2 text-xs text-amber-600 hover:text-amber-800 underline"
-              >
-                Retry Audio
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Controls */}
