@@ -55,16 +55,20 @@ export default function CheckoutPage() {
 
       if (!res.ok) {
         setError(data.error || 'Failed to create checkout session')
+        setLoading(false)
         return
       }
 
-      // Redirect to Stripe Checkout
+      // Redirect to Stripe Checkout URL directly
       if (data.url) {
         window.location.href = data.url
+      } else {
+        setError('No checkout URL received')
+        setLoading(false)
       }
     } catch (err) {
+      console.error('Checkout error:', err)
       setError('An error occurred. Please try again.')
-    } finally {
       setLoading(false)
     }
   }
@@ -241,7 +245,7 @@ export default function CheckoutPage() {
                     {loading ? (
                       <>
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        Processing...
+                        Redirecting to Stripe...
                       </>
                     ) : (
                       <>
