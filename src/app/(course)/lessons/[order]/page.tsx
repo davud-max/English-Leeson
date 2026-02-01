@@ -56,6 +56,8 @@ export default function DynamicLessonPage() {
   
   const audioRef = useRef<HTMLAudioElement>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const currentSlideRef = useRef(0)
+  const totalSlidesRef = useRef(0)
 
   // Загрузка урока
   useEffect(() => {
@@ -103,6 +105,12 @@ export default function DynamicLessonPage() {
   }] : [])
 
   const totalSlides = slides.length
+  
+  // Синхронизация refs для использования в onended
+  useEffect(() => {
+    currentSlideRef.current = currentSlide
+    totalSlidesRef.current = totalSlides
+  }, [currentSlide, totalSlides])
 
   // Улучшенная функция подготовки аудио с диагностикой
   const prepareAudio = (audioFile: string): Promise<void> => {
@@ -135,6 +143,19 @@ export default function DynamicLessonPage() {
         console.log('Audio metadata loaded successfully')
         clearTimeout(timeout)
         resolve()
+      }
+      
+      // Обработчик окончания воспроизведения
+      audioRef.current.onended = () => {
+        console.log('Audio ended, current slide:', currentSlideRef.current, 'total:', totalSlidesRef.current)
+        if (currentSlideRef.current < totalSlidesRef.current - 1) {
+          setCurrentSlide(prev => prev + 1)
+          setProgress(0)
+          setAudioLoading(false) // Сбросим чтобы useEffect сработал
+        } else {
+          setIsPlaying(false)
+          setProgress(100)
+        }
       }
       
       // Обработка ошибок загрузки
@@ -298,13 +319,7 @@ export default function DynamicLessonPage() {
   }, [isPlaying, audioError, audioLoading, currentSlide, slides])
 
   const handleAudioEnded = () => {
-    if (currentSlide < totalSlides - 1) {
-      setCurrentSlide(prev => prev + 1)
-      setProgress(0)
-    } else {
-      setIsPlaying(false)
-      setProgress(100)
-    }
+    // Обработка теперь в prepareAudio.onended
   }
 
   const togglePlay = () => {
