@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/admin/lessons/[id] - получить детали урока
+// GET /api/admin/lessons/[id] - получить урок по ID
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
@@ -9,15 +9,6 @@ export async function GET(
   try {
     const lesson = await prisma.lesson.findUnique({
       where: { id: params.id },
-      select: {
-        id: true,
-        order: true,
-        title: true,
-        content: true,
-        description: true,
-        duration: true,
-        published: true,
-      },
     });
 
     if (!lesson) {
@@ -27,17 +18,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ 
-      lesson: {
-        id: lesson.id,
-        order: lesson.order,
-        title: lesson.title,
-        content: lesson.content || '',
-        description: lesson.description || '',
-        duration: lesson.duration || 25,
-        published: lesson.published ?? false,
-      }
-    });
+    return NextResponse.json({ lesson });
   } catch (error) {
     console.error('Error fetching lesson:', error);
     return NextResponse.json(
@@ -55,16 +36,23 @@ export async function PUT(
   try {
     const body = await request.json();
     
+    const updateData: Record<string, any> = {};
+    
+    // Обновляем только переданные поля
+    if (body.title !== undefined) updateData.title = body.title;
+    if (body.description !== undefined) updateData.description = body.description;
+    if (body.content !== undefined) updateData.content = body.content;
+    if (body.duration !== undefined) updateData.duration = body.duration;
+    if (body.published !== undefined) updateData.published = body.published;
+    if (body.order !== undefined) updateData.order = body.order;
+    if (body.emoji !== undefined) updateData.emoji = body.emoji;
+    if (body.color !== undefined) updateData.color = body.color;
+    if (body.available !== undefined) updateData.available = body.available;
+    if (body.slides !== undefined) updateData.slides = body.slides;
+    
     const lesson = await prisma.lesson.update({
       where: { id: params.id },
-      data: {
-        ...(body.title !== undefined && { title: body.title }),
-        ...(body.description !== undefined && { description: body.description }),
-        ...(body.content !== undefined && { content: body.content }),
-        ...(body.duration !== undefined && { duration: body.duration }),
-        ...(body.published !== undefined && { published: body.published }),
-        ...(body.order !== undefined && { order: body.order }),
-      },
+      data: updateData,
     });
 
     return NextResponse.json(lesson);

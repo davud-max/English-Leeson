@@ -1,227 +1,45 @@
 'use client'
 
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
-const LESSONS = [
-  { 
-    order: 1, 
-    title: '📐 Terms and Definitions', 
-    description: 'How knowledge is born. Fundamental terms: point, line, plane, space. Two opposing movements of thought.',
-    duration: 40,
-    available: true,
-    color: 'from-blue-500 to-indigo-600'
-  },
-  { 
-    order: 2, 
-    title: '🔢 What Is Counting?', 
-    description: 'The origin of counting. Group, numeral, digit. Counting on fingers: dozen, score, gross. Natural numbers.',
-    duration: 30,
-    available: true,
-    color: 'from-green-500 to-emerald-600'
-  },
-  { 
-    order: 3, 
-    title: '📊 What Is a Formula?', 
-    description: 'The emergence of the concept of a parameter. Relationships between quantities and formulae. The number π.',
-    duration: 30,
-    available: true,
-    color: 'from-purple-500 to-violet-600'
-  },
-  { 
-    order: 4, 
-    title: '🧠 Abstraction and Rules', 
-    description: 'Human beings and thinking. Abstraction and knowledge. Literacy as rule-based action.',
-    duration: 25,
-    available: true,
-    color: 'from-indigo-500 to-purple-600'
-  },
-  { 
-    order: 5, 
-    title: '🎭 Human Activity: Praxeology', 
-    description: 'What kind of activity is worthy of a human being? How can creation be distinguished from imitation?',
-    duration: 25,
-    available: true,
-    color: 'from-orange-500 to-red-600'
-  },
-  { 
-    order: 6, 
-    title: '💼 Human Activity and Economics', 
-    description: 'From communication to law. Levels of civilization. Goals and goods. Ethics and experience.',
-    duration: 25,
-    available: true,
-    color: 'from-teal-500 to-cyan-600'
-  },
-  { 
-    order: 7, 
-    title: '💰 The Fair and the Coin', 
-    description: 'How money, markets, and banks emerged from the exchange of gifts between tribes.',
-    duration: 25,
-    available: true,
-    color: 'from-yellow-500 to-amber-600'
-  },
-  { 
-    order: 8, 
-    title: '🧠 Theory of Cognitive Resonance', 
-    description: 'How does thought arise? Two circuits of consciousness and the mechanism of resonance.',
-    duration: 25,
-    available: true,
-    color: 'from-emerald-500 to-teal-600'
-  },
-  { 
-    order: 9, 
-    title: '📖 Sacred Text and Reality', 
-    description: 'Heaven and earth, water and light — a philosophical analysis of the first chapter of Genesis.',
-    duration: 25,
-    available: true,
-    color: 'from-sky-500 to-blue-600'
-  },
-  { 
-    order: 10, 
-    title: '📻 How Thought Finds Us', 
-    description: 'The radio receiver model of consciousness. How we catch thoughts through cognitive resonance.',
-    duration: 30,
-    available: true,
-    color: 'from-fuchsia-500 to-pink-600'
-  },
-  { 
-    order: 11, 
-    title: '🔢 The Number 666', 
-    description: 'A philosophical interpretation of the number of the Beast through the theory of abstraction.',
-    duration: 25,
-    available: true,
-    color: 'from-red-500 to-rose-600'
-  },
-  { 
-    order: 12, 
-    title: '⬆️ Three Steps to Heaven', 
-    description: 'The number 666 as a formula of ascent: beast, human, divine.',
-    duration: 28,
-    available: true,
-    color: 'from-violet-500 to-purple-600'
-  },
-  { 
-    order: 13, 
-    title: '🌍 The Sixth Human Level', 
-    description: 'The transition from external law to internal law. From Moses to Jesus.',
-    duration: 30,
-    available: true,
-    color: 'from-emerald-500 to-teal-600'
-  },
-  { 
-    order: 14, 
-    title: '🌌 How Consciousness Creates', 
-    description: 'The act of primary distinction. The triad: Being, Consciousness, and the Act of Distinction.',
-    duration: 30,
-    available: true,
-    color: 'from-indigo-500 to-blue-600'
-  },
-  { 
-    order: 15, 
-    title: '🌐 A Theory of Everything', 
-    description: 'A philosophical hypothesis about the fundamental nature of reality beyond space.',
-    duration: 25,
-    available: true,
-    color: 'from-cyan-500 to-teal-600'
-  },
-  { 
-    order: 16, 
-    title: '➖ Minus-Space', 
-    description: 'Abstraction as the substance of the world.',
-    duration: 20,
-    available: true,
-    color: 'from-gray-500 to-slate-600'
-  },
-  { 
-    order: 17, 
-    title: '🎯 The Human Path', 
-    description: 'A synthesis of all lessons: from the capacity to distinguish to the comprehension of unity.',
-    duration: 30,
-    available: true,
-    color: 'from-amber-500 to-orange-600'
-  },
-  { 
-    order: 18, 
-    title: '🔄 Cycles of Understanding', 
-    description: 'How knowledge spirals upward through repetition and deepening.',
-    duration: 25,
-    available: true,
-    color: 'from-rose-500 to-pink-600'
-  },
-  { 
-    order: 19, 
-    title: '🌊 Waves of Consciousness', 
-    description: 'The rhythm of thought and the patterns of awareness.',
-    duration: 25,
-    available: true,
-    color: 'from-sky-500 to-cyan-600'
-  },
-  { 
-    order: 20, 
-    title: '⚡ The Spark of Insight', 
-    description: 'Moments of clarity and the mechanics of understanding.',
-    duration: 25,
-    available: true,
-    color: 'from-yellow-500 to-orange-600'
-  },
-  { 
-    order: 21, 
-    title: '👁️ Observation, Terms and Counting', 
-    description: 'The foundation of knowledge: from observation to abstraction to quantification.',
-    duration: 25,
-    available: true,
-    color: 'from-emerald-500 to-green-600'
-  },
-  { 
-    order: 22, 
-    title: '📖 FORMULAS, ABSTRACTION AND RULES', 
-    description: '',
-    duration: 25,
-    available: true,
-    color: 'from-blue-500 to-indigo-600'
-  },
-  { 
-    order: 23, 
-    title: '📖 HUMAN ACTIVITY, LAW AND CIVILIZATION', 
-    description: '',
-    duration: 25,
-    available: true,
-    color: 'from-blue-500 to-indigo-600'
-  },
-  { 
-    order: 24, 
-    title: '📖 THE BIRTH OF MONEY AND BANKS: FROM FAIR TO CITY', 
-    description: '',
-    duration: 25,
-    available: true,
-    color: 'from-blue-500 to-indigo-600'
-  },
-  { 
-    order: 25, 
-    title: '📖 Lesson 25', 
-    description: 'New lesson content',
-    duration: 25,
-    available: true,
-    color: 'from-purple-500 to-violet-600'
-  },
-  { 
-    order: 26, 
-    title: '📖 THREE STEPS TO HEAVEN AND THE SIXTH LEVEL OF MAN', 
-    description: '',
-    duration: 25,
-    available: true,
-    color: 'from-blue-500 to-indigo-600'
-  },
-  { 
-    order: 27, 
-    title: '📖 THREE STEPS TO HEAVEN AND THE SIXTH LEVEL OF MAN', 
-    description: '',
-    duration: 25,
-    available: true,
-    color: 'from-blue-500 to-indigo-600'
-  },
-]
+interface Lesson {
+  id: string
+  order: number
+  title: string
+  description: string
+  duration: number
+  emoji: string
+  color: string
+  available: boolean
+}
 
 export default function LessonsPage() {
+  const [lessons, setLessons] = useState<Lesson[]>([])
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState({ total: 0, available: 0 })
+
+  useEffect(() => {
+    fetchLessons()
+  }, [])
+
+  const fetchLessons = async () => {
+    try {
+      const res = await fetch('/api/lessons')
+      if (res.ok) {
+        const data = await res.json()
+        setLessons(data.lessons || [])
+        setStats({ total: data.total || 0, available: data.available || 0 })
+      }
+    } catch (error) {
+      console.error('Failed to fetch lessons:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const progressPercent = stats.total > 0 ? Math.round((stats.available / stats.total) * 100) : 0
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
@@ -248,73 +66,97 @@ export default function LessonsPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Your Progress</h2>
-              <p className="text-gray-600">22 of 27 lessons available • Complete all lessons to earn your certificate</p>
+              <p className="text-gray-600">
+                {stats.available} of {stats.total} lessons available • Complete all lessons to earn your certificate
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">22</div>
+                <div className="text-3xl font-bold text-blue-600">{stats.available}</div>
                 <div className="text-sm text-gray-500">Available</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-400">5</div>
+                <div className="text-3xl font-bold text-gray-400">{stats.total - stats.available}</div>
                 <div className="text-sm text-gray-500">Locked</div>
               </div>
             </div>
           </div>
           <div className="mt-4">
             <div className="w-full bg-gray-200 rounded-full h-3">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style={{ width: '76%' }}></div>
+              <div 
+                className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500" 
+                style={{ width: `${progressPercent}%` }}
+              />
             </div>
           </div>
         </div>
 
-        {/* Lessons Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {LESSONS.map((lesson) => (
-            <div 
-              key={lesson.order}
-              className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 ${
-                lesson.available 
-                  ? 'hover:shadow-2xl hover:-translate-y-1 cursor-pointer' 
-                  : 'opacity-60'
-              }`}
-            >
-              {/* Card Header */}
-              <div className={`bg-gradient-to-r ${lesson.color} p-4 text-white`}>
-                <div className="flex items-center justify-between">
-                  <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                    Lesson {lesson.order}
-                  </span>
-                  <span className="text-sm">⏱️ {lesson.duration} min</span>
+        {/* Loading State */}
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          </div>
+        ) : (
+          /* Lessons Grid */
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {lessons.map((lesson) => (
+              <div 
+                key={lesson.id}
+                className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 ${
+                  lesson.available 
+                    ? 'hover:shadow-2xl hover:-translate-y-1 cursor-pointer' 
+                    : 'opacity-60'
+                }`}
+              >
+                {/* Card Header */}
+                <div className={`bg-gradient-to-r ${lesson.color || 'from-blue-500 to-indigo-600'} p-4 text-white`}>
+                  <div className="flex items-center justify-between">
+                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
+                      Lesson {lesson.order}
+                    </span>
+                    <span className="text-sm">⏱️ {lesson.duration} min</span>
+                  </div>
+                  <div className="text-4xl mt-2">{lesson.emoji || '📖'}</div>
+                </div>
+                
+                {/* Card Body */}
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-gray-800 mb-2">{lesson.title}</h3>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {lesson.description || 'No description available'}
+                  </p>
+                  
+                  {lesson.available ? (
+                    <Link 
+                      href={`/lessons/${lesson.order}`}
+                      className={`block w-full text-center bg-gradient-to-r ${lesson.color || 'from-blue-500 to-indigo-600'} text-white py-3 rounded-xl font-medium hover:opacity-90 transition-opacity`}
+                    >
+                      Start Lesson →
+                    </Link>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2 text-gray-400 py-3 bg-gray-100 rounded-xl">
+                      <span>🔒</span>
+                      <span>Enroll to Unlock</span>
+                    </div>
+                  )}
                 </div>
               </div>
-              
-              {/* Card Body */}
-              <div className="p-5">
-                <h3 className="text-lg font-bold text-gray-800 mb-2">{lesson.title}</h3>
-                <p className="text-gray-600 text-sm mb-4">{lesson.description}</p>
-                
-                {lesson.available ? (
-                  <Link 
-                    href={`/lessons/${lesson.order}`}
-                    className={`block w-full text-center bg-gradient-to-r ${lesson.color} text-white py-3 rounded-xl font-medium hover:opacity-90 transition-opacity`}
-                  >
-                    Start Lesson →
-                  </Link>
-                ) : (
-                  <div className="flex items-center justify-center gap-2 text-gray-400 py-3 bg-gray-100 rounded-xl">
-                    <span>🔒</span>
-                    <span>Enroll to Unlock</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && lessons.length === 0 && (
+          <div className="text-center py-20">
+            <div className="text-6xl mb-4">📚</div>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No lessons available</h3>
+            <p className="text-gray-500">Check back soon for new content!</p>
+          </div>
+        )}
 
         {/* CTA Section */}
         <div className="mt-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 rounded-3xl p-10 text-white text-center shadow-2xl">
-          <h2 className="text-3xl font-bold mb-4">🚀 Unlock All 21 Lessons!</h2>
+          <h2 className="text-3xl font-bold mb-4">🚀 Unlock All {stats.total} Lessons!</h2>
           <p className="text-blue-100 mb-8 text-xl max-w-2xl mx-auto">
             Get lifetime access to the complete course with AI-generated questions, voice input, and a certificate of completion.
           </p>

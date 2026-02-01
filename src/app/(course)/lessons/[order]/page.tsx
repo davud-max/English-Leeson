@@ -3,78 +3,107 @@
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { useState, useRef, useEffect } from 'react'
+import { useParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
 const VoiceQuiz = dynamic(() => import('@/components/quiz/VoiceQuiz'), { ssr: false })
 
-const LESSON_11_SLIDES = [
-  {
-    id: 1,
-    title: "The Final Riddle",
-    content: "We have traveled a path from the circle to the Sacred Description. We have seen how the act of distinction creates the world.\n\nNow before us lies the final riddle — **the number of the Beast, 666**.\n\n> *\"Here is wisdom. Let him who has understanding count the number of the beast, for it is the number of a man...\"*\n\nThe key word is **\"count.\"** Not \"learn,\" not \"memorize.\" **\"Count\"** — calculate, derive, understand the algorithm.",
-    emoji: "🔢",
-    duration: 28000
-  },
-  {
-    id: 2,
-    title: "The First Six: The Beast",
-    content: "**Six** is the number of the fullness of physical perception.\n\nFive senses: sight, hearing, smell, taste, touch. Plus a sixth — the sense of bodily attraction, of instinct.\n\n**The first six** is a world ruled by six isolated senses. Each pulls in its own direction. This is the world of pure reaction, **the kingdom of the Beast**.\n\nIn this world there is no \"other.\" There is only \"I\" and what my senses register as food, threat, or mate.\n\n> Each sense operates independently. Each is directed inward, showing only what the beast's own body experiences.",
-    emoji: "🐾",
-    duration: 32000
-  },
-  {
-    id: 3,
-    title: "The Second Six: The Human",
-    content: "Then **Light** appears — the ability to abstract.\n\nMan looks at his six senses **from the outside**. He begins to unite them. With what? With **Love**.\n\n**Love is a new principle of organizing the six senses.** Now they are directed outward — toward understanding another \"I.\"\n\n> **The second six** is the **Human number**. Six senses unite in the phenomenon of human love.\n\nParaphrasing Augustine: ordinary, physical love is that by which the soul is informed of what **another body** experiences.",
-    emoji: "❤️",
-    duration: 30000
-  },
-  {
-    id: 4,
-    title: "The Third Six: The Divine",
-    content: "But even this is not the limit. What if one rises even higher?\n\nJesus speaks of **Divine Love — Agape**. This is the principle of connecting souls directly, **bypassing the mediation of the senses**.\n\n**The third six** is the **Divine number**. The transition to the level of pure spirit.\n\n| Level | Number | Principle |\n|-------|--------|----------|\n| Six One | Beast | Senses |\n| Six Two | Human | Love |\n| Six Three | God | Agape |\n\n> Divine love is that by which the soul is informed of what **another soul** experiences.",
-    emoji: "✨",
-    duration: 32000
-  },
-  {
-    id: 5,
-    title: "The Formula of 666",
-    content: "Now we can **count**.\n\n**Six hundred sixty-six is not one number.** It is a formula: six-one, six-two, six-three.\n\nA **three-step path of ascent**.\n\n> \"The number of a man\" — an indication of the second step. But wisdom lies in seeing **the entire staircase** as a whole.\n\nThis is like the sacred mathematical trinity:\n- **Quantity** — concrete apples\n- **Digit** — the symbol \"6\"\n- **Number** — pure abstraction\n\nEach level transcends and includes the previous one.",
-    emoji: "📐",
-    duration: 28000
-  },
-  {
-    id: 6,
-    title: "The End of Light",
-    content: "And then the final words become clear.\n\n**\"The End of Light\"**: Light was needed to travel the path from six-one to six-three. When the goal is reached, the need for distinction falls away. The \"end of Light\" arrives — **not a catastrophe, but the completion of its mission**.\n\n**\"And Man shall disappear\"** — he will overcome himself and become what the Apostle Paul called a **\"spiritual body.\"**\n\n> As long as human souls are separated by the physical, man will exist. When the third six is fully achieved, all souls will merge and unite with God.\n\n*Thank you for your attention.*",
-    emoji: "🌟",
-    duration: 34000
-  }
-]
+interface Slide {
+  id: number
+  title: string
+  content: string
+  emoji: string
+  duration?: number
+}
 
-const LESSON_CONTENT = LESSON_11_SLIDES.map(s => s.content).join('\n\n')
+interface Lesson {
+  id: string
+  order: number
+  title: string
+  description: string
+  content: string
+  duration: number
+  emoji: string
+  color: string
+  available: boolean
+  slides: Slide[] | null
+}
 
-export default function Lesson11Page() {
+interface Navigation {
+  prev: { order: number; title: string } | null
+  next: { order: number; title: string } | null
+  total: number
+}
+
+export default function DynamicLessonPage() {
+  const params = useParams()
+  const lessonOrder = parseInt(params.order as string)
+  
+  const [lesson, setLesson] = useState<Lesson | null>(null)
+  const [navigation, setNavigation] = useState<Navigation | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [audioError, setAudioError] = useState(false)
   const [showQuiz, setShowQuiz] = useState(false)
+  
   const audioRef = useRef<HTMLAudioElement>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const totalSlides = LESSON_11_SLIDES.length
-
+  // Загрузка урока
   useEffect(() => {
-    if (!isPlaying) return
+    if (isNaN(lessonOrder)) {
+      setError('Invalid lesson number')
+      setLoading(false)
+      return
+    }
+    
+    fetchLesson()
+  }, [lessonOrder])
 
-    const audioFile = `/audio/lesson11/slide${currentSlide + 1}.mp3`
+  const fetchLesson = async () => {
+    try {
+      const res = await fetch(`/api/lessons/${lessonOrder}`)
+      const data = await res.json()
+      
+      if (!res.ok) {
+        setError(data.error || 'Failed to load lesson')
+        return
+      }
+      
+      setLesson(data.lesson)
+      setNavigation(data.navigation)
+    } catch (err) {
+      setError('Failed to load lesson')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Создаём слайды из контента если нет готовых
+  const slides: Slide[] = lesson?.slides || (lesson?.content ? [{
+    id: 1,
+    title: lesson.title,
+    content: lesson.content,
+    emoji: lesson.emoji || '📖',
+    duration: 30000,
+  }] : [])
+
+  const totalSlides = slides.length
+
+  // Аудио проигрывание
+  useEffect(() => {
+    if (!isPlaying || !lesson) return
+
+    const audioFile = `/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`
     if (audioRef.current) {
       audioRef.current.src = audioFile
-      audioRef.current.play().catch(e => {
-        console.log("Audio not available, using timer fallback")
+      audioRef.current.play().catch(() => {
         setAudioError(true)
-        const duration = LESSON_11_SLIDES[currentSlide].duration
+        const duration = slides[currentSlide]?.duration || 20000
         timerRef.current = setTimeout(() => {
           if (currentSlide < totalSlides - 1) {
             setCurrentSlide(prev => prev + 1)
@@ -88,12 +117,13 @@ export default function Lesson11Page() {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
     }
-  }, [currentSlide, isPlaying, totalSlides])
+  }, [currentSlide, isPlaying, lesson, lessonOrder, slides, totalSlides])
 
+  // Прогресс бар
   useEffect(() => {
     if (!isPlaying || !audioError) return
     
-    const duration = LESSON_11_SLIDES[currentSlide].duration
+    const duration = slides[currentSlide]?.duration || 20000
     const interval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) return 0
@@ -102,7 +132,7 @@ export default function Lesson11Page() {
     }, 100)
 
     return () => clearInterval(interval)
-  }, [isPlaying, audioError, currentSlide])
+  }, [isPlaying, audioError, currentSlide, slides])
 
   useEffect(() => {
     if (!isPlaying || audioError) return
@@ -142,22 +172,44 @@ export default function Lesson11Page() {
     if (timerRef.current) clearTimeout(timerRef.current)
     setCurrentSlide(index)
     setProgress(0)
-    if (isPlaying) {
-      setAudioError(false)
-    }
+    if (isPlaying) setAudioError(false)
   }
 
-  const currentSlideData = LESSON_11_SLIDES[currentSlide]
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-700 mx-auto mb-4"></div>
+          <p className="text-stone-600">Loading lesson...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error || !lesson) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">😕</div>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Lesson Not Found</h2>
+          <p className="text-stone-600 mb-6">{error || 'This lesson does not exist'}</p>
+          <Link href="/lessons" className="px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800">
+            ← Back to Lessons
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const currentSlideData = slides[currentSlide]
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <audio 
-        ref={audioRef} 
-        onEnded={handleAudioEnded}
-        onError={() => setAudioError(true)}
-      />
+      <audio ref={audioRef} onEnded={handleAudioEnded} onError={() => setAudioError(true)} />
       
-      {/* Academic Header */}
+      {/* Header */}
       <header className="bg-stone-800 text-stone-100 border-b-4 border-amber-700">
         <div className="max-w-5xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -166,7 +218,7 @@ export default function Lesson11Page() {
             </Link>
             <div className="text-center">
               <h1 className="text-lg font-serif">Algorithms of Thinking and Cognition</h1>
-              <p className="text-stone-400 text-sm">Lecture XI</p>
+              <p className="text-stone-400 text-sm">Lecture {lessonOrder}</p>
             </div>
             <div className="text-stone-400 text-sm">
               {currentSlide + 1} / {totalSlides}
@@ -180,9 +232,9 @@ export default function Lesson11Page() {
         
         {/* Lesson Title */}
         <div className="text-center mb-10">
-          <span className="text-5xl mb-4 block">{currentSlideData.emoji}</span>
+          <span className="text-5xl mb-4 block">{currentSlideData?.emoji || lesson.emoji}</span>
           <h2 className="text-3xl font-serif text-stone-800 mb-2">
-            {currentSlideData.title}
+            {currentSlideData?.title || lesson.title}
           </h2>
           <div className="w-24 h-1 bg-amber-700 mx-auto"></div>
         </div>
@@ -203,12 +255,12 @@ export default function Lesson11Page() {
                 ul: ({children}) => <ul className="list-disc list-outside ml-6 text-stone-700 space-y-2 my-4">{children}</ul>,
                 ol: ({children}) => <ol className="list-decimal list-outside ml-6 text-stone-700 space-y-2 my-4">{children}</ol>,
                 li: ({children}) => <li className="text-stone-700 leading-relaxed">{children}</li>,
-                table: ({children}) => <table className="w-full my-6 border-collapse">{children}</table>,
-                th: ({children}) => <th className="border border-stone-300 bg-stone-100 px-4 py-2 text-left font-semibold">{children}</th>,
-                td: ({children}) => <td className="border border-stone-300 px-4 py-2">{children}</td>,
+                h1: ({children}) => <h1 className="text-2xl font-bold text-stone-900 mt-8 mb-4">{children}</h1>,
+                h2: ({children}) => <h2 className="text-xl font-bold text-stone-900 mt-6 mb-3">{children}</h2>,
+                h3: ({children}) => <h3 className="text-lg font-bold text-stone-900 mt-4 mb-2">{children}</h3>,
               }}
             >
-              {currentSlideData.content}
+              {currentSlideData?.content || lesson.content}
             </ReactMarkdown>
           </div>
         </article>
@@ -272,55 +324,61 @@ export default function Lesson11Page() {
         </div>
 
         {/* Slide Navigation */}
-        <div className="bg-white rounded-lg shadow border border-stone-200 p-6">
-          <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-4">Lecture Sections</h3>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-            {LESSON_11_SLIDES.map((slide, index) => (
-              <button
-                key={slide.id}
-                onClick={() => goToSlide(index)}
-                className={`p-3 rounded text-sm font-medium transition ${
-                  index === currentSlide
-                    ? 'bg-amber-700 text-white'
-                    : index < currentSlide
-                    ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
-                    : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
-                }`}
-                title={slide.title}
-              >
-                {index + 1}
-              </button>
-            ))}
+        {totalSlides > 1 && (
+          <div className="bg-white rounded-lg shadow border border-stone-200 p-6">
+            <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-4">Lecture Sections</h3>
+            <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
+              {slides.map((slide, index) => (
+                <button
+                  key={slide.id}
+                  onClick={() => goToSlide(index)}
+                  className={`p-3 rounded text-sm font-medium transition ${
+                    index === currentSlide
+                      ? 'bg-amber-700 text-white'
+                      : index < currentSlide
+                      ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                      : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                  }`}
+                  title={slide.title}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </main>
 
       {/* Voice Quiz Modal */}
       {showQuiz && (
         <VoiceQuiz
-          lessonId={11}
-          lessonTitle="The Number 666"
+          lessonId={lessonOrder}
+          lessonTitle={lesson.title}
           onClose={() => setShowQuiz(false)}
         />
       )}
 
-      {/* Academic Footer */}
+      {/* Footer */}
       <footer className="bg-stone-800 text-stone-400 py-6 mt-16 border-t-4 border-amber-700">
         <div className="max-w-4xl mx-auto px-6">
           <div className="flex justify-between items-center">
-            <Link 
-              href="/lessons/10"
-              className="hover:text-white transition"
-            >
-              ← Lecture X: How Thought Finds Us
-            </Link>
-            <span className="text-stone-500 text-sm font-serif">Lecture XI</span>
-            <Link 
-              href="/lessons/12"
-              className="hover:text-white transition"
-            >
-              Lecture XII: Three Steps to Heaven →
-            </Link>
+            {navigation?.prev ? (
+              <Link href={`/lessons/${navigation.prev.order}`} className="hover:text-white transition">
+                ← Lecture {navigation.prev.order}
+              </Link>
+            ) : (
+              <span></span>
+            )}
+            <span className="text-stone-500 text-sm font-serif">Lecture {lessonOrder}</span>
+            {navigation?.next ? (
+              <Link href={`/lessons/${navigation.next.order}`} className="hover:text-white transition">
+                Lecture {navigation.next.order} →
+              </Link>
+            ) : (
+              <Link href="/lessons" className="hover:text-white transition">
+                All Lessons →
+              </Link>
+            )}
           </div>
         </div>
       </footer>

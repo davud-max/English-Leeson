@@ -58,6 +58,14 @@ model Lesson {
   duration      Int          // in minutes
   published     Boolean      @default(true)
   
+  // New fields for UI
+  emoji         String       @default("📖")
+  color         String       @default("from-blue-500 to-indigo-600")
+  available     Boolean      @default(true) // Is lesson unlocked for users
+  
+  // Slides content (JSON array of slides)
+  slides        Json?        // [{id, title, content, emoji, audioText}]
+  
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   

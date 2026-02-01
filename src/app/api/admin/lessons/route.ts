@@ -13,6 +13,10 @@ export async function GET() {
         content: true,
         duration: true,
         published: true,
+        emoji: true,
+        color: true,
+        available: true,
+        slides: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -21,7 +25,7 @@ export async function GET() {
       },
     });
 
-    // Форматируем с дефолтными значениями для совместимости
+    // Форматируем с дефолтными значениями
     const formattedLessons = lessons.map(lesson => ({
       id: lesson.id,
       order: lesson.order,
@@ -29,7 +33,11 @@ export async function GET() {
       description: lesson.description || '',
       content: lesson.content || '',
       duration: lesson.duration || 25,
-      published: lesson.published ?? false,
+      published: lesson.published ?? true,
+      emoji: lesson.emoji || '📖',
+      color: lesson.color || 'from-blue-500 to-indigo-600',
+      available: lesson.available ?? true,
+      slides: lesson.slides,
       createdAt: lesson.createdAt,
       updatedAt: lesson.updatedAt,
     }));
@@ -49,7 +57,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     
-    // Получаем первый курс (или создаём если нет)
+    // Получаем или создаём курс
     let course = await prisma.course.findFirst();
     if (!course) {
       course = await prisma.course.create({
@@ -71,7 +79,11 @@ export async function POST(request: Request) {
         description: body.description || '',
         content: body.content || '',
         duration: body.duration || 25,
-        published: body.published || false,
+        published: body.published ?? true,
+        emoji: body.emoji || '📖',
+        color: body.color || 'from-blue-500 to-indigo-600',
+        available: body.available ?? true,
+        slides: body.slides || null,
       },
     });
 

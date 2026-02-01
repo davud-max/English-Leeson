@@ -171,7 +171,7 @@ export default function LessonsManagement() {
         ? '/api/admin/lessons' 
         : `/api/admin/lessons/${selectedLesson?.id}`
       
-      // Отправляем только поля которые есть в базе данных
+      // Отправляем все поля
       const dbFields = {
         title: formData.title,
         description: formData.description,
@@ -179,6 +179,9 @@ export default function LessonsManagement() {
         duration: formData.duration,
         published: formData.published,
         order: formData.order,
+        emoji: formData.emoji,
+        color: formData.color,
+        available: formData.available,
       }
       
       const res = await fetch(url, {
