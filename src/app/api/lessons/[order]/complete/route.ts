@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { order: string } }
 ) {
   const session = await getServerSession(authOptions)
 
@@ -14,17 +14,37 @@ export async function POST(
   }
 
   try {
-    const lessonId = params.id
+    const lessonOrder = parseInt(params.order)
+    
+    if (isNaN(lessonOrder)) {
+      return NextResponse.json({ error: 'Invalid lesson number' }, { status: 400 })
+    }
 
-    // Update progress
-    const progress = await prisma.progress.update({
+    // Find lesson by order number
+    const lesson = await prisma.lesson.findFirst({
+      where: { order: lessonOrder },
+      select: { id: true },
+    })
+
+    if (!lesson) {
+      return NextResponse.json({ error: 'Lesson not found' }, { status: 404 })
+    }
+
+    // Update or create progress
+    const progress = await prisma.progress.upsert({
       where: {
         userId_lessonId: {
           userId: session.user.id,
-          lessonId,
+          lessonId: lesson.id,
         },
       },
-      data: {
+      update: {
+        completed: true,
+        completedAt: new Date(),
+      },
+      create: {
+        userId: session.user.id,
+        lessonId: lesson.id,
         completed: true,
         completedAt: new Date(),
       },
@@ -36,7 +56,8 @@ export async function POST(
         userId: session.user.id,
         eventType: 'lesson_completed',
         metadata: {
-          lessonId,
+          lessonId: lesson.id,
+          lessonOrder,
         },
       },
     })
