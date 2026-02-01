@@ -50,6 +50,8 @@ export default function DynamicLessonPage() {
   const [audioError, setAudioError] = useState(false)
   const [showQuiz, setShowQuiz] = useState(false)
   const [audioLoading, setAudioLoading] = useState(false)
+  const [audioRetryCount, setAudioRetryCount] = useState(0)
+  const [audioDebug, setAudioDebug] = useState<string | null>(null)
   
   const audioRef = useRef<HTMLAudioElement>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -129,42 +131,86 @@ export default function DynamicLessonPage() {
     })
   }
 
-  // Улучшенная функция воспроизведения
+  // Улучшенная функция воспроизведения с диагностикой и повторными попытками
   const playAudio = async (audioFile: string) => {
-    if (audioLoading) return
+    if (audioLoading) {
+      console.log('Audio already loading, skipping...')
+      return
+    }
     
     setAudioLoading(true)
     setAudioError(false)
+    setAudioDebug(null)
+    
+    const debugInfo = [`Attempting to play: ${audioFile}`, `Retry count: ${audioRetryCount}`]
     
     try {
+      debugInfo.push('Preparing audio...')
+      setAudioDebug(debugInfo.join('\n'))
+      
       // Подготовка аудио с ожиданием метаданных
       await prepareAudio(audioFile)
+      
+      debugInfo.push('Metadata loaded, starting playback...')
+      setAudioDebug(debugInfo.join('\n'))
       
       // Попытка воспроизведения
       await audioRef.current!.play()
       
+      debugInfo.push('✅ Playback started successfully!')
+      setAudioDebug(debugInfo.join('\n'))
       setAudioLoading(false)
+      setAudioRetryCount(0)
       console.log('Audio playing successfully')
       
     } catch (error) {
       setAudioLoading(false)
       
       const errorMessage = error instanceof Error ? error.message : String(error)
+      debugInfo.push(`❌ Error: ${errorMessage}`)
+      setAudioDebug(debugInfo.join('\n'))
       console.error('Audio playback failed:', errorMessage)
       
-      // Запуск резервного таймера
-      const duration = slides[currentSlide]?.duration || 20000
-      timerRef.current = setTimeout(() => {
-        if (currentSlide < totalSlides - 1) {
-          setCurrentSlide(prev => prev + 1)
-        } else {
-          setIsPlaying(false)
-          setProgress(100)
-        }
-      }, duration)
+      // Проверяем, стоит ли повторить попытку
+      const isTimeoutError = errorMessage.includes('timeout')
       
-      // Устанавливаем флаг ошибки только если это не таймаут метаданных
-      if (!errorMessage.includes('timeout') && !errorMessage.includes('metadata')) {
+      if (isTimeoutError && audioRetryCount < 3) {
+        // Попробовать еще раз с небольшой задержкой
+        const nextRetry = audioRetryCount + 1
+        setAudioRetryCount(nextRetry)
+        debugInfo.push(`🔄 Retrying in ${nextRetry}s (attempt ${nextRetry}/3)...`)
+        setAudioDebug(debugInfo.join('\n'))
+        
+        setTimeout(() => {
+          if (isPlaying) {
+            console.log(`Retrying audio playback (attempt ${nextRetry}/3)`)
+            playAudio(audioFile)
+          }
+        }, nextRetry * 1000)
+        
+        return
+      }
+      
+      // Если повторные попытки не помогли или ошибка не связана с таймаутом
+      // Запуск резервного таймера только если это не ошибка автовоспроизведения
+      const isAutoplayBlocked = errorMessage.includes('NotAllowedError') || 
+                                errorMessage.includes('autoplay')
+      
+      if (!isAutoplayBlocked) {
+        const duration = slides[currentSlide]?.duration || 20000
+        timerRef.current = setTimeout(() => {
+          if (currentSlide < totalSlides - 1) {
+            setCurrentSlide(prev => prev + 1)
+            setAudioRetryCount(0)
+          } else {
+            setIsPlaying(false)
+            setProgress(100)
+          }
+        }, duration)
+      }
+      
+      // Устанавливаем флаг ошибки
+      if (!isTimeoutError) {
         setAudioError(true)
       }
     }
@@ -354,10 +400,27 @@ export default function DynamicLessonPage() {
               Loading audio...
             </p>
           )}
+          {audioDebug && (
+            <div className="mt-2 p-2 bg-gray-100 rounded text-xs text-left font-mono text-gray-600">
+              <pre className="whitespace-pre-wrap">{audioDebug}</pre>
+            </div>
+          )}
           {audioError && (
-            <p className="text-xs text-stone-400 mt-2 text-center">
-              Audio unavailable — using timed advancement
-            </p>
+            <div className="text-center">
+              <p className="text-xs text-stone-400 mt-2 text-center">
+                Audio unavailable — using timed advancement
+              </p>
+              <button
+                onClick={() => {
+                  setAudioError(false)
+                  setAudioRetryCount(0)
+                  setIsPlaying(true)
+                }}
+                className="mt-2 text-xs text-amber-600 hover:text-amber-800 underline"
+              >
+                Retry Audio
+              </button>
+            </div>
           )}
         </div>
 
