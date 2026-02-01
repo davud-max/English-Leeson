@@ -49,8 +49,23 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     
+    // Получаем первый курс (или создаём если нет)
+    let course = await prisma.course.findFirst();
+    if (!course) {
+      course = await prisma.course.create({
+        data: {
+          title: 'Algorithms of Thinking and Cognition',
+          description: 'A comprehensive course on thinking and cognition',
+          price: 30,
+          currency: 'USD',
+          published: true,
+        },
+      });
+    }
+    
     const lesson = await prisma.lesson.create({
       data: {
+        courseId: course.id,
         order: body.order,
         title: body.title,
         description: body.description || '',
