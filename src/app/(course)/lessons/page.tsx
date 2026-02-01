@@ -128,15 +128,15 @@ const LESSONS = [
     title: '➖ Minus-Space', 
     description: 'Abstraction as the substance of the world.',
     duration: 20,
-    available: false,
-    color: 'from-gray-600 to-slate-700'
+    available: true,
+    color: 'from-gray-500 to-slate-600'
   },
   { 
     order: 17, 
     title: '🎯 The Human Path', 
     description: 'A synthesis of all lessons: from the capacity to distinguish to the comprehension of unity.',
     duration: 30,
-    available: false,
+    available: true,
     color: 'from-amber-500 to-orange-600'
   },
   { 
@@ -144,7 +144,7 @@ const LESSONS = [
     title: '🔄 Cycles of Understanding', 
     description: 'How knowledge spirals upward through repetition and deepening.',
     duration: 25,
-    available: false,
+    available: true,
     color: 'from-rose-500 to-pink-600'
   },
   { 
@@ -152,7 +152,7 @@ const LESSONS = [
     title: '🌊 Waves of Consciousness', 
     description: 'The rhythm of thought and the patterns of awareness.',
     duration: 25,
-    available: false,
+    available: true,
     color: 'from-sky-500 to-cyan-600'
   },
   { 
@@ -160,7 +160,7 @@ const LESSONS = [
     title: '⚡ The Spark of Insight', 
     description: 'Moments of clarity and the mechanics of understanding.',
     duration: 25,
-    available: false,
+    available: true,
     color: 'from-yellow-500 to-orange-600'
   },
   { 
