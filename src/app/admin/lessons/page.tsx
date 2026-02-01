@@ -171,10 +171,20 @@ export default function LessonsManagement() {
         ? '/api/admin/lessons' 
         : `/api/admin/lessons/${selectedLesson?.id}`
       
+      // Отправляем только поля которые есть в базе данных
+      const dbFields = {
+        title: formData.title,
+        description: formData.description,
+        content: formData.content,
+        duration: formData.duration,
+        published: formData.published,
+        order: formData.order,
+      }
+      
       const res = await fetch(url, {
         method: isCreating ? 'POST' : 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dbFields),
       })
 
       if (res.ok) {
