@@ -1,0 +1,42 @@
+{
+  "lessonId": 5,
+  "lessonTitle": "Numbers and Counting",
+  "generatedAt": "2026-02-02T17:53:44.926Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the difference between a number and a numeral?",
+      "correct_answer": "A number is a pure abstraction that exists only as a concept, while a numeral is the term for a counting result.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "Can you see or touch the number five itself?",
+      "correct_answer": "No, you cannot see, touch, or show the number five itself. You can only show five objects, but not 'fiveness'.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What is a digit?",
+      "correct_answer": "A digit is the symbol representing a numeral.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 4,
+      "question": "Why did counting emerge?",
+      "correct_answer": "Counting emerged from the need to describe quantity without listing every element.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "Why is understanding numbers as pure abstractions essential for mathematics?",
+      "correct_answer": "This abstraction enables mathematics because operations on numbers follow logical rules independent of what is being counted, which is essential for grasping higher mathematics and formal systems.",
+      "difficulty": "easy",
+      "points": 5
+    }
+  ]
+}
