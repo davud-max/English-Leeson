@@ -1,0 +1,77 @@
+{
+  "lessonId": 1,
+  "lessonTitle": "Introduction to Thinking",
+  "generatedAt": "2026-02-02T17:27:16.470Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the main focus of the course on Algorithms of Thinking and Cognition?",
+      "correct_answer": "The course explores how we think, perceive reality, and make decisions.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What are the three fundamental concepts mentioned that the course will examine?",
+      "correct_answer": "Observation, abstraction, and the nature of knowledge itself.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What is the primary goal of this course?",
+      "correct_answer": "The goal is not just to learn about thinking, but to develop practical skills that help you think more effectively.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 4,
+      "question": "What basic question about observation does the course ask?",
+      "correct_answer": "What does it mean to observe?",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "What question about definitions will the course explore?",
+      "correct_answer": "How do we create definitions?",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 6,
+      "question": "What relationship will be examined in this course regarding words?",
+      "correct_answer": "The relationship between words and reality.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 7,
+      "question": "What approach will the course take toward common assumptions?",
+      "correct_answer": "The course will challenge common assumptions.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 8,
+      "question": "What will the course explore regarding human cognition?",
+      "correct_answer": "The course will explore the deep structures underlying human cognition.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 9,
+      "question": "Is the course focused only on learning about thinking or does it have a broader purpose?",
+      "correct_answer": "It has a broader purpose - to develop practical skills that help you think more effectively, not just learn about thinking.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 10,
+      "question": "What three basic questions does the course start with?",
+      "correct_answer": "What does it mean to observe? How do we create definitions? What is the relationship between words and reality?",
+      "difficulty": "easy",
+      "points": 5
+    }
+  ]
+}
