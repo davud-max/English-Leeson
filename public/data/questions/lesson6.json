@@ -1,42 +1,42 @@
 {
   "lessonId": 6,
   "lessonTitle": "Conditional Reflexes and Behavior",
-  "generatedAt": "2026-01-31T16:33:11.697Z",
+  "generatedAt": "2026-02-02T17:54:50.429Z",
   "questions": [
     {
       "id": 1,
-      "question": "What is the difference between an unconditioned stimulus and a conditioned stimulus?",
-      "correct_answer": "An unconditioned stimulus naturally produces a response (like food causing salivation), while a conditioned stimulus is a neutral stimulus that learns to trigger the same response through repeated pairing with the unconditioned stimulus.",
+      "question": "What produces an unconditioned response of salivation automatically in Pavlov's experiments?",
+      "correct_answer": "An unconditioned stimulus, specifically food.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "In Pavlov's experiment, what happened when the bell was rung repeatedly without presenting food?",
-      "correct_answer": "The bell became a conditioned stimulus that triggered salivation even without the presence of food.",
+      "question": "What happens to a neutral stimulus when it is paired repeatedly with an unconditioned stimulus?",
+      "correct_answer": "The neutral stimulus becomes a conditioned stimulus that can trigger the same response even without the unconditioned stimulus.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "How does understanding conditional reflexes create a bridge between mechanical behavior and conscious development?",
-      "correct_answer": "Awareness of our conditioning mechanisms reveals the boundaries of free will and creates space for genuine choice, allowing us to potentially recondition ourselves deliberately rather than being purely reactive.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "According to the lesson, what human behaviors form through conditioning processes similar to Pavlov's experiments?",
+      "correct_answer": "Our emotional reactions, preferences, and habits form through similar conditioning processes.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 4,
-      "question": "According to the lesson, what role do conditioning processes play in human emotions, preferences, and habits?",
-      "correct_answer": "Much of what we consider conscious choice, including our emotional reactions, preferences, and habits, are actually conditioned responses formed through similar conditioning processes as Pavlov's reflexes.",
+      "question": "What does understanding conditioning mechanisms reveal about free will according to the lesson?",
+      "correct_answer": "Understanding these mechanisms doesn't eliminate free will but reveals its boundaries.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "Analyze the paradox presented in the lesson regarding awareness of conditioning and free will. How does knowledge of our mechanical nature potentially enhance rather than diminish human agency?",
-      "correct_answer": "While understanding conditioning reveals that much of our behavior is mechanical rather than freely chosen, this awareness creates the possibility for deliberate reconditioning. Knowledge of our conditioning mechanisms provides the foundation for conscious choice by revealing where genuine agency can be exercised.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "What two questions does the lesson suggest are important regarding reconditioning and awareness?",
+      "correct_answer": "Can we recondition ourselves deliberately? Can awareness of conditioning create space for genuine choice?",
+      "difficulty": "easy",
+      "points": 5
     }
   ]
 }
