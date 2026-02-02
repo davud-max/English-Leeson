@@ -1,0 +1,77 @@
+{
+  "lessonId": 3,
+  "lessonTitle": "The Fair and the Coin",
+  "generatedAt": "2026-02-02T17:37:18.850Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "In primitive societies, who owned the resources?",
+      "correct_answer": "Clan chiefs owned the resources in primitive societies.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "How did different groups interact with each other in early societies?",
+      "correct_answer": "Groups interacted through gift exchange.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What happened when caravan routes intersected?",
+      "correct_answer": "Temporary camps became seasonal fairs when caravan routes intersected.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 4,
+      "question": "How did markets originate according to the lesson?",
+      "correct_answer": "Markets originated when fairs developed formal exchange rules independent of tribal customs.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "Why did merchants receive tokens at fairs?",
+      "correct_answer": "Merchants received tokens as proof of payment to track daily market rent.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 6,
+      "question": "What were the earliest forms of tokens made from?",
+      "correct_answer": "The earliest tokens were made from leather tags.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 7,
+      "question": "What did tokens eventually evolve into?",
+      "correct_answer": "Tokens evolved into metal coins bearing the owner's seal.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 8,
+      "question": "What became the first bank?",
+      "correct_answer": "The treasury that issued coins became the first bank.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 9,
+      "question": "What groups emerged to seek valuable goods directly as they moved along exchange chains?",
+      "correct_answer": "Specialized merchant groups emerged to seek valuable goods directly.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 10,
+      "question": "What does understanding the evolution from fairs to coins reveal about money?",
+      "correct_answer": "Understanding this evolution reveals the abstract nature of money itself.",
+      "difficulty": "easy",
+      "points": 5
+    }
+  ]
+}
