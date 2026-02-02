@@ -34,7 +34,7 @@ export async function GET(
         emoji: true,
         color: true,
         available: true,
-        // Не выбираем slides из базы данных, будем генерировать динамически
+        slides: true, // Выбираем slides из базы данных
       },
     });
 
@@ -45,11 +45,14 @@ export async function GET(
       );
     }
 
-    // Динамически определяем количество слайдов на основе аудио-файлов
-    const audioDir = path.join(process.cwd(), 'public', 'audio', `lesson${orderNum}`);
-    let slides: { id: number; title: string; content: string; emoji: string; duration: number }[] | null = null;
-    
-    if (fs.existsSync(audioDir)) {
+    // Если в базе данных уже есть слайды, используем их
+    let slides = (lesson as any).slides;
+
+    if (!slides || (Array.isArray(slides) && slides.length === 0)) {
+      // Динамически определяем количество слайдов на основе аудио-файлов только если их нет в базе
+      const audioDir = path.join(process.cwd(), 'public', 'audio', `lesson${orderNum}`);
+      
+      if (fs.existsSync(audioDir)) {
       const audioFiles = fs.readdirSync(audioDir)
         .filter(file => file.startsWith('slide') && file.endsWith('.mp3'))
         .sort((a, b) => {
@@ -84,6 +87,7 @@ export async function GET(
         duration: 30000,
       }];
     }
+  }
 
     // Добавляем слайды к уроку
     const lessonWithSlides = {
