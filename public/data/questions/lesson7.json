@@ -1,0 +1,77 @@
+{
+  "lessonId": 7,
+  "lessonTitle": "The Fair and the Coin",
+  "generatedAt": "2026-02-02T17:58:57.886Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What type of trade existed in closed societies?",
+      "correct_answer": "No trade existed in closed societies - resources belonged to chiefs.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "How did interaction occur between neighboring communities before formal trade?",
+      "correct_answer": "Through mutual gifts between communities.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What were the first tokens that merchants received, and what did they certify?",
+      "correct_answer": "Merchants received tokens that certified payment for rented land at markets.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 4,
+      "question": "What institution evolved from simple storage treasuries?",
+      "correct_answer": "The first bank evolved from treasuries that became profit-generating institutions.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "Why were cast coins replaced by minted coins?",
+      "correct_answer": "To prevent forgery and ensure coin authenticity.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 6,
+      "question": "Analyze the evolutionary progression from gift exchange to banking systems, identifying the key transformation points.",
+      "correct_answer": "The progression moved from tribal gift exchange to merchant specialization, then to seasonal fairs with formal rules, followed by land rental tokens evolving into coins, and finally treasuries becoming profit-generating banks.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 7,
+      "question": "How did the intersection of caravan routes contribute to the development of standardized exchange rules?",
+      "correct_answer": "Intersections created seasonal fairs that attracted international merchants, forcing the development of unified exchange rules independent of individual tribal customs.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 8,
+      "question": "Explain the relationship between the principle 'good money drives out bad money' and the evolution from cast to minted coins.",
+      "correct_answer": "Minted coins represented 'good money' with verified authenticity that replaced 'bad money' (cast coins prone to forgery), as merchants preferred reliable currency.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 9,
+      "question": "What systemic changes enabled the transformation from simple coin storage to banking networks?",
+      "correct_answer": "Coin owners expanded operations across multiple markets, creating interconnected systems that moved beyond storage to profit generation and network-based services.",
+      "difficulty": "hard",
+      "points": 15
+    },
+    {
+      "id": 10,
+      "question": "Analyze how the concepts of bank and coin revolutionized exchange systems beyond simple payment methods.",
+      "correct_answer": "Banks and coins enabled complex economic structures including organized markets, retail trade, currency exchange, and credit systems, fundamentally transforming from barter to sophisticated financial networks.",
+      "difficulty": "hard",
+      "points": 15
+    }
+  ]
+}
