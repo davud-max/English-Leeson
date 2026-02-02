@@ -1,0 +1,77 @@
+{
+  "lessonId": 2,
+  "lessonTitle": "Observation and Perception",
+  "generatedAt": "2026-02-02T17:35:15.987Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is described as the foundation of all knowledge?",
+      "correct_answer": "Observation",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What is the key difference between how animals and humans see the world?",
+      "correct_answer": "Animals see the world, but only humans truly observe by consciously separating phenomena from the continuous flow of existence.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What three things does observation require?",
+      "correct_answer": "Attention, distinction, and the ability to hold something in awareness.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 4,
+      "question": "What does the process of observation immediately create?",
+      "correct_answer": "Abstractions",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "Why must we select what matters when observing?",
+      "correct_answer": "Because we cannot observe everything at once.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 6,
+      "question": "Is the selection process in observation passive or active?",
+      "correct_answer": "Active",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 7,
+      "question": "How do we construct what we see according to the lesson?",
+      "correct_answer": "We construct what we see through the lens of our existing concepts.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 8,
+      "question": "How is the relationship between raw sensory data and conscious perception described?",
+      "correct_answer": "More complex than it appears",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 9,
+      "question": "What does understanding observation help us understand?",
+      "correct_answer": "How we create our experienced reality",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 10,
+      "question": "What does it mean to truly observe according to the lesson?",
+      "correct_answer": "To consciously separate phenomena from the continuous flow of existence.",
+      "difficulty": "easy",
+      "points": 5
+    }
+  ]
+}
