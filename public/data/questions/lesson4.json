@@ -1,0 +1,42 @@
+{
+  "lessonId": 4,
+  "lessonTitle": "Terms and Definitions",
+  "generatedAt": "2026-02-02T17:52:39.150Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is a definition according to the lesson?",
+      "correct_answer": "A definition is the shortest possible description of something.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What paradox occurs when trying to define something?",
+      "correct_answer": "To define something, we need words, but words themselves need definitions, creating an infinite regress.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What are fundamental terms?",
+      "correct_answer": "Fundamental terms are terms that cannot be defined but only understood directly.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 4,
+      "question": "What is the difference between names and terms?",
+      "correct_answer": "Names are for real objects that can be shown, while terms are for abstract objects that can only be described.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "Give two examples of fundamental geometric concepts mentioned in the lesson.",
+      "correct_answer": "Point, line, plane, and space are examples of fundamental geometric concepts (any two are correct).",
+      "difficulty": "easy",
+      "points": 5
+    }
+  ]
+}
