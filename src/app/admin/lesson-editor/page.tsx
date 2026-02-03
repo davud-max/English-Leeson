@@ -602,7 +602,7 @@ export default function LessonEditor() {
 
                         {(!selectedLesson.slides || selectedLesson.slides.length === 0) && (
                           <div className="text-center text-gray-500 py-8">
-                            Нет слайдов. Добавьте слайды во вкладке "Слайды".
+                            Нет слайдов. Добавьте слайды во вкладке &quot;Слайды&quot;.
                           </div>
                         )}
                       </div>
@@ -703,7 +703,7 @@ export default function LessonEditor() {
 
                         {questions.length === 0 && (
                           <div className="text-center text-gray-500 py-8">
-                            Нет вопросов. Нажмите "Добавить вопрос" для создания.
+                            Нет вопросов. Нажмите &quot;Добавить вопрос&quot; для создания.
                           </div>
                         )}
                       </div>
