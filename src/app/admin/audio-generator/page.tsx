@@ -23,7 +23,7 @@ const ELEVENLABS_VOICES: Record<string, { name: string; type: string }> = {
 
 interface Lesson {
   id: string;
-  number: number;
+  order: number;
   title: string;
   audioText?: string;
   content?: string;
@@ -67,7 +67,7 @@ export default function AudioGeneratorPage() {
       const res = await fetch('/api/admin/lessons');
       if (!res.ok) throw new Error('Failed to fetch lessons');
       const data = await res.json();
-      setLessons(data.lessons || []);
+      setLessons(data || []);
     } catch (err) {
       setError('Не удалось загрузить уроки: ' + (err as Error).message);
     } finally {
@@ -240,7 +240,7 @@ export default function AudioGeneratorPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          lessonNumber: selectedLesson.number,
+          lessonNumber: selectedLesson.order,
           slideNumber: slide.number,
           audioBase64: slide.audioBase64,
         }),
@@ -289,7 +289,7 @@ export default function AudioGeneratorPage() {
       const clearRes = await fetch('/api/admin/clear-lesson-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lessonNumber: selectedLesson.number }),
+        body: JSON.stringify({ lessonNumber: selectedLesson.order }),
       });
 
       if (!clearRes.ok) {
@@ -471,7 +471,7 @@ export default function AudioGeneratorPage() {
                   <option value="">-- Выберите урок --</option>
                   {lessons.map(lesson => (
                     <option key={lesson.id} value={lesson.id}>
-                      Урок {lesson.number}: {lesson.title}
+                      Урок {lesson.order}: {lesson.title}
                     </option>
                   ))}
                 </select>
