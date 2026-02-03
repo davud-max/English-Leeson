@@ -326,7 +326,7 @@ export default function DynamicLessonPage() {
         <div className="flex items-center justify-center gap-6 mb-10">
           <button
             onClick={() => goToSlide(Math.max(0, currentSlide - 1))}
-            disabled={currentSlide === 0}
+            disabled={currentSlide === 0 || isPlaying}
             className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
           >
             ← Previous
@@ -341,7 +341,7 @@ export default function DynamicLessonPage() {
           
           <button
             onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
-            disabled={currentSlide === totalSlides - 1}
+            disabled={currentSlide === totalSlides - 1 || isPlaying}
             className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
           >
             Next →
