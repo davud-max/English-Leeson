@@ -231,23 +231,29 @@ export default function LessonEditor() {
   }
 
   const deployChanges = async () => {
-    setSaveStatus('Запуск деплоя...')
+    if (!selectedLesson) return
+    
+    setSaveStatus('Сохранение изменений...')
+    
+    // Сначала сохраняем урок
     try {
-      const res = await fetch('/api/admin/trigger-deploy', {
-        method: 'POST',
+      const res = await fetch(`/api/admin/lessons/${selectedLesson.id}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
+        body: JSON.stringify(selectedLesson),
       })
       
-      if (res.ok) {
-        setSaveStatus('🚀 Деплой запущен!')
-        setTimeout(() => setSaveStatus(''), 3000)
-      } else {
-        setSaveStatus('⚠️ Ошибка деплоя')
+      if (!res.ok) {
+        setSaveStatus('❌ Ошибка сохранения')
+        return
       }
     } catch (error) {
-      setSaveStatus('⚠️ Ошибка деплоя')
+      setSaveStatus('❌ Ошибка сохранения')
+      return
     }
+
+    setSaveStatus('✅ Сохранено! Деплой запустится автоматически через GitHub.')
+    setTimeout(() => setSaveStatus(''), 4000)
   }
 
   const generateAudio = async (slideIndex: number) => {
@@ -474,7 +480,7 @@ export default function LessonEditor() {
                     onClick={deployChanges}
                     className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
                   >
-                    🚀 Деплой на сайт
+                    💾 Сохранить и деплой
                   </button>
                   {saveStatus && (
                     <div className="flex items-center text-sm font-medium">{saveStatus}</div>
