@@ -48,7 +48,7 @@ export async function GET(
     // Если в базе данных уже есть слайды, используем их
     let slides = (lesson as any).slides;
 
-    if (!slides || (Array.isArray(slides) && slides.length === 0)) {
+    if (!slides || slides === null || (Array.isArray(slides) && slides.length === 0)) {
       // Динамически определяем количество слайдов на основе аудио-файлов только если их нет в базе
       const audioDir = path.join(process.cwd(), 'public', 'audio', `lesson${orderNum}`);
       
