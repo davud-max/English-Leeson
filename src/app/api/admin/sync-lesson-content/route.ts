@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import fs from 'fs';
+import path from 'path';
 
 export async function POST() {
   try {    
@@ -7,19 +9,36 @@ export async function POST() {
     const updates = [];
     
     for (const lessonOrder of lessonsToSync) {
-      // Получаем слайды из API
-      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'https://english-leeson-production.up.railway.app'}/api/lessons/${lessonOrder}`);
+      // Читаем статический файл урока
+      const filePath = path.join(process.cwd(), 'src', 'app', '(course)', 'lessons', String(lessonOrder), 'page.tsx');
       
-      if (!response.ok) {
-        updates.push({ order: lessonOrder, status: 'API error' });
+      if (!fs.existsSync(filePath)) {
+        updates.push({ order: lessonOrder, status: 'file not found' });
         continue;
       }
       
-      const data = await response.json();
-      const slides = data.lesson?.slides;
+      const fileContent = fs.readFileSync(filePath, 'utf8');
       
-      if (!slides || !Array.isArray(slides) || slides.length === 0) {
-        updates.push({ order: lessonOrder, status: 'no slides from API' });
+      // Извлекаем массив слайдов из кода
+      const contentMatches = fileContent.matchAll(/content: `([\s\S]*?)`,/g);
+      const slides = [];
+      let slideId = 1;
+      
+      for (const match of contentMatches) {
+        const content = match[1];
+        if (content && content.length > 10) {
+          slides.push({
+            id: slideId++,
+            title: `Part ${slideId - 1}`,
+            content: content,
+            emoji: '📖',
+            duration: 20000
+          });
+        }
+      }
+      
+      if (slides.length === 0) {
+        updates.push({ order: lessonOrder, status: 'no content extracted' });
         continue;
       }
       
