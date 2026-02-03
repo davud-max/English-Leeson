@@ -180,6 +180,14 @@ export default function AdminDashboard() {
               <p className="text-gray-600 text-xs">Edit content in database</p>
             </div>
           </Link>
+
+          <Link href="/admin/lesson-editor" className="block">
+            <div className="bg-white rounded-xl shadow p-5 hover:shadow-lg transition border-l-4 border-purple-500 h-full">
+              <div className="text-3xl mb-2">✏️</div>
+              <h3 className="font-bold text-gray-900 mb-1">Lesson Editor</h3>
+              <p className="text-gray-600 text-xs">Edit slides + audio + quiz</p>
+            </div>
+          </Link>
           
           <Link href="/admin/questions" className="block">
             <div className="bg-white rounded-xl shadow p-5 hover:shadow-lg transition border-l-4 border-amber-500 h-full">
