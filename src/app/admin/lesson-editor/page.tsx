@@ -9,7 +9,26 @@ interface Slide {
   content: string
   emoji: string
   duration: number
+  audioUrl?: string
 }
+
+interface Voice {
+  id: string
+  name: string
+  type: 'custom' | 'builtin'
+}
+
+const VOICES: Voice[] = [
+  { id: 'kFVUJfjBCiv9orAbWhZN', name: 'Custom Voice ⭐', type: 'custom' },
+  { id: '8Hdxm8QJKOFknq47BhTz', name: 'dZulu', type: 'custom' },
+  { id: 'ma4IY0Z4IUybdEpvYzBW', name: 'dZulu2', type: 'custom' },
+  { id: 'TxGEqnHWrfWFTfGW9XjX', name: 'Josh (Male, Young)', type: 'builtin' },
+  { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam (Male, Deep)', type: 'builtin' },
+  { id: 'yoZ06aMxZJJ28mfd3POQ', name: 'Sam (Male, Raspy)', type: 'builtin' },
+  { id: 'ErXwobaYiN019PkySvjV', name: 'Antoni (Male, Soft)', type: 'builtin' },
+  { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Bella (Female)', type: 'builtin' },
+  { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel (Female)', type: 'builtin' },
+]
 
 interface Question {
   id: string
@@ -39,6 +58,8 @@ export default function LessonEditor() {
   const [loading, setLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState('')
   const [activeTab, setActiveTab] = useState<'content' | 'slides' | 'audio' | 'questions'>('content')
+  const [selectedVoice, setSelectedVoice] = useState('TxGEqnHWrfWFTfGW9XjX')
+  const [generatingSlide, setGeneratingSlide] = useState<number | null>(null)
 
   useEffect(() => {
     fetchLessons()
@@ -173,6 +194,38 @@ export default function LessonEditor() {
     }
   }
 
+  const generateQuestionAudio = async (questionIndex: number) => {
+    const question = questions[questionIndex]
+    if (!question.question) return
+
+    setSaveStatus(`Генерация аудио для вопроса ${questionIndex + 1}...`)
+    
+    try {
+      const res = await fetch('/api/generate-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: question.question,
+          voiceId: selectedVoice,
+        }),
+      })
+
+      if (!res.ok) throw new Error('Failed to generate audio')
+
+      const blob = await res.blob()
+      const audioUrl = URL.createObjectURL(blob)
+      
+      const updatedQuestions = [...questions]
+      updatedQuestions[questionIndex] = { ...question, audioUrl }
+      setQuestions(updatedQuestions)
+
+      setSaveStatus(`✅ Аудио для вопроса ${questionIndex + 1} сгенерировано!`)
+      setTimeout(() => setSaveStatus(''), 2000)
+    } catch (error) {
+      setSaveStatus(`❌ Ошибка генерации: ${(error as Error).message}`)
+    }
+  }
+
   const deployChanges = async () => {
     setSaveStatus('Запуск деплоя...')
     try {
@@ -191,6 +244,80 @@ export default function LessonEditor() {
     } catch (error) {
       setSaveStatus('⚠️ Ошибка деплоя')
     }
+  }
+
+  const generateAudio = async (slideIndex: number) => {
+    if (!selectedLesson) return
+    
+    const slide = selectedLesson.slides[slideIndex]
+    if (!slide.content) {
+      setSaveStatus('❌ Нет текста для генерации')
+      return
+    }
+
+    setGeneratingSlide(slideIndex)
+    setSaveStatus(`Генерация аудио для слайда ${slideIndex + 1}...`)
+
+    try {
+      const res = await fetch('/api/generate-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: slide.content,
+          voiceId: selectedVoice,
+        }),
+      })
+
+      if (!res.ok) throw new Error('Failed to generate audio')
+
+      const blob = await res.blob()
+      const audioBase64 = await blobToBase64(blob)
+
+      // Upload audio file
+      const uploadRes = await fetch('/api/admin/upload-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lessonOrder: selectedLesson.order,
+          slideNumber: slideIndex + 1,
+          audioBase64,
+        }),
+      })
+
+      if (uploadRes.ok) {
+        setSaveStatus(`✅ Аудио для слайда ${slideIndex + 1} сгенерировано!`)
+        setTimeout(() => setSaveStatus(''), 2000)
+      } else {
+        throw new Error('Failed to upload audio')
+      }
+    } catch (error) {
+      setSaveStatus(`❌ Ошибка генерации аудио: ${(error as Error).message}`)
+    } finally {
+      setGeneratingSlide(null)
+    }
+  }
+
+  const generateAllAudio = async () => {
+    if (!selectedLesson || !selectedLesson.slides) return
+
+    setSaveStatus('Генерация всех аудио...')
+    for (let i = 0; i < selectedLesson.slides.length; i++) {
+      await generateAudio(i)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+    setSaveStatus('✅ Все аудио сгенерированы!')
+  }
+
+  const blobToBase64 = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const base64 = (reader.result as string).split(',')[1]
+        resolve(base64)
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
   }
 
   if (loading) {
@@ -413,34 +540,71 @@ export default function LessonEditor() {
                   {/* Audio Tab */}
                   {activeTab === 'audio' && (
                     <div>
-                      <h3 className="text-lg font-medium mb-4">Управление аудио</h3>
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                        <p className="text-sm text-blue-800">
-                          📌 Для генерации аудио используйте <Link href="/admin/audio-generator" className="underline font-medium">Аудио Генератор</Link>
-                        </p>
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-medium">Управление аудио</h3>
+                        <div className="flex items-center space-x-3">
+                          <select
+                            value={selectedVoice}
+                            onChange={(e) => setSelectedVoice(e.target.value)}
+                            className="border rounded px-3 py-2 text-sm"
+                          >
+                            <optgroup label="Custom Voices">
+                              {VOICES.filter(v => v.type === 'custom').map(voice => (
+                                <option key={voice.id} value={voice.id}>{voice.name}</option>
+                              ))}
+                            </optgroup>
+                            <optgroup label="Built-in Voices">
+                              {VOICES.filter(v => v.type === 'builtin').map(voice => (
+                                <option key={voice.id} value={voice.id}>{voice.name}</option>
+                              ))}
+                            </optgroup>
+                          </select>
+                          <button
+                            onClick={generateAllAudio}
+                            disabled={generatingSlide !== null}
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm disabled:opacity-50"
+                          >
+                            🎵 Генерировать все
+                          </button>
+                        </div>
                       </div>
 
                       <div className="space-y-3">
                         {(selectedLesson.slides || []).map((slide, index) => (
-                          <div key={slide.id} className="border rounded p-3 bg-gray-50">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <span className="font-medium">Слайд {index + 1}:</span>{' '}
-                                <span className="text-gray-600">{slide.title}</span>
+                          <div key={slide.id} className="border rounded p-4 bg-gray-50">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex-1">
+                                <div className="font-medium">Слайд {index + 1}: {slide.title}</div>
+                                <div className="text-sm text-gray-600 mt-1 line-clamp-2">{slide.content}</div>
                               </div>
+                              <button
+                                onClick={() => generateAudio(index)}
+                                disabled={generatingSlide === index}
+                                className="ml-4 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm disabled:opacity-50"
+                              >
+                                {generatingSlide === index ? '⏳ Генерация...' : '🎵 Генерировать'}
+                              </button>
+                            </div>
+                            <div className="flex items-center space-x-3">
                               <audio
                                 controls
                                 src={`/audio/lesson${selectedLesson.order}/slide${index + 1}.mp3`}
-                                className="h-8"
+                                className="flex-1 h-8"
                                 onError={(e) => {
                                   e.currentTarget.style.display = 'none'
                                   e.currentTarget.nextElementSibling!.classList.remove('hidden')
                                 }}
                               />
-                              <span className="hidden text-sm text-red-600">Файл не найден</span>
+                              <span className="hidden text-sm text-red-600">❌ Файл не найден</span>
                             </div>
                           </div>
                         ))}
+
+                        {(!selectedLesson.slides || selectedLesson.slides.length === 0) && (
+                          <div className="text-center text-gray-500 py-8">
+                            Нет слайдов. Добавьте слайды во вкладке "Слайды".
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -471,12 +635,20 @@ export default function LessonEditor() {
                           <div key={question.id} className="border rounded-lg p-4 bg-gray-50">
                             <div className="flex justify-between items-start mb-3">
                               <span className="font-medium text-lg">Вопрос {qIndex + 1}</span>
-                              <button
-                                onClick={() => deleteQuestion(qIndex)}
-                                className="text-red-600 hover:text-red-800 text-sm"
-                              >
-                                🗑️ Удалить
-                              </button>
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => generateQuestionAudio(qIndex)}
+                                  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+                                >
+                                  🎵 Озвучить
+                                </button>
+                                <button
+                                  onClick={() => deleteQuestion(qIndex)}
+                                  className="text-red-600 hover:text-red-800 text-sm"
+                                >
+                                  🗑️ Удалить
+                                </button>
+                              </div>
                             </div>
 
                             <input
@@ -486,6 +658,12 @@ export default function LessonEditor() {
                               className="w-full border rounded p-2 mb-3"
                               placeholder="Текст вопроса"
                             />
+
+                            {question.audioUrl && (
+                              <div className="mb-3">
+                                <audio controls src={question.audioUrl} className="w-full h-8" />
+                              </div>
+                            )}
 
                             <div className="space-y-2 mb-3">
                               <label className="block text-sm font-medium text-gray-700">Варианты ответов:</label>
