@@ -5,6 +5,19 @@ import path from 'path';
 
 export async function POST() {
   try {
+    // Получаем урок из базы
+    const lesson = await prisma.lesson.findUnique({
+      where: { id: 'cmks5saj0000v11nt8a2ati54' },
+      select: { content: true, emoji: true }
+    });
+
+    if (!lesson || !lesson.content) {
+      return NextResponse.json(
+        { error: 'Lesson content not found' },
+        { status: 404 }
+      );
+    }
+
     // Читаем аудиофайлы из папки
     const audioDir = path.join(process.cwd(), 'public', 'audio', 'lesson16');
     
@@ -23,14 +36,14 @@ export async function POST() {
         return numA - numB;
       });
 
-    // Создаём слайды из аудиофайлов
+    // Создаём слайды с контентом урока
     const slides = audioFiles.map((file, index) => {
       const slideNumber = index + 1;
       return {
         id: slideNumber,
-        title: `Slide ${slideNumber}`,
-        content: `Content for slide ${slideNumber} of lesson 16`,
-        emoji: '➖',
+        title: `Part ${slideNumber}`,
+        content: lesson.content, // Используем полный контент урока для каждого слайда
+        emoji: lesson.emoji || '➖',
         duration: 30000
       };
     });
