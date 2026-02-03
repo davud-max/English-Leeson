@@ -60,6 +60,10 @@ export default function LessonEditor() {
   const [activeTab, setActiveTab] = useState<'content' | 'slides' | 'audio' | 'questions'>('content')
   const [selectedVoice, setSelectedVoice] = useState('TxGEqnHWrfWFTfGW9XjX')
   const [generatingSlide, setGeneratingSlide] = useState<number | null>(null)
+  const [showTranslateModal, setShowTranslateModal] = useState(false)
+  const [russianText, setRussianText] = useState('')
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [adminKey, setAdminKey] = useState('')
 
   useEffect(() => {
     fetchLessons()
@@ -320,6 +324,64 @@ export default function LessonEditor() {
     })
   }
 
+  const translateAndImport = async () => {
+    if (!russianText.trim() || !adminKey) {
+      setSaveStatus('❌ Введите текст и Admin Key')
+      return
+    }
+
+    setIsTranslating(true)
+    setSaveStatus('Перевод текста...')
+
+    try {
+      const response = await fetch('/api/admin/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: russianText,
+          type: 'content',
+          adminKey
+        }),
+      })
+
+      const data = await response.json()
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Translation failed')
+      }
+
+      const translatedText = data.result
+
+      // Разбиваем текст на абзацы для слайдов
+      const paragraphs = translatedText.split('\n\n').filter((p: string) => p.trim().length > 0)
+      
+      if (selectedLesson) {
+        const newSlides = paragraphs.map((content: string, index: number) => ({
+          id: index + 1,
+          title: `Part ${index + 1}`,
+          content: content.trim(),
+          emoji: '📖',
+          duration: 30000
+        }))
+
+        setSelectedLesson({
+          ...selectedLesson,
+          content: translatedText,
+          slides: newSlides
+        })
+
+        setSaveStatus('✅ Текст переведён и импортирован!')
+        setShowTranslateModal(false)
+        setRussianText('')
+        setTimeout(() => setSaveStatus(''), 2000)
+      }
+    } catch (error) {
+      setSaveStatus(`❌ Ошибка: ${(error as Error).message}`)
+    } finally {
+      setIsTranslating(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
@@ -401,6 +463,12 @@ export default function LessonEditor() {
                     className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
                   >
                     💾 Сохранить урок
+                  </button>
+                  <button
+                    onClick={() => setShowTranslateModal(true)}
+                    className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700"
+                  >
+                    🌐 Импорт из русского
                   </button>
                   <button
                     onClick={deployChanges}
@@ -719,6 +787,63 @@ export default function LessonEditor() {
           )}
         </div>
       </div>
+
+      {/* Translation Modal */}
+      {showTranslateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full mx-4">
+            <h3 className="text-xl font-bold mb-4">🌐 Импорт русского текста</h3>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Admin Key
+              </label>
+              <input
+                type="password"
+                value={adminKey}
+                onChange={(e) => setAdminKey(e.target.value)}
+                className="w-full border rounded px-3 py-2"
+                placeholder="Введите Admin Key"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Русский текст
+              </label>
+              <textarea
+                value={russianText}
+                onChange={(e) => setRussianText(e.target.value)}
+                className="w-full h-64 border rounded p-3 font-mono text-sm"
+                placeholder="Вставьте русский текст урока. Он будет переведён на английский и разбит на слайды."
+              />
+              <div className="text-sm text-gray-500 mt-1">
+                {russianText.length} символов
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowTranslateModal(false)
+                  setRussianText('')
+                }}
+                disabled={isTranslating}
+                className="px-4 py-2 border rounded hover:bg-gray-100 disabled:opacity-50"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={translateAndImport}
+                disabled={isTranslating || !russianText.trim() || !adminKey}
+                className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 disabled:opacity-50"
+              >
+                {isTranslating ? '⏳ Перевод...' : '🌐 Перевести и импортировать'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
