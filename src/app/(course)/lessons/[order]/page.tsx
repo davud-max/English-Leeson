@@ -96,6 +96,7 @@ export default function DynamicLessonPage() {
 
   // Простая функция воспроизведения слайда
   const playSlide = useCallback((slideIndex: number) => {
+    const totalSlides = slides.length
     console.log(`Playing slide ${slideIndex + 1} of ${totalSlides}`)
     
     // Останавливаем предыдущее аудио
@@ -177,7 +178,7 @@ export default function DynamicLessonPage() {
     
     // Запускаем воспроизведение
     audio.play().catch(console.error)
-  }, [lessonOrder, totalSlides])
+  }, [lessonOrder, slides.length])
 
   const togglePlay = () => {
     if (isPlaying) {
