@@ -22,6 +22,7 @@ const VOICES: Voice[] = [
   { id: 'kFVUJfjBCiv9orAbWhZN', name: 'Custom Voice ⭐', type: 'custom' },
   { id: '8Hdxm8QJKOFknq47BhTz', name: 'dZulu', type: 'custom' },
   { id: 'ma4IY0Z4IUybdEpvYzBW', name: 'dZulu2', type: 'custom' },
+  { id: 'erDx71FK2teMZ7g6khzw', name: 'New Voice', type: 'custom' },
   { id: 'TxGEqnHWrfWFTfGW9XjX', name: 'Josh (Male, Young)', type: 'builtin' },
   { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam (Male, Deep)', type: 'builtin' },
   { id: 'yoZ06aMxZJJ28mfd3POQ', name: 'Sam (Male, Raspy)', type: 'builtin' },
