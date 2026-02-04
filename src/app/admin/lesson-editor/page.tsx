@@ -289,7 +289,7 @@ export default function LessonEditor() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          lessonOrder: selectedLesson.order,
+          lessonNumber: selectedLesson.order,
           slideNumber: slideIndex + 1,
           audioBase64,
         }),
