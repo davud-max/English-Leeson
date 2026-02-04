@@ -283,6 +283,32 @@ export default function DynamicLessonPage() {
           <div className="w-24 h-1 bg-amber-700 mx-auto"></div>
         </div>
 
+        {/* Audio Controls - Top Position */}
+        <div className="flex items-center justify-center gap-6 mb-10">
+          <button
+            onClick={() => goToSlide(Math.max(0, currentSlide - 1))}
+            disabled={currentSlide === 0}
+            className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
+          >
+            ← Previous
+          </button>
+          
+          <button
+            onClick={togglePlay}
+            className="px-8 py-3 rounded-lg bg-amber-700 text-white font-semibold hover:bg-amber-800 transition shadow-md"
+          >
+            {isPlaying ? '⏸ Pause' : '▶ Play Lecture'}
+          </button>
+          
+          <button
+            onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
+            disabled={currentSlide === totalSlides - 1}
+            className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
+          >
+            Next →
+          </button>
+        </div>
+
         {/* Content Card */}
         <article className="bg-white rounded-lg shadow-lg border border-stone-200 p-8 md:p-12 mb-8">
           <div className="prose prose-stone prose-lg max-w-none">
@@ -309,45 +335,7 @@ export default function DynamicLessonPage() {
           </div>
         </article>
 
-        {/* Progress Section */}
-        <div className="bg-white rounded-lg shadow border border-stone-200 p-6 mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-stone-500 font-medium">Slide Progress</span>
-            <span className="text-sm text-stone-500">{Math.round(progress)}%</span>
-          </div>
-          <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-amber-700 transition-all duration-300 rounded-full"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
 
-        {/* Controls */}
-        <div className="flex items-center justify-center gap-6 mb-10">
-          <button
-            onClick={() => goToSlide(Math.max(0, currentSlide - 1))}
-            disabled={currentSlide === 0}
-            className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
-          >
-            ← Previous
-          </button>
-          
-          <button
-            onClick={togglePlay}
-            className="px-8 py-3 rounded-lg bg-amber-700 text-white font-semibold hover:bg-amber-800 transition shadow-md"
-          >
-            {isPlaying ? '⏸ Pause' : '▶ Play Lecture'}
-          </button>
-          
-          <button
-            onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
-            disabled={currentSlide === totalSlides - 1}
-            className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
-          >
-            Next →
-          </button>
-        </div>
 
         {/* Voice Quiz Button */}
         <div className="bg-gradient-to-r from-amber-600 to-amber-800 rounded-lg shadow-lg p-6 mb-10 text-center">
