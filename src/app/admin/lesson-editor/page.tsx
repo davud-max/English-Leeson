@@ -765,7 +765,7 @@ export default function LessonEditorComplete() {
 
                         {questions.length === 0 && (
                           <div className="text-center text-gray-500 py-8">
-                            Нет вопросов. Нажмите "+ Вопрос"
+                            Нет вопросов. Нажмите «+ Вопрос»
                           </div>
                         )}
                       </div>
