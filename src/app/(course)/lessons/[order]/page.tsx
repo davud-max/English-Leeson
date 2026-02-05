@@ -206,7 +206,9 @@ export default function DynamicLessonPage() {
       }
       
       // Создаём аудио синхронно в обработчике клика (важно для Safari)
-      const audio = new Audio(`/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`)
+      const audioPath = `/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`
+      console.log('Loading audio:', audioPath)
+      const audio = new Audio(audioPath)
       audioRef.current = audio
       
       audio.ontimeupdate = () => {

@@ -306,6 +306,7 @@ export default function LessonEditor() {
 
     setGeneratingSlide(slideIndex)
     setSaveStatus(`Генерация аудио для слайда ${slideIndex + 1}...`)
+    console.log('Selected voice:', selectedVoice)
 
     try {
       const res = await fetch('/api/generate-audio', {
