@@ -253,61 +253,48 @@ export default function DynamicLessonPage() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Header */}
-      <header className="bg-stone-800 text-stone-100 border-b-4 border-amber-700">
-        <div className="max-w-5xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/lessons" className="text-stone-400 hover:text-white flex items-center gap-2 text-sm">
-              ← Back to Course
+      {/* Fixed Audio Controls */}
+      <div className="sticky top-0 z-50 bg-white border-b-4 border-amber-700 shadow-md">
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <Link href="/lessons" className="text-stone-600 hover:text-stone-800 text-sm whitespace-nowrap">
+              ← Back
             </Link>
-            <div className="text-center">
-              <h1 className="text-lg font-serif">Algorithms of Thinking and Cognition</h1>
-              <p className="text-stone-400 text-sm">Lecture {lessonOrder}</p>
+            
+            <div className="flex items-center justify-center gap-3 flex-1">
+              <button
+                onClick={() => goToSlide(Math.max(0, currentSlide - 1))}
+                disabled={currentSlide === 0}
+                className="px-4 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition text-sm"
+              >
+                ← Prev
+              </button>
+              
+              <button
+                onClick={togglePlay}
+                className="px-6 py-2 rounded-lg bg-amber-700 text-white font-semibold hover:bg-amber-800 transition shadow-md text-sm"
+              >
+                {isPlaying ? '⏸ Pause' : '▶ Play'}
+              </button>
+              
+              <button
+                onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
+                disabled={currentSlide === totalSlides - 1}
+                className="px-4 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition text-sm"
+              >
+                Next →
+              </button>
             </div>
-            <div className="text-stone-400 text-sm">
-              {currentSlide + 1} / {totalSlides}
+            
+            <div className="text-stone-500 text-sm whitespace-nowrap">
+              {currentSlide + 1}/{totalSlides}
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Main Content */}
+      {/* Scrollable Content */}
       <main className="max-w-4xl mx-auto px-6 py-10">
-        
-        {/* Lesson Title */}
-        <div className="text-center mb-10">
-          <span className="text-5xl mb-4 block">{currentSlideData?.emoji || lesson.emoji}</span>
-          <h2 className="text-3xl font-serif text-stone-800 mb-2">
-            {currentSlideData?.title || lesson.title}
-          </h2>
-          <div className="w-24 h-1 bg-amber-700 mx-auto"></div>
-        </div>
-
-        {/* Audio Controls - Top Position */}
-        <div className="flex items-center justify-center gap-6 mb-10">
-          <button
-            onClick={() => goToSlide(Math.max(0, currentSlide - 1))}
-            disabled={currentSlide === 0}
-            className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
-          >
-            ← Previous
-          </button>
-          
-          <button
-            onClick={togglePlay}
-            className="px-8 py-3 rounded-lg bg-amber-700 text-white font-semibold hover:bg-amber-800 transition shadow-md"
-          >
-            {isPlaying ? '⏸ Pause' : '▶ Play Lecture'}
-          </button>
-          
-          <button
-            onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
-            disabled={currentSlide === totalSlides - 1}
-            className="px-5 py-2 rounded border border-stone-300 text-stone-600 disabled:opacity-30 hover:bg-stone-100 transition font-medium"
-          >
-            Next →
-          </button>
-        </div>
 
         {/* Content Card */}
         <article className="bg-white rounded-lg shadow-lg border border-stone-200 p-8 md:p-12 mb-8">
@@ -348,31 +335,6 @@ export default function DynamicLessonPage() {
             Start Voice Quiz
           </button>
         </div>
-
-        {/* Slide Navigation */}
-        {totalSlides > 1 && (
-          <div className="bg-white rounded-lg shadow border border-stone-200 p-6">
-            <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-4">Lecture Sections</h3>
-            <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
-              {slides.map((slide, index) => (
-                <button
-                  key={slide.id}
-                  onClick={() => goToSlide(index)}
-                  className={`p-3 rounded text-sm font-medium transition ${
-                    index === currentSlide
-                      ? 'bg-amber-700 text-white'
-                      : index < currentSlide
-                      ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
-                      : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
-                  }`}
-                  title={slide.title}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </main>
 
       {/* Voice Quiz Modal */}
