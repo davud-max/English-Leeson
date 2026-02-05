@@ -336,7 +336,14 @@ export default function LessonEditorComplete() {
 
       const uploadData = await uploadRes.json()
       
-      // 3. Success
+      // 3. Success - update slide with GitHub raw URL
+      const githubRawUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${selectedLesson.order}/slide${slideIndex + 1}.mp3?t=${Date.now()}`
+      
+      // Update slide audioUrl
+      const updatedSlides = [...selectedLesson.slides]
+      updatedSlides[slideIndex] = { ...updatedSlides[slideIndex], audioUrl: githubRawUrl }
+      setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
+      
       progressCopy[slideIndex] = { 
         slideIndex, 
         status: 'success',
@@ -685,9 +692,9 @@ export default function LessonEditorComplete() {
                               </div>
                               <audio
                                 controls
-                                src={`/audio/lesson${selectedLesson.order}/slide${index + 1}.mp3`}
+                                key={slide.audioUrl || `slide-${index}`}
+                                src={slide.audioUrl || `/audio/lesson${selectedLesson.order}/slide${index + 1}.mp3`}
                                 className="w-full h-8 mt-3"
-                                onError={(e) => e.currentTarget.style.display = 'none'}
                               />
                             </div>
                           )
