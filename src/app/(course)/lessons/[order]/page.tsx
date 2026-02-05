@@ -381,14 +381,12 @@ export default function DynamicLessonPage() {
 
 
         {/* Voice Quiz Button */}
-        <div className="bg-gradient-to-r from-amber-600 to-amber-800 rounded-lg shadow-lg p-6 mb-10 text-center">
-          <h3 className="text-xl font-bold text-white mb-2">🎤 Ready to Test Your Knowledge?</h3>
-          <p className="text-amber-100 mb-4">Take a voice quiz with AI-generated questions based on this lecture</p>
+        <div className="text-center mb-10">
           <button
             onClick={() => setShowQuiz(true)}
-            className="px-8 py-3 bg-white text-amber-700 rounded-lg font-bold hover:bg-amber-50 transition shadow-md"
+            className="px-6 py-2 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-800 transition shadow"
           >
-            Start Voice Quiz
+            Start Voice Test
           </button>
         </div>
       </main>
