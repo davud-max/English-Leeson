@@ -21,15 +21,24 @@ interface Voice {
 
 const VOICES: Voice[] = [
   { id: 'kFVUJfjBCiv9orAbWhZN', name: 'Custom Voice', type: 'custom', description: '⭐ Recommended' },
-  { id: '8Hdxm8QJKOFknq47BhTz', name: 'dZulu', type: 'custom', description: 'Custom Voice 1' },
-  { id: 'ma4IY0Z4IUybdEpvYzBW', name: 'dZulu2', type: 'custom', description: 'Custom Voice 2' },
-  { id: 'erDx71FK2teMZ7g6khzw', name: 'New Voice', type: 'custom', description: 'Latest Custom' },
+  { id: '8Hdxm8QJKOFknq47BhTz', name: 'dZulu', type: 'custom', description: 'Custom 1' },
+  { id: 'ma4IY0Z4IUybdEpvYzBW', name: 'dZulu2', type: 'custom', description: 'Custom 2' },
+  { id: 'erDx71FK2teMZ7g6khzw', name: 'New Voice', type: 'custom', description: 'Latest' },
   { id: 'TxGEqnHWrfWFTfGW9XjX', name: 'Josh', type: 'builtin', description: 'Male, Young' },
   { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam', type: 'builtin', description: 'Male, Deep' },
   { id: 'ErXwobaYiN019PkySvjV', name: 'Antoni', type: 'builtin', description: 'Male, Soft' },
   { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Bella', type: 'builtin', description: 'Female, Soft' },
   { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel', type: 'builtin', description: 'Female, Calm' },
 ]
+
+interface Question {
+  id: string
+  question: string
+  options: string[]
+  correctAnswer: number
+  explanation?: string
+  audioUrl?: string
+}
 
 interface Lesson {
   id: string
@@ -50,19 +59,30 @@ interface AudioGenerationProgress {
   error?: string
 }
 
-export default function LessonEditorFixed() {
+export default function LessonEditorComplete() {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
+  const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState('')
-  const [activeTab, setActiveTab] = useState<'content' | 'slides' | 'audio'>('slides')
+  const [activeTab, setActiveTab] = useState<'content' | 'slides' | 'audio' | 'questions'>('slides')
   const [selectedVoice, setSelectedVoice] = useState('kFVUJfjBCiv9orAbWhZN')
   const [audioProgress, setAudioProgress] = useState<AudioGenerationProgress[]>([])
   const [isGeneratingAll, setIsGeneratingAll] = useState(false)
+  const [showTranslateModal, setShowTranslateModal] = useState(false)
+  const [russianText, setRussianText] = useState('')
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [adminKey, setAdminKey] = useState('')
 
   useEffect(() => {
     fetchLessons()
   }, [])
+
+  useEffect(() => {
+    if (selectedLesson) {
+      fetchQuestions(selectedLesson.order)
+    }
+  }, [selectedLesson])
 
   const fetchLessons = async () => {
     try {
@@ -74,9 +94,21 @@ export default function LessonEditorFixed() {
       }
     } catch (error) {
       console.error('Failed to fetch lessons:', error)
-      setSaveStatus('❌ Ошибка загрузки уроков')
+      setSaveStatus('❌ Ошибка загрузки')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchQuestions = async (lessonOrder: number) => {
+    try {
+      const res = await fetch(`/api/admin/questions?lesson=${lessonOrder}`)
+      if (res.ok) {
+        const data = await res.json()
+        setQuestions(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch questions:', error)
     }
   }
 
@@ -105,7 +137,7 @@ export default function LessonEditorFixed() {
         setTimeout(() => setSaveStatus(''), 2000)
       } else {
         const error = await res.json()
-        setSaveStatus(`❌ ${error.error || 'Ошибка сохранения'}`)
+        setSaveStatus(`❌ ${error.error || 'Ошибка'}`)
         setTimeout(() => setSaveStatus(''), 5000)
       }
     } catch (error) {
@@ -115,7 +147,7 @@ export default function LessonEditorFixed() {
   }
 
   const syncFromStaticFiles = async () => {
-    setSaveStatus('🔄 Синхронизация из статических файлов...')
+    setSaveStatus('🔄 Синхронизация...')
     
     try {
       const res = await fetch('/api/admin/sync-lesson-content', {
@@ -124,7 +156,7 @@ export default function LessonEditorFixed() {
       
       if (res.ok) {
         const data = await res.json()
-        setSaveStatus(`✅ Синхронизировано! ${JSON.stringify(data.updates)}`)
+        setSaveStatus(`✅ Синхронизировано! ${data.successCount} уроков`)
         fetchLessons()
         setTimeout(() => setSaveStatus(''), 5000)
       } else {
@@ -167,28 +199,99 @@ export default function LessonEditorFixed() {
     setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
   }
 
-  // Генерация аудио для одного слайда
+  const recreateSlides = () => {
+    if (!selectedLesson || !selectedLesson.content) {
+      setSaveStatus('❌ Нет контента')
+      return
+    }
+    
+    setSaveStatus('🔄 Разбиение...')
+    
+    const paragraphs = selectedLesson.content
+      .split(/\n\n+/)
+      .filter(p => p.trim().length > 0)
+    
+    const newSlides = paragraphs.map((content, index) => ({
+      id: index + 1,
+      title: `Part ${index + 1}`,
+      content: content.trim(),
+      emoji: '📖',
+      duration: 30000
+    }))
+    
+    setSelectedLesson({
+      ...selectedLesson,
+      slides: newSlides
+    })
+    
+    setSaveStatus(`✅ ${newSlides.length} слайдов`)
+    setTimeout(() => setSaveStatus(''), 3000)
+  }
+
+  // Questions functions
+  const addQuestion = () => {
+    const newQuestion: Question = {
+      id: `q${Date.now()}`,
+      question: '',
+      options: ['', '', '', ''],
+      correctAnswer: 0,
+      explanation: ''
+    }
+    setQuestions([...questions, newQuestion])
+  }
+
+  const updateQuestion = (index: number, field: keyof Question, value: any) => {
+    const updated = [...questions]
+    updated[index] = { ...updated[index], [field]: value }
+    setQuestions(updated)
+  }
+
+  const deleteQuestion = (index: number) => {
+    setQuestions(questions.filter((_, i) => i !== index))
+  }
+
+  const saveQuestions = async () => {
+    if (!selectedLesson) return
+    
+    setSaveStatus('💾 Сохранение вопросов...')
+    try {
+      const res = await fetch('/api/admin/questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lessonOrder: selectedLesson.order,
+          questions
+        }),
+      })
+      
+      if (res.ok) {
+        setSaveStatus('✅ Вопросы сохранены!')
+        setTimeout(() => setSaveStatus(''), 2000)
+      } else {
+        setSaveStatus('❌ Ошибка')
+      }
+    } catch (error) {
+      setSaveStatus('❌ Ошибка')
+    }
+  }
+
+  // Audio generation
   const generateAudio = async (slideIndex: number) => {
     if (!selectedLesson) return
     
     const slide = selectedLesson.slides[slideIndex]
     if (!slide.content) {
-      setSaveStatus('❌ Нет текста для генерации')
+      setSaveStatus('❌ Нет текста')
       return
     }
 
-    // Обновляем статус
     const progressCopy = [...audioProgress]
     progressCopy[slideIndex] = { slideIndex, status: 'generating' }
     setAudioProgress(progressCopy)
-    setSaveStatus(`🎵 Генерация аудио для слайда ${slideIndex + 1}...`)
+    setSaveStatus(`🎵 Генерация ${slideIndex + 1}...`)
 
     try {
-      // 1. Генерируем аудио
-      console.log(`Generating audio for lesson ${selectedLesson.order}, slide ${slideIndex + 1}`)
-      console.log(`Using voice: ${selectedVoice}`)
-      console.log(`Text length: ${slide.content.length}`)
-      
+      // 1. Generate audio
       const genRes = await fetch('/api/admin/generate-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -206,22 +309,21 @@ export default function LessonEditorFixed() {
       }
 
       const genData = await genRes.json()
-      console.log('Audio generated:', genData)
       
       if (!genData.success || !genData.audioBase64) {
-        throw new Error('No audio data received')
+        throw new Error('No audio data')
       }
 
-      // 2. Загружаем в GitHub
+      // 2. Upload to GitHub
       progressCopy[slideIndex] = { slideIndex, status: 'uploading' }
       setAudioProgress([...progressCopy])
-      setSaveStatus(`📤 Загрузка аудио для слайда ${slideIndex + 1} в GitHub...`)
+      setSaveStatus(`📤 Загрузка ${slideIndex + 1}...`)
 
       const uploadRes = await fetch('/api/admin/upload-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          lessonNumber: selectedLesson.order,  // ✅ ИСПРАВЛЕНО: используем lessonNumber
+          lessonNumber: selectedLesson.order,  // ✅ FIXED
           slideNumber: slideIndex + 1,
           audioBase64: genData.audioBase64,
         }),
@@ -233,20 +335,18 @@ export default function LessonEditorFixed() {
       }
 
       const uploadData = await uploadRes.json()
-      console.log('Audio uploaded:', uploadData)
       
-      // 3. Успех!
+      // 3. Success
       progressCopy[slideIndex] = { 
         slideIndex, 
         status: 'success',
       }
       setAudioProgress([...progressCopy])
 
-      setSaveStatus(`✅ Слайд ${slideIndex + 1} - готово! ${uploadData.url}`)
+      setSaveStatus(`✅ Слайд ${slideIndex + 1} готов!`)
       setTimeout(() => setSaveStatus(''), 3000)
 
     } catch (error) {
-      console.error(`Error generating audio for slide ${slideIndex + 1}:`, error)
       progressCopy[slideIndex] = { 
         slideIndex, 
         status: 'error',
@@ -254,17 +354,16 @@ export default function LessonEditorFixed() {
       }
       setAudioProgress([...progressCopy])
       
-      setSaveStatus(`❌ Слайд ${slideIndex + 1}: ${(error as Error).message}`)
+      setSaveStatus(`❌ ${slideIndex + 1}: ${(error as Error).message}`)
       setTimeout(() => setSaveStatus(''), 5000)
     }
   }
 
-  // Генерация аудио для всех слайдов
   const generateAllAudio = async () => {
     if (!selectedLesson || !selectedLesson.slides?.length) return
 
     setIsGeneratingAll(true)
-    setSaveStatus(`🎵 Генерация ${selectedLesson.slides.length} аудио файлов...`)
+    setSaveStatus(`🎵 Генерация ${selectedLesson.slides.length} файлов...`)
     
     const initialProgress = selectedLesson.slides.map((_, index) => ({
       slideIndex: index,
@@ -274,18 +373,74 @@ export default function LessonEditorFixed() {
 
     for (let i = 0; i < selectedLesson.slides.length; i++) {
       await generateAudio(i)
-      // Пауза между запросами (чтобы не перегрузить API)
       if (i < selectedLesson.slides.length - 1) {
         await new Promise(resolve => setTimeout(resolve, 2000))
       }
     }
 
     setIsGeneratingAll(false)
-    setSaveStatus('✅ Все аудио сгенерированы и загружены!')
+    setSaveStatus('✅ Все готово!')
     setTimeout(() => {
       setSaveStatus('')
       setAudioProgress([])
     }, 3000)
+  }
+
+  // Translate modal
+  const translateAndImport = async () => {
+    if (!russianText.trim() || !adminKey) {
+      setSaveStatus('❌ Введите текст и ключ')
+      return
+    }
+
+    setIsTranslating(true)
+    setSaveStatus('🌐 Перевод...')
+
+    try {
+      const response = await fetch('/api/admin/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: russianText,
+          type: 'content',
+          adminKey
+        }),
+      })
+
+      const data = await response.json()
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Translation failed')
+      }
+
+      const translatedText = data.result
+      const paragraphs = translatedText.split('\n\n').filter((p: string) => p.trim().length > 0)
+      
+      if (selectedLesson) {
+        const newSlides = paragraphs.map((content: string, index: number) => ({
+          id: index + 1,
+          title: `Part ${index + 1}`,
+          content: content.trim(),
+          emoji: '📖',
+          duration: 30000
+        }))
+
+        setSelectedLesson({
+          ...selectedLesson,
+          content: translatedText,
+          slides: newSlides
+        })
+
+        setSaveStatus('✅ Переведено!')
+        setShowTranslateModal(false)
+        setRussianText('')
+        setTimeout(() => setSaveStatus(''), 2000)
+      }
+    } catch (error) {
+      setSaveStatus(`❌ ${(error as Error).message}`)
+    } finally {
+      setIsTranslating(false)
+    }
   }
 
   if (loading) {
@@ -293,7 +448,7 @@ export default function LessonEditorFixed() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <div className="text-gray-600">Загрузка уроков...</div>
+          <div className="text-gray-600">Загрузка...</div>
         </div>
       </div>
     )
@@ -303,12 +458,12 @@ export default function LessonEditorFixed() {
     <div className="min-h-screen bg-gray-50">
       <div className="flex h-screen">
         {/* Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
+        <div className="w-64 bg-white border-r overflow-y-auto">
           <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-purple-600">
             <Link href="/admin" className="text-white hover:text-blue-100 text-sm flex items-center gap-2 mb-2">
-              ← Админ панель
+              ← Админ
             </Link>
-            <h2 className="text-lg font-bold text-white">📚 Редактор уроков</h2>
+            <h2 className="text-lg font-bold text-white">📚 Редактор</h2>
           </div>
           
           <div className="p-4 border-b bg-amber-50">
@@ -316,9 +471,8 @@ export default function LessonEditorFixed() {
               onClick={syncFromStaticFiles}
               className="w-full bg-amber-600 text-white px-3 py-2 rounded text-sm hover:bg-amber-700"
             >
-              🔄 Синхронизировать все
+              🔄 Синхронизировать
             </button>
-            <p className="text-xs text-gray-600 mt-2">Загрузить контент из статических файлов</p>
           </div>
           
           <div className="p-2">
@@ -326,7 +480,7 @@ export default function LessonEditorFixed() {
               <button
                 key={lesson.id}
                 onClick={() => setSelectedLesson(lesson)}
-                className={`w-full text-left p-3 rounded mb-1 transition-all ${
+                className={`w-full text-left p-3 rounded mb-1 ${
                   selectedLesson?.id === lesson.id 
                     ? 'bg-blue-50 border-l-4 border-blue-600' 
                     : 'hover:bg-gray-50'
@@ -344,7 +498,7 @@ export default function LessonEditorFixed() {
           </div>
         </div>
 
-        {/* Main Editor */}
+        {/* Main */}
         <div className="flex-1 overflow-y-auto">
           {selectedLesson ? (
             <div className="p-6">
@@ -368,11 +522,11 @@ export default function LessonEditorFixed() {
                 </div>
 
                 <div className="flex gap-3">
-                  <button
-                    onClick={saveLesson}
-                    className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-                  >
+                  <button onClick={saveLesson} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
                     💾 Сохранить
+                  </button>
+                  <button onClick={() => setShowTranslateModal(true)} className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">
+                    🌐 Перевод
                   </button>
                   {saveStatus && (
                     <div className="flex items-center px-4 py-2 bg-gray-100 rounded text-sm">
@@ -390,6 +544,7 @@ export default function LessonEditorFixed() {
                       { id: 'content', label: '📝 Контент' },
                       { id: 'slides', label: '📊 Слайды', count: selectedLesson.slides?.length || 0 },
                       { id: 'audio', label: '🎵 Аудио', count: selectedLesson.slides?.length || 0 },
+                      { id: 'questions', label: '❓ Вопросы', count: questions.length },
                     ].map((tab) => (
                       <button
                         key={tab.id}
@@ -397,7 +552,7 @@ export default function LessonEditorFixed() {
                         className={`py-4 px-1 border-b-2 font-medium text-sm ${
                           activeTab === tab.id
                             ? 'border-blue-500 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                            : 'border-transparent text-gray-500'
                         }`}
                       >
                         {tab.label}
@@ -412,10 +567,9 @@ export default function LessonEditorFixed() {
                 </div>
 
                 <div className="p-6">
-                  {/* Content Tab */}
+                  {/* Content */}
                   {activeTab === 'content' && (
                     <div>
-                      <label className="block text-sm font-medium mb-2">Полный контент (Markdown)</label>
                       <textarea
                         value={selectedLesson.content}
                         onChange={(e) => setSelectedLesson({ ...selectedLesson, content: e.target.value })}
@@ -424,33 +578,32 @@ export default function LessonEditorFixed() {
                     </div>
                   )}
 
-                  {/* Slides Tab */}
+                  {/* Slides */}
                   {activeTab === 'slides' && (
                     <div>
                       <div className="flex justify-between mb-4">
-                        <h3 className="text-lg font-medium">Слайды презентации</h3>
-                        <button
-                          onClick={addSlide}
-                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
-                        >
-                          + Добавить слайд
-                        </button>
+                        <h3 className="text-lg font-medium">Слайды</h3>
+                        <div className="flex gap-2">
+                          <button onClick={recreateSlides} className="bg-amber-600 text-white px-4 py-2 rounded text-sm">
+                            🔄 Разбить
+                          </button>
+                          <button onClick={addSlide} className="bg-blue-600 text-white px-4 py-2 rounded text-sm">
+                            + Слайд
+                          </button>
+                        </div>
                       </div>
 
                       <div className="space-y-4">
                         {(selectedLesson.slides || []).map((slide, index) => (
-                          <div key={slide.id} className="border rounded-lg p-4 bg-gray-50">
+                          <div key={slide.id} className="border rounded p-4 bg-gray-50">
                             <div className="flex justify-between mb-3">
                               <input
                                 type="text"
                                 value={slide.title}
                                 onChange={(e) => updateSlide(index, 'title', e.target.value)}
-                                className="font-medium border-b hover:border-gray-300 bg-transparent outline-none"
+                                className="font-medium border-b bg-transparent outline-none"
                               />
-                              <button
-                                onClick={() => deleteSlide(index)}
-                                className="text-red-600 hover:text-red-800 text-sm"
-                              >
+                              <button onClick={() => deleteSlide(index)} className="text-red-600 text-sm">
                                 🗑️
                               </button>
                             </div>
@@ -465,38 +618,34 @@ export default function LessonEditorFixed() {
                     </div>
                   )}
 
-                  {/* Audio Tab */}
+                  {/* Audio */}
                   {activeTab === 'audio' && (
                     <div>
-                      <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-medium">Генерация аудио</h3>
-                        <div className="flex items-center gap-3">
+                      <div className="flex justify-between mb-6">
+                        <h3 className="text-lg font-medium">Аудио</h3>
+                        <div className="flex gap-3">
                           <select
                             value={selectedVoice}
                             onChange={(e) => setSelectedVoice(e.target.value)}
                             className="border rounded px-3 py-2 text-sm"
                           >
-                            <optgroup label="Custom Voices">
-                              {VOICES.filter(v => v.type === 'custom').map(voice => (
-                                <option key={voice.id} value={voice.id}>
-                                  {voice.name} - {voice.description}
-                                </option>
+                            <optgroup label="Custom">
+                              {VOICES.filter(v => v.type === 'custom').map(v => (
+                                <option key={v.id} value={v.id}>{v.name} - {v.description}</option>
                               ))}
                             </optgroup>
-                            <optgroup label="Built-in Voices">
-                              {VOICES.filter(v => v.type === 'builtin').map(voice => (
-                                <option key={voice.id} value={voice.id}>
-                                  {voice.name} - {voice.description}
-                                </option>
+                            <optgroup label="Built-in">
+                              {VOICES.filter(v => v.type === 'builtin').map(v => (
+                                <option key={v.id} value={v.id}>{v.name} - {v.description}</option>
                               ))}
                             </optgroup>
                           </select>
                           <button
                             onClick={generateAllAudio}
                             disabled={isGeneratingAll}
-                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+                            className="bg-green-600 text-white px-4 py-2 rounded disabled:opacity-50"
                           >
-                            {isGeneratingAll ? '⏳ Генерация...' : '🎵 Генерировать все'}
+                            {isGeneratingAll ? '⏳ Генерация...' : '🎵 Все'}
                           </button>
                         </div>
                       </div>
@@ -513,15 +662,15 @@ export default function LessonEditorFixed() {
 
                           return (
                             <div key={slide.id} className="border rounded p-4 bg-gray-50">
-                              <div className="flex items-center justify-between">
+                              <div className="flex justify-between">
                                 <div>
-                                  <div className="font-medium">Слайд {index + 1}: {slide.title}</div>
+                                  <div className="font-medium">{index + 1}. {slide.title}</div>
                                   <div className="text-sm text-gray-600 line-clamp-2">{slide.content}</div>
                                   {progress && (
                                     <div className={`text-sm mt-2 ${statusColor}`}>
                                       {progress.status === 'generating' && '🎵 Генерация...'}
-                                      {progress.status === 'uploading' && '📤 Загрузка в GitHub...'}
-                                      {progress.status === 'success' && '✅ Готово!'}
+                                      {progress.status === 'uploading' && '📤 Загрузка...'}
+                                      {progress.status === 'success' && '✅ Готово'}
                                       {progress.status === 'error' && `❌ ${progress.error}`}
                                     </div>
                                   )}
@@ -529,15 +678,11 @@ export default function LessonEditorFixed() {
                                 <button
                                   onClick={() => generateAudio(index)}
                                   disabled={progress?.status === 'generating' || progress?.status === 'uploading'}
-                                  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm disabled:opacity-50"
+                                  className="bg-blue-600 text-white px-3 py-1 rounded text-sm disabled:opacity-50"
                                 >
-                                  {progress?.status === 'generating' || progress?.status === 'uploading' 
-                                    ? '⏳' 
-                                    : '🎵 Генерировать'}
+                                  {progress?.status === 'generating' || progress?.status === 'uploading' ? '⏳' : '🎵'}
                                 </button>
                               </div>
-                              
-                              {/* Preview audio if exists */}
                               <audio
                                 controls
                                 src={`/audio/lesson${selectedLesson.order}/slide${index + 1}.mp3`}
@@ -550,16 +695,141 @@ export default function LessonEditorFixed() {
                       </div>
                     </div>
                   )}
+
+                  {/* Questions */}
+                  {activeTab === 'questions' && (
+                    <div>
+                      <div className="flex justify-between mb-4">
+                        <h3 className="text-lg font-medium">Вопросы</h3>
+                        <div className="flex gap-2">
+                          <button onClick={addQuestion} className="bg-blue-600 text-white px-4 py-2 rounded text-sm">
+                            + Вопрос
+                          </button>
+                          <button onClick={saveQuestions} className="bg-green-600 text-white px-4 py-2 rounded text-sm">
+                            💾 Сохранить
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        {questions.map((q, qIndex) => (
+                          <div key={q.id} className="border rounded p-4 bg-gray-50">
+                            <div className="flex justify-between mb-3">
+                              <span className="font-medium">Вопрос {qIndex + 1}</span>
+                              <button onClick={() => deleteQuestion(qIndex)} className="text-red-600 text-sm">
+                                🗑️
+                              </button>
+                            </div>
+
+                            <input
+                              type="text"
+                              value={q.question}
+                              onChange={(e) => updateQuestion(qIndex, 'question', e.target.value)}
+                              className="w-full border rounded p-2 mb-3"
+                              placeholder="Текст вопроса"
+                            />
+
+                            <div className="space-y-2 mb-3">
+                              {q.options.map((option, oIndex) => (
+                                <div key={oIndex} className="flex gap-2">
+                                  <input
+                                    type="radio"
+                                    name={`correct-${q.id}`}
+                                    checked={q.correctAnswer === oIndex}
+                                    onChange={() => updateQuestion(qIndex, 'correctAnswer', oIndex)}
+                                  />
+                                  <input
+                                    type="text"
+                                    value={option}
+                                    onChange={(e) => {
+                                      const newOptions = [...q.options]
+                                      newOptions[oIndex] = e.target.value
+                                      updateQuestion(qIndex, 'options', newOptions)
+                                    }}
+                                    className="flex-1 border rounded p-2"
+                                    placeholder={`Вариант ${oIndex + 1}`}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+
+                            <textarea
+                              value={q.explanation || ''}
+                              onChange={(e) => updateQuestion(qIndex, 'explanation', e.target.value)}
+                              className="w-full border rounded p-2 text-sm"
+                              rows={2}
+                              placeholder="Объяснение (опционально)"
+                            />
+                          </div>
+                        ))}
+
+                        {questions.length === 0 && (
+                          <div className="text-center text-gray-500 py-8">
+                            Нет вопросов. Нажмите "+ Вопрос"
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500">
-              Выберите урок из списка
+              Выберите урок
             </div>
           )}
         </div>
       </div>
+
+      {/* Translate Modal */}
+      {showTranslateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full mx-4">
+            <h3 className="text-xl font-bold mb-4">🌐 Перевод с русского</h3>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Admin Key</label>
+              <input
+                type="password"
+                value={adminKey}
+                onChange={(e) => setAdminKey(e.target.value)}
+                className="w-full border rounded px-3 py-2"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Русский текст</label>
+              <textarea
+                value={russianText}
+                onChange={(e) => setRussianText(e.target.value)}
+                className="w-full h-64 border rounded p-3 font-mono text-sm"
+                placeholder="Вставьте русский текст..."
+              />
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowTranslateModal(false)
+                  setRussianText('')
+                }}
+                disabled={isTranslating}
+                className="px-4 py-2 border rounded disabled:opacity-50"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={translateAndImport}
+                disabled={isTranslating || !russianText.trim() || !adminKey}
+                className="bg-purple-600 text-white px-6 py-2 rounded disabled:opacity-50"
+              >
+                {isTranslating ? '⏳ Перевод...' : '🌐 Перевести'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
