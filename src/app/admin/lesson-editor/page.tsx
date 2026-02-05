@@ -31,13 +31,22 @@ const VOICES: Voice[] = [
   { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel', type: 'builtin', description: 'Female, Calm' },
 ]
 
-interface Question {
-  id: string
+interface GeneratedQuestion {
+  id: number
   question: string
-  options: string[]
-  correctAnswer: number
-  explanation?: string
+  correct_answer: string
+  difficulty: string
+  points: number
+}
+
+interface QuizAudioResult {
+  question: number
+  filename: string
+  success: boolean
+  size?: number
+  audioBase64?: string
   audioUrl?: string
+  error?: string
 }
 
 interface Lesson {
@@ -62,10 +71,9 @@ interface AudioGenerationProgress {
 export default function LessonEditorComplete() {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
-  const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState('')
-  const [activeTab, setActiveTab] = useState<'content' | 'slides' | 'audio' | 'questions'>('slides')
+  const [activeTab, setActiveTab] = useState<'content' | 'slides' | 'audio' | 'quiz'>('slides')
   const [selectedVoice, setSelectedVoice] = useState('kFVUJfjBCiv9orAbWhZN')
   const [audioProgress, setAudioProgress] = useState<AudioGenerationProgress[]>([])
   const [isGeneratingAll, setIsGeneratingAll] = useState(false)
@@ -73,6 +81,17 @@ export default function LessonEditorComplete() {
   const [russianText, setRussianText] = useState('')
   const [isTranslating, setIsTranslating] = useState(false)
   const [adminKey, setAdminKey] = useState('')
+  
+  // Quiz Generator states
+  const [quizCount, setQuizCount] = useState(5)
+  const [quizDifficulty, setQuizDifficulty] = useState('mixed')
+  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false)
+  const [generatedQuestions, setGeneratedQuestions] = useState<GeneratedQuestion[]>([])
+  const [quizMessage, setQuizMessage] = useState('')
+  const [isGeneratingQuizAudio, setIsGeneratingQuizAudio] = useState(false)
+  const [quizAudioResults, setQuizAudioResults] = useState<QuizAudioResult[]>([])
+  const [isSavingQuizAudio, setIsSavingQuizAudio] = useState(false)
+  const [quizSaveProgress, setQuizSaveProgress] = useState({ current: 0, total: 0 })
 
   useEffect(() => {
     fetchLessons()
@@ -80,7 +99,10 @@ export default function LessonEditorComplete() {
 
   useEffect(() => {
     if (selectedLesson) {
-      fetchQuestions(selectedLesson.order)
+      // Reset quiz state when lesson changes
+      setGeneratedQuestions([])
+      setQuizAudioResults([])
+      setQuizMessage('')
     }
   }, [selectedLesson])
 
@@ -100,17 +122,7 @@ export default function LessonEditorComplete() {
     }
   }
 
-  const fetchQuestions = async (lessonOrder: number) => {
-    try {
-      const res = await fetch(`/api/admin/questions?lesson=${lessonOrder}`)
-      if (res.ok) {
-        const data = await res.json()
-        setQuestions(data)
-      }
-    } catch (error) {
-      console.error('Failed to fetch questions:', error)
-    }
-  }
+
 
   const saveLesson = async () => {
     if (!selectedLesson) return
@@ -228,50 +240,151 @@ export default function LessonEditorComplete() {
     setTimeout(() => setSaveStatus(''), 3000)
   }
 
-  // Questions functions
-  const addQuestion = () => {
-    const newQuestion: Question = {
-      id: `q${Date.now()}`,
-      question: '',
-      options: ['', '', '', ''],
-      correctAnswer: 0,
-      explanation: ''
+  // Quiz Generator functions
+  const generateQuizQuestions = async () => {
+    if (!selectedLesson || !adminKey) {
+      setQuizMessage('❌ Enter admin key')
+      return
     }
-    setQuestions([...questions, newQuestion])
-  }
 
-  const updateQuestion = (index: number, field: keyof Question, value: any) => {
-    const updated = [...questions]
-    updated[index] = { ...updated[index], [field]: value }
-    setQuestions(updated)
-  }
+    const content = selectedLesson.content || selectedLesson.slides?.map(s => s.content).join('\n\n')
+    if (!content) {
+      setQuizMessage('❌ No lesson content')
+      return
+    }
 
-  const deleteQuestion = (index: number) => {
-    setQuestions(questions.filter((_, i) => i !== index))
-  }
+    setIsGeneratingQuiz(true)
+    setQuizMessage('🔄 Generating with Claude AI...')
+    setGeneratedQuestions([])
+    setQuizAudioResults([])
 
-  const saveQuestions = async () => {
-    if (!selectedLesson) return
-    
-    setSaveStatus('💾 Сохранение вопросов...')
     try {
-      const res = await fetch('/api/admin/questions', {
+      const response = await fetch('/api/admin/generate-questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          lessonOrder: selectedLesson.order,
-          questions
+          lessonId: selectedLesson.order,
+          lessonTitle: selectedLesson.title,
+          lessonContent: content,
+          count: quizCount,
+          difficulty: quizDifficulty,
+          adminKey,
         }),
       })
+
+      const data = await response.json()
       
-      if (res.ok) {
-        setSaveStatus('✅ Вопросы сохранены!')
-        setTimeout(() => setSaveStatus(''), 2000)
+      if (data.success) {
+        setGeneratedQuestions(data.questions)
+        setQuizMessage(`✅ Generated ${data.questions.length} questions` + (data.savedToGitHub ? ' (saved to GitHub)' : ''))
       } else {
-        setSaveStatus('❌ Ошибка')
+        setQuizMessage('❌ ' + (data.error || 'Failed to generate'))
       }
     } catch (error) {
-      setSaveStatus('❌ Ошибка')
+      setQuizMessage('❌ ' + (error as Error).message)
+    } finally {
+      setIsGeneratingQuiz(false)
+    }
+  }
+
+  const generateQuizAudio = async () => {
+    if (!selectedLesson || !adminKey || generatedQuestions.length === 0) {
+      setQuizMessage('❌ Generate questions first')
+      return
+    }
+
+    setIsGeneratingQuizAudio(true)
+    setQuizAudioResults([])
+    setQuizMessage('🎤 Generating audio...')
+
+    try {
+      const response = await fetch('/api/admin/generate-question-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lessonId: selectedLesson.order,
+          questions: generatedQuestions,
+          adminKey,
+        }),
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        setQuizAudioResults(data.results || [])
+        const successCount = data.results?.filter((r: QuizAudioResult) => r.success).length || 0
+        setQuizMessage(`✅ Generated ${successCount} audio files`)
+      } else {
+        setQuizMessage('❌ ' + (data.error || 'Audio generation failed'))
+      }
+    } catch (error) {
+      setQuizMessage('❌ ' + (error as Error).message)
+    } finally {
+      setIsGeneratingQuizAudio(false)
+    }
+  }
+
+  const saveQuizAudioToRepo = async () => {
+    if (!selectedLesson || !adminKey) return
+
+    const successfulAudios = quizAudioResults.filter(r => r.success && r.audioBase64)
+    if (successfulAudios.length === 0) {
+      setQuizMessage('❌ No audio to save')
+      return
+    }
+
+    setIsSavingQuizAudio(true)
+    setQuizSaveProgress({ current: 0, total: successfulAudios.length + 1 })
+    setQuizMessage('💾 Saving to GitHub...')
+
+    try {
+      // Clear old files
+      await fetch('/api/admin/clear-question-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lessonNumber: selectedLesson.order, adminKey }),
+      })
+
+      // Upload new files
+      let uploadedCount = 0
+      for (let i = 0; i < successfulAudios.length; i++) {
+        const audio = successfulAudios[i]
+        setQuizSaveProgress({ current: i + 1, total: successfulAudios.length })
+
+        try {
+          const uploadRes = await fetch('/api/admin/upload-question-audio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              lessonNumber: selectedLesson.order,
+              questionNumber: audio.question,
+              audioBase64: audio.audioBase64,
+              adminKey,
+            }),
+          })
+
+          if (uploadRes.ok) uploadedCount++
+          await new Promise(resolve => setTimeout(resolve, 300))
+        } catch (e) {
+          console.error(`Error uploading question ${audio.question}:`, e)
+        }
+      }
+
+      // Trigger deploy
+      try {
+        await fetch('/api/admin/trigger-deploy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminKey }),
+        })
+        setQuizMessage(`✅ Saved ${uploadedCount} files! Deploy started.`)
+      } catch {
+        setQuizMessage(`✅ Saved ${uploadedCount} files!`)
+      }
+    } catch (error) {
+      setQuizMessage('❌ ' + (error as Error).message)
+    } finally {
+      setIsSavingQuizAudio(false)
     }
   }
 
@@ -551,7 +664,7 @@ export default function LessonEditorComplete() {
                       { id: 'content', label: '📝 Контент' },
                       { id: 'slides', label: '📊 Слайды', count: selectedLesson.slides?.length || 0 },
                       { id: 'audio', label: '🎵 Аудио', count: selectedLesson.slides?.length || 0 },
-                      { id: 'questions', label: '❓ Вопросы', count: questions.length },
+                      { id: 'quiz', label: '🎯 Quiz Generator', count: generatedQuestions.length },
                     ].map((tab) => (
                       <button
                         key={tab.id}
@@ -703,79 +816,119 @@ export default function LessonEditorComplete() {
                     </div>
                   )}
 
-                  {/* Questions */}
-                  {activeTab === 'questions' && (
-                    <div>
-                      <div className="flex justify-between mb-4">
-                        <h3 className="text-lg font-medium">Вопросы</h3>
-                        <div className="flex gap-2">
-                          <button onClick={addQuestion} className="bg-blue-600 text-white px-4 py-2 rounded text-sm">
-                            + Вопрос
-                          </button>
-                          <button onClick={saveQuestions} className="bg-green-600 text-white px-4 py-2 rounded text-sm">
-                            💾 Сохранить
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="space-y-6">
-                        {questions.map((q, qIndex) => (
-                          <div key={q.id} className="border rounded p-4 bg-gray-50">
-                            <div className="flex justify-between mb-3">
-                              <span className="font-medium">Вопрос {qIndex + 1}</span>
-                              <button onClick={() => deleteQuestion(qIndex)} className="text-red-600 text-sm">
-                                🗑️
-                              </button>
-                            </div>
-
+                  {/* Quiz Generator */}
+                  {activeTab === 'quiz' && (
+                    <div className="space-y-6">
+                      {/* Settings */}
+                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
+                        <h3 className="text-lg font-bold mb-4">🎯 Quiz Questions Generator</h3>
+                        
+                        <div className="grid grid-cols-3 gap-4 mb-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Admin Key</label>
                             <input
-                              type="text"
-                              value={q.question}
-                              onChange={(e) => updateQuestion(qIndex, 'question', e.target.value)}
-                              className="w-full border rounded p-2 mb-3"
-                              placeholder="Текст вопроса"
+                              type="password"
+                              value={adminKey}
+                              onChange={(e) => setAdminKey(e.target.value)}
+                              className="w-full border rounded px-3 py-2 text-sm"
+                              placeholder="Enter key..."
                             />
-
-                            <div className="space-y-2 mb-3">
-                              {q.options.map((option, oIndex) => (
-                                <div key={oIndex} className="flex gap-2">
-                                  <input
-                                    type="radio"
-                                    name={`correct-${q.id}`}
-                                    checked={q.correctAnswer === oIndex}
-                                    onChange={() => updateQuestion(qIndex, 'correctAnswer', oIndex)}
-                                  />
-                                  <input
-                                    type="text"
-                                    value={option}
-                                    onChange={(e) => {
-                                      const newOptions = [...q.options]
-                                      newOptions[oIndex] = e.target.value
-                                      updateQuestion(qIndex, 'options', newOptions)
-                                    }}
-                                    className="flex-1 border rounded p-2"
-                                    placeholder={`Вариант ${oIndex + 1}`}
-                                  />
-                                </div>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Questions</label>
+                            <select
+                              value={quizCount}
+                              onChange={(e) => setQuizCount(Number(e.target.value))}
+                              className="w-full border rounded px-3 py-2 text-sm"
+                            >
+                              {[3, 5, 7, 10].map(n => (
+                                <option key={n} value={n}>{n} questions</option>
                               ))}
-                            </div>
-
-                            <textarea
-                              value={q.explanation || ''}
-                              onChange={(e) => updateQuestion(qIndex, 'explanation', e.target.value)}
-                              className="w-full border rounded p-2 text-sm"
-                              rows={2}
-                              placeholder="Объяснение (опционально)"
-                            />
+                            </select>
                           </div>
-                        ))}
-
-                        {questions.length === 0 && (
-                          <div className="text-center text-gray-500 py-8">
-                            Нет вопросов. Нажмите «+ Вопрос»
+                          <div>
+                            <label className="block text-sm font-medium mb-1">Difficulty</label>
+                            <select
+                              value={quizDifficulty}
+                              onChange={(e) => setQuizDifficulty(e.target.value)}
+                              className="w-full border rounded px-3 py-2 text-sm"
+                            >
+                              <option value="mixed">Mixed</option>
+                              <option value="easy">Easy Only</option>
+                              <option value="hard">Hard Only</option>
+                            </select>
                           </div>
+                        </div>
+
+                        <button
+                          onClick={generateQuizQuestions}
+                          disabled={isGeneratingQuiz || !adminKey}
+                          className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition disabled:opacity-50"
+                        >
+                          {isGeneratingQuiz ? '🔄 Generating with Claude AI...' : '✨ Generate Questions'}
+                        </button>
+
+                        {quizMessage && (
+                          <p className={`mt-3 text-center text-sm ${quizMessage.startsWith('✅') ? 'text-green-600' : quizMessage.startsWith('❌') ? 'text-red-600' : 'text-blue-600'}`}>
+                            {quizMessage}
+                          </p>
                         )}
                       </div>
+
+                      {/* Generated Questions */}
+                      {generatedQuestions.length > 0 && (
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-gray-700">Generated Questions:</h4>
+                          {generatedQuestions.map((q, i) => (
+                            <div key={i} className="border rounded-lg p-4 bg-white shadow-sm">
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <p className="font-medium">Q{i + 1}: {q.question}</p>
+                                  <p className="text-sm text-gray-600 mt-1">✅ {q.correct_answer}</p>
+                                </div>
+                                <span className={`text-xs px-2 py-1 rounded ${q.difficulty === 'hard' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                  {q.difficulty === 'hard' ? '🔥 Hard' : '📗 Easy'} • {q.points}pts
+                                </span>
+                              </div>
+                              {quizAudioResults[i]?.success && quizAudioResults[i]?.audioUrl && (
+                                <audio src={quizAudioResults[i].audioUrl} controls className="w-full h-8 mt-2" />
+                              )}
+                            </div>
+                          ))}
+
+                          {/* Audio Generation */}
+                          <div className="border-t pt-4 space-y-3">
+                            <button
+                              onClick={generateQuizAudio}
+                              disabled={isGeneratingQuizAudio}
+                              className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg font-bold transition disabled:opacity-50"
+                            >
+                              {isGeneratingQuizAudio ? '⏳ Generating Audio...' : '🎤 Generate Audio for Questions'}
+                            </button>
+
+                            {quizAudioResults.filter(r => r.success).length > 0 && (
+                              <button
+                                onClick={saveQuizAudioToRepo}
+                                disabled={isSavingQuizAudio}
+                                className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-bold transition disabled:opacity-50"
+                              >
+                                {isSavingQuizAudio 
+                                  ? `⏳ Saving... ${quizSaveProgress.current}/${quizSaveProgress.total}` 
+                                  : `💾 Save to GitHub (${quizAudioResults.filter(r => r.success).length} files)`
+                                }
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {generatedQuestions.length === 0 && !isGeneratingQuiz && (
+                        <div className="text-center text-gray-500 py-12 bg-gray-50 rounded-lg">
+                          <div className="text-4xl mb-3">🧠</div>
+                          <p>Questions will be auto-generated from lesson content</p>
+                          <p className="text-sm mt-1">Enter admin key and click Generate</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
