@@ -177,7 +177,14 @@ export default function DynamicLessonPage() {
     }
     
     // Запускаем воспроизведение
-    audio.play().catch(console.error)
+    audio.play().catch((err) => {
+      console.error('Audio play error:', err)
+      if (err.name === 'NotSupportedError' || err.name === 'NotAllowedError') {
+        // Safari блокирует автовоспроизведение
+        setIsPlaying(false)
+        alert('Please click Play button to start audio')
+      }
+    })
   }, [lessonOrder, slides.length])
 
   const togglePlay = () => {
