@@ -195,10 +195,57 @@ export default function DynamicLessonPage() {
       }
       setIsPlaying(false)
     } else {
-      // Запуск
+      // Запуск - создаём и запускаем аудио синхронно в обработчике клика
       setIsPlaying(true)
       setProgress(0)
-      playSlide(currentSlide)
+      
+      // Останавливаем предыдущее аудио
+      if (audioRef.current) {
+        audioRef.current.pause()
+        audioRef.current = null
+      }
+      
+      // Создаём аудио синхронно в обработчике клика (важно для Safari)
+      const audio = new Audio(`/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`)
+      audioRef.current = audio
+      
+      audio.ontimeupdate = () => {
+        if (audio.duration) {
+          setProgress((audio.currentTime / audio.duration) * 100)
+        }
+      }
+      
+      audio.onended = () => {
+        if (currentSlide < totalSlides - 1) {
+          const nextSlide = currentSlide + 1
+          setCurrentSlide(nextSlide)
+          setProgress(0)
+          playSlide(nextSlide)
+        } else {
+          setIsPlaying(false)
+          setProgress(100)
+        }
+      }
+      
+      audio.onerror = () => {
+        console.error(`Error loading slide ${currentSlide + 1}`)
+        // Переходим к следующему слайду
+        if (currentSlide < totalSlides - 1) {
+          const nextSlide = currentSlide + 1
+          setCurrentSlide(nextSlide)
+          setProgress(0)
+          playSlide(nextSlide)
+        } else {
+          setIsPlaying(false)
+        }
+      }
+      
+      // Запускаем немедленно - это важно для Safari
+      audio.play().catch((err) => {
+        console.error('Play failed:', err)
+        setIsPlaying(false)
+        alert('Audio playback failed. Please try again.')
+      })
     }
   }
 
