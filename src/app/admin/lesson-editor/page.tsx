@@ -149,8 +149,46 @@ export default function LessonEditor() {
 
   const deleteSlide = (index: number) => {
     if (!selectedLesson) return
-    const updatedSlides = selectedLesson.slides.filter((_, i) => i !== index)
+    const updatedSlides = [...(selectedLesson.slides || [])]
+    updatedSlides.splice(index, 1)
+    // Renumber slide IDs
+    updatedSlides.forEach((slide, i) => {
+      slide.id = i + 1
+      if (!slide.title || slide.title.startsWith('Part ')) {
+        slide.title = `Part ${i + 1}`
+      }
+    })
     setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
+  }
+
+  const recreateSlides = () => {
+    if (!selectedLesson || !selectedLesson.content) {
+      setSaveStatus('❌ Нет контента для разбиения')
+      return
+    }
+    
+    setSaveStatus('Разбиение на слайды...')
+    
+    // Split by paragraphs (double newline)
+    const paragraphs = selectedLesson.content
+      .split(/\n\n+/)
+      .filter(p => p.trim().length > 0)
+    
+    const newSlides = paragraphs.map((content, index) => ({
+      id: index + 1,
+      title: `Part ${index + 1}`,
+      content: content.trim(),
+      emoji: '📖',
+      duration: 30000
+    }))
+    
+    setSelectedLesson({
+      ...selectedLesson,
+      slides: newSlides
+    })
+    
+    setSaveStatus(`✅ Создано ${newSlides.length} слайдов`)
+    setTimeout(() => setSaveStatus(''), 3000)
   }
 
   const addQuestion = () => {
@@ -543,12 +581,20 @@ export default function LessonEditor() {
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-medium">Слайды презентации</h3>
-                        <button
-                          onClick={addSlide}
-                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
-                        >
-                          + Добавить слайд
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={recreateSlides}
+                            className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 text-sm"
+                          >
+                            🔄 Разбить на слайды
+                          </button>
+                          <button
+                            onClick={addSlide}
+                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+                          >
+                            + Добавить слайд
+                          </button>
+                        </div>
                       </div>
 
                       <div className="space-y-4">
