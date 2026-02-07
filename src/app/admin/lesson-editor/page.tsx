@@ -604,14 +604,17 @@ export default function LessonEditorComplete() {
                   selectedLesson?.id === lesson.id 
                     ? 'bg-blue-50 border-l-4 border-blue-600' 
                     : 'hover:bg-gray-50'
-                }`}
+                } ${!lesson.published ? 'opacity-60' : ''}`}
               >
                 <div className="font-medium text-sm flex items-center gap-2">
                   <span>{lesson.emoji || '📖'}</span>
                   <span>{lesson.order}. {lesson.title}</span>
+                  <span className={`ml-auto text-xs px-1.5 py-0.5 rounded ${lesson.published ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {lesson.published ? '✅' : '🚫'}
+                  </span>
                 </div>
                 <div className="text-xs text-gray-500 mt-1">
-                  {lesson.slides?.length || 0} слайдов
+                  {lesson.slides?.length || 0} слайдов • {lesson.published ? 'Published' : 'Draft'}
                 </div>
               </button>
             ))}
@@ -641,7 +644,22 @@ export default function LessonEditorComplete() {
                   </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-3 items-center">
+                  {/* Published Toggle */}
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedLesson.published}
+                      onChange={(e) => setSelectedLesson({ ...selectedLesson, published: e.target.checked })}
+                      className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    />
+                    <span className={`text-sm font-medium ${selectedLesson.published ? 'text-green-600' : 'text-red-600'}`}>
+                      {selectedLesson.published ? '✅ Published' : '🚫 Draft'}
+                    </span>
+                  </label>
+                  
+                  <div className="border-l h-8 mx-2"></div>
+                  
                   <button onClick={saveLesson} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
                     💾 Сохранить
                   </button>
