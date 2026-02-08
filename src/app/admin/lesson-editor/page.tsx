@@ -74,7 +74,7 @@ export default function LessonEditorComplete() {
   const [loading, setLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState('')
   const [activeTab, setActiveTab] = useState<'content' | 'slides' | 'audio' | 'quiz'>('slides')
-  const [selectedVoice, setSelectedVoice] = useState('kFVUJfjBCiv9orAbWhZN')
+  const [selectedVoice, setSelectedVoice] = useState('erDx71FK2teMZ7g6khzw')
   const [audioProgress, setAudioProgress] = useState<AudioGenerationProgress[]>([])
   const [isGeneratingAll, setIsGeneratingAll] = useState(false)
   const [showTranslateModal, setShowTranslateModal] = useState(false)
