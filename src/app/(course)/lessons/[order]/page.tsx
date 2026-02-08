@@ -189,65 +189,69 @@ export default function DynamicLessonPage() {
 
   const togglePlay = () => {
     if (isPlaying) {
-      // Пауза
+      // Пауза - просто останавливаем, НЕ удаляем аудио объект
       if (audioRef.current) {
         audioRef.current.pause()
       }
       setIsPlaying(false)
     } else {
-      // Запуск - создаём и запускаем аудио синхронно в обработчике клика
+      // Воспроизведение
       setIsPlaying(true)
-      setProgress(0)
       
-      // Останавливаем предыдущее аудио
+      // Если аудио уже существует - просто продолжаем воспроизведение
       if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current = null
-      }
-      
-      // Создаём аудио синхронно в обработчике клика (важно для Safari)
-      const audioPath = `/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`
-      console.log('Loading audio:', audioPath)
-      const audio = new Audio(audioPath)
-      audioRef.current = audio
-      
-      audio.ontimeupdate = () => {
-        if (audio.duration) {
-          setProgress((audio.currentTime / audio.duration) * 100)
-        }
-      }
-      
-      audio.onended = () => {
-        if (currentSlide < totalSlides - 1) {
-          const nextSlide = currentSlide + 1
-          setCurrentSlide(nextSlide)
-          setProgress(0)
-          playSlide(nextSlide)
-        } else {
+        audioRef.current.play().catch((err) => {
+          console.error('Play failed:', err)
           setIsPlaying(false)
-          setProgress(100)
+          alert('Audio playback failed. Please try again.')
+        })
+      } else {
+        // Создаём новый аудио объект только если его нет
+        setProgress(0)
+        
+        const audioPath = `/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`
+        console.log('Loading audio:', audioPath)
+        const audio = new Audio(audioPath)
+        audioRef.current = audio
+        
+        audio.ontimeupdate = () => {
+          if (audio.duration) {
+            setProgress((audio.currentTime / audio.duration) * 100)
+          }
         }
-      }
-      
-      audio.onerror = () => {
-        console.error(`Error loading slide ${currentSlide + 1}`)
-        // Переходим к следующему слайду
-        if (currentSlide < totalSlides - 1) {
-          const nextSlide = currentSlide + 1
-          setCurrentSlide(nextSlide)
-          setProgress(0)
-          playSlide(nextSlide)
-        } else {
+        
+        audio.onended = () => {
+          if (currentSlide < totalSlides - 1) {
+            const nextSlide = currentSlide + 1
+            setCurrentSlide(nextSlide)
+            setProgress(0)
+            playSlide(nextSlide)
+          } else {
+            setIsPlaying(false)
+            setProgress(100)
+          }
+        }
+        
+        audio.onerror = () => {
+          console.error(`Error loading slide ${currentSlide + 1}`)
+          // Переходим к следующему слайду
+          if (currentSlide < totalSlides - 1) {
+            const nextSlide = currentSlide + 1
+            setCurrentSlide(nextSlide)
+            setProgress(0)
+            playSlide(nextSlide)
+          } else {
+            setIsPlaying(false)
+          }
+        }
+        
+        // Запускаем немедленно - это важно для Safari
+        audio.play().catch((err) => {
+          console.error('Play failed:', err)
           setIsPlaying(false)
-        }
+          alert('Audio playback failed. Please try again.')
+        })
       }
-      
-      // Запускаем немедленно - это важно для Safari
-      audio.play().catch((err) => {
-        console.error('Play failed:', err)
-        setIsPlaying(false)
-        alert('Audio playback failed. Please try again.')
-      })
     }
   }
 
