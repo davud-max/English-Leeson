@@ -455,7 +455,7 @@ export default function LessonEditorComplete() {
       // Update slide audioUrl
       const updatedSlides = [...selectedLesson.slides]
       updatedSlides[slideIndex] = { ...updatedSlides[slideIndex], audioUrl: githubRawUrl }
-      setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
+      // setSelectedLesson({ ...selectedLesson, slides: updatedSlides }) //временно не обновляем состояние при массовой генерации
       
       progressCopy[slideIndex] = { 
         slideIndex, 
@@ -491,9 +491,16 @@ export default function LessonEditorComplete() {
     }))
     setAudioProgress(initialProgress)
 
+    // Создаем копию слайдов для обновления после завершения генерации
+    const updatedSlides = [...selectedLesson.slides];
+
     for (let i = 0; i < selectedLesson.slides.length; i++) {
       try {
-        await generateAudio(i)
+        // Обновляем аудио URL напрямую в копии слайдов
+        const githubRawUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${selectedLesson.order}/slide${i + 1}.mp3?t=${Date.now()}`;
+        updatedSlides[i] = { ...updatedSlides[i], audioUrl: githubRawUrl };
+        
+        await generateAudio(i);
       } catch (error) {
         console.error(`Error generating audio for slide ${i + 1}:`, error)
         
@@ -513,6 +520,9 @@ export default function LessonEditorComplete() {
         await new Promise(resolve => setTimeout(resolve, 2000))
       }
     }
+    
+    // После завершения всех генераций обновляем состояние урока
+    setSelectedLesson({ ...selectedLesson, slides: updatedSlides });
 
     setIsGeneratingAll(false)
     setSaveStatus('✅ Все готово!')
