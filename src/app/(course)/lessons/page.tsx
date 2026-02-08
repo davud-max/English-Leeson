@@ -41,18 +41,18 @@ export default function LessonsPage() {
   const progressPercent = stats.total > 0 ? Math.round((stats.available / stats.total) * 100) : 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-stone-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-2xl">
+      <header className="bg-white border-b-4 border-amber-700 shadow-md">
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-4xl font-bold mb-2">📚 Course Lessons</h1>
-              <p className="text-blue-100">Algorithms of Thinking and Cognition</p>
+              <h1 className="text-4xl font-bold mb-2 text-stone-800">Course Lessons</h1>
+              <p className="text-stone-600">Algorithms of Thinking and Cognition</p>
             </div>
             <Link 
               href="/" 
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105"
+              className="text-stone-600 hover:text-stone-800 transition"
             >
               ← Back to Home
             </Link>
@@ -62,29 +62,14 @@ export default function LessonsPage() {
 
       {/* Progress Overview */}
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Your Progress</h2>
-              <p className="text-gray-600">
-                {stats.available} of {stats.total} lessons available • Complete all lessons to earn your certificate
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">{stats.available}</div>
-                <div className="text-sm text-gray-500">Available</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-400">{stats.total - stats.available}</div>
-                <div className="text-sm text-gray-500">Locked</div>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4">
-            <div className="w-full bg-gray-200 rounded-full h-3">
+        <div className="bg-amber-50 border border-amber-200 p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <p className="text-stone-700">
+              {stats.available} of {stats.total} lessons available
+            </p>
+            <div className="w-48 bg-stone-200 h-2">
               <div 
-                className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500" 
+                className="bg-amber-700 h-2 transition-all" 
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -94,53 +79,36 @@ export default function LessonsPage() {
         {/* Loading State */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-700"></div>
           </div>
         ) : (
           /* Lessons Grid */
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {lessons.map((lesson) => (
-              <div 
+              <Link 
                 key={lesson.id}
-                className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 ${
+                href={lesson.available ? `/lessons/${lesson.order}` : '#'}
+                className={`block bg-white border-2 border-stone-200 p-6 transition-all ${
                   lesson.available 
-                    ? 'hover:shadow-2xl hover:-translate-y-1 cursor-pointer' 
-                    : 'opacity-60'
+                    ? 'hover:border-amber-700 hover:shadow-md' 
+                    : 'opacity-50 cursor-not-allowed'
                 }`}
               >
-                {/* Card Header */}
-                <div className={`bg-gradient-to-r ${lesson.color || 'from-blue-500 to-indigo-600'} p-4 text-white`}>
-                  <div className="flex items-center justify-between">
-                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                      Lesson {lesson.order}
-                    </span>
-                    <span className="text-sm">⏱️ {lesson.duration} min</span>
-                  </div>
-                  <div className="text-4xl mt-2">{lesson.emoji || '📖'}</div>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-2xl font-bold text-amber-700">
+                    {lesson.order}
+                  </span>
+                  <h3 className="text-lg font-semibold text-stone-800 leading-tight">
+                    {lesson.title}
+                  </h3>
                 </div>
                 
-                {/* Card Body */}
-                <div className="p-5">
-                  <h3 className="text-lg font-bold text-gray-800 mb-2">{lesson.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {lesson.description || 'No description available'}
-                  </p>
-                  
-                  {lesson.available ? (
-                    <Link 
-                      href={`/lessons/${lesson.order}`}
-                      className={`block w-full text-center bg-gradient-to-r ${lesson.color || 'from-blue-500 to-indigo-600'} text-white py-3 rounded-xl font-medium hover:opacity-90 transition-opacity`}
-                    >
-                      Start Lesson →
-                    </Link>
-                  ) : (
-                    <div className="flex items-center justify-center gap-2 text-gray-400 py-3 bg-gray-100 rounded-xl">
-                      <span>🔒</span>
-                      <span>Enroll to Unlock</span>
-                    </div>
-                  )}
-                </div>
-              </div>
+                {!lesson.available && (
+                  <div className="mt-3 text-sm text-stone-500">
+                    Locked
+                  </div>
+                )}
+              </Link>
             ))}
           </div>
         )}
@@ -148,21 +116,20 @@ export default function LessonsPage() {
         {/* Empty State */}
         {!loading && lessons.length === 0 && (
           <div className="text-center py-20">
-            <div className="text-6xl mb-4">📚</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No lessons available</h3>
-            <p className="text-gray-500">Check back soon for new content!</p>
+            <h3 className="text-xl font-semibold text-stone-700 mb-2">No lessons available</h3>
+            <p className="text-stone-500">Check back soon for new content!</p>
           </div>
         )}
 
         {/* CTA Section */}
-        <div className="mt-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 rounded-3xl p-10 text-white text-center shadow-2xl">
-          <h2 className="text-3xl font-bold mb-4">🚀 Unlock All {stats.total} Lessons!</h2>
-          <p className="text-blue-100 mb-8 text-xl max-w-2xl mx-auto">
+        <div className="mt-12 bg-amber-50 border-4 border-amber-700 p-10 text-center">
+          <h2 className="text-3xl font-bold mb-4 text-stone-800">Unlock All {stats.total} Lessons</h2>
+          <p className="text-stone-600 mb-8 text-lg max-w-2xl mx-auto">
             Get lifetime access to the complete course with AI-generated questions, voice input, and a certificate of completion.
           </p>
           <Link 
             href="/checkout" 
-            className="inline-block bg-white text-blue-600 hover:bg-blue-50 px-10 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-xl"
+            className="inline-block bg-amber-700 text-white hover:bg-amber-800 px-10 py-4 font-bold text-lg transition"
           >
             Enroll Now - $30
           </Link>
@@ -170,7 +137,7 @@ export default function LessonsPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-8 mt-16">
+      <footer className="bg-stone-800 text-stone-400 py-8 mt-16 border-t-4 border-amber-700">
         <div className="container mx-auto px-4 text-center">
           <p>&copy; 2025 Algorithms of Thinking and Cognition. All rights reserved.</p>
         </div>
