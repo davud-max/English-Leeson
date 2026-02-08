@@ -7,52 +7,66 @@ import dynamic from 'next/dynamic'
 
 const VoiceQuiz = dynamic(() => import('@/components/quiz/VoiceQuiz'), { ssr: false })
 
-const LESSON_11_SLIDES = [
+const LESSON_13_SLIDES = [
   {
     id: 1,
-    title: "The Final Riddle",
-    content: "We have traveled a path from the circle to the Sacred Description. We have seen how the act of distinction creates the world.\n\nNow before us lies the final riddle — **the number of the Beast, 666**.\n\n> *\"Here is wisdom. Let him who has understanding count the number of the beast, for it is the number of a man...\"*\n\nThe key word is **\"count.\"** Not \"learn,\" not \"memorize.\" **\"Count\"** — calculate, derive, understand the algorithm.",
-    emoji: "🔢",
+    title: "The Algorithm of Algorithms",
+    content: "We have explored various algorithms of thought throughout our journey — the algorithm of distinction, the algorithm of levels, the algorithm of recursion. But now we arrive at the deepest question: Is there an algorithm of algorithms?\n\n**Can we find a single principle that generates all other thinking algorithms?**\n\nThis is the quest for the meta-algorithm — the algorithm that creates algorithms. It is the search for the source code of thought itself.\n\n> The algorithm of algorithms must be capable of generating itself and all other algorithms. It must be both the program and the programmer.",
+    emoji: "🧮",
     duration: 28000
   },
   {
     id: 2,
-    title: "The First Six: The Beast",
-    content: "**Six** is the number of the fullness of physical perception.\n\nFive senses: sight, hearing, smell, taste, touch. Plus a sixth — the sense of bodily attraction, of instinct.\n\n**The first six** is a world ruled by six isolated senses. Each pulls in its own direction. This is the world of pure reaction, **the kingdom of the Beast**.\n\nIn this world there is no \"other.\" There is only \"I\" and what my senses register as food, threat, or mate.\n\n> Each sense operates independently. Each is directed inward, showing only what the beast's own body experiences.",
-    emoji: "🐾",
+    title: "Self-Generating Systems",
+    content: "An algorithm of algorithms must be self-generating — capable of creating variations of itself and other algorithms.\n\nSuch systems exist in mathematics and computer science:\n- **Lambda calculus** - a system that can express any computable function\n- **Universal Turing machines** - machines that can simulate any other machine\n- **Self-modifying code** - programs that alter their own instructions\n\nThe key insight: these systems achieve universality through self-reference and the capacity for self-transformation.\n\n**The algorithm of algorithms is a self-generating, self-applying operation.**",
+    emoji: "🔄",
     duration: 32000
   },
   {
     id: 3,
-    title: "The Second Six: The Human",
-    content: "Then **Light** appears — the ability to abstract.\n\nMan looks at his six senses **from the outside**. He begins to unite them. With what? With **Love**.\n\n**Love is a new principle of organizing the six senses.** Now they are directed outward — toward understanding another \"I.\"\n\n> **The second six** is the **Human number**. Six senses unite in the phenomenon of human love.\n\nParaphrasing Augustine: ordinary, physical love is that by which the soul is informed of what **another body** experiences.",
-    emoji: "❤️",
+    title: "The Minimal Operation",
+    content: "What is the simplest operation that can generate all of thought?\n\nGeorge Spencer-Brown proposed that the act of distinction itself — the drawing of a boundary — is the fundamental operation from which all mathematics and logic can be constructed.\n\n**The minimal operation:**\n1. Make a distinction\n2. Observe the distinction\n3. See the observer\n4. Repeat\n\nThis four-step algorithm generates:\n- Binary logic (true/false, inside/outside)\n- Arithmetic (difference creates quantity)\n- Algebra (variables represent distinctions)\n- Higher mathematics (distinctions of distinctions)",
+    emoji: "⚛️",
     duration: 30000
   },
   {
     id: 4,
-    title: "The Third Six: The Divine",
-    content: "But even this is not the limit. What if one rises even higher?\n\nJesus speaks of **Divine Love — Agape**. This is the principle of connecting souls directly, **bypassing the mediation of the senses**.\n\n**The third six** is the **Divine number**. The transition to the level of pure spirit.\n\n| Level | Number | Principle |\n|-------|--------|----------|\n| Six One | Beast | Senses |\n| Six Two | Human | Love |\n| Six Three | God | Agape |\n\n> Divine love is that by which the soul is informed of what **another soul** experiences.",
-    emoji: "✨",
+    title: "Recursion and Self-Application",
+    content: "The algorithm of algorithms must be recursive — it applies to itself.\n\nWhen we apply the distinction operation to itself, we get:\n- The distinction between distinctions\n- The observer of observing\n- The algorithm of algorithms of algorithms\n\nThis creates an infinite tower of meta-levels, but one that is grounded in the original operation.\n\n**Self-application is the engine of complexity** — from the simple act of distinction, we generate the full complexity of mathematical and logical systems.\n\nThe algorithm of algorithms is ultimately self-contained and self-generating.",
+    emoji: "♾️",
     duration: 32000
   },
   {
     id: 5,
-    title: "The Formula of 666",
-    content: "Now we can **count**.\n\n**Six hundred sixty-six is not one number.** It is a formula: six-one, six-two, six-three.\n\nA **three-step path of ascent**.\n\n> \"The number of a man\" — an indication of the second step. But wisdom lies in seeing **the entire staircase** as a whole.\n\nThis is like the sacred mathematical trinity:\n- **Quantity** — concrete apples\n- **Digit** — the symbol \"6\"\n- **Number** — pure abstraction\n\nEach level transcends and includes the previous one.",
-    emoji: "📐",
+    title: "The Closure Property",
+    content: "The algorithm of algorithms must be closed — it must operate within itself and return to itself.\n\n**Closure means:**\n- The algorithm can be applied to its own output\n- The system of operations is complete\n- Nothing external is required to sustain the process\n\nMathematical systems achieve closure through axioms and rules of inference.\nProgramming languages achieve closure through primitive operations and composition rules.\n\n**The algorithm of algorithms is a closed system of distinction** — it contains within itself all that is needed for the generation of all possible distinctions.",
+    emoji: "⭕",
     duration: 28000
   },
   {
     id: 6,
-    title: "The End of Light",
-    content: "And then the final words become clear.\n\n**\"The End of Light\"**: Light was needed to travel the path from six-one to six-three. When the goal is reached, the need for distinction falls away. The \"end of Light\" arrives — **not a catastrophe, but the completion of its mission**.\n\n**\"And Man shall disappear\"** — he will overcome himself and become what the Apostle Paul called a **\"spiritual body.\"**\n\n> As long as human souls are separated by the physical, man will exist. When the third six is fully achieved, all souls will merge and unite with God.\n\n*Thank you for your attention.*",
-    emoji: "🌟",
+    title: "Universality and Implementation",
+    content: "The algorithm of algorithms is universal — it can implement any other algorithm, any other system of thought.\n\nBut universality without implementation is sterile. The algorithm of algorithms must be capable of embodiment:\n- In neural networks (how the brain implements thought)\n- In digital computers (artificial intelligence)\n- In social systems (collective intelligence)\n- In biological evolution (natural computation)\n\n**The power of the algorithm of algorithms lies not just in its universality but in its implementability across domains.**",
+    emoji: "🌐",
     duration: 34000
+  },
+  {
+    id: 7,
+    title: "The Paradox of Self-Generation",
+    content: "There is a deep paradox at the heart of the algorithm of algorithms: how can an algorithm create itself?\n\nThis is reminiscent of Russell's paradox, Gödel's incompleteness, and the halting problem.\n\nThe resolution comes through the temporal dimension — the algorithm doesn't exist all at once but emerges through process:\n- Stage 1: Simple distinction\n- Stage 2: Distinction of distinction\n- Stage 3: Self-referential distinction\n- Stage 4: Recursive self-generation\n\nThe algorithm of algorithms is the story of its own becoming.",
+    emoji: "⏳",
+    duration: 30000
+  },
+  {
+    id: 8,
+    title: "The Return to Simplicity",
+    content: "After traversing the full complexity of self-generating algorithms, we return to simplicity.\n\nThe algorithm of algorithms is ultimately:\n**Make a distinction.**\n\nEverything else — recursion, self-reference, universality, closure — follows from this single operation applied to itself.\n\nThe power of the algorithm of algorithms lies in the recursive application of a simple operation.\n\n*The algorithm of algorithms teaches us that in the deepest foundation of thought, complexity and simplicity are one.*",
+    emoji: "🎯",
+    duration: 26000
   }
 ]
 
-const LESSON_CONTENT = LESSON_11_SLIDES.map(s => s.content).join('\n\n')
+const LESSON_CONTENT = LESSON_13_SLIDES.map(s => s.content).join('\n\n')
 
 export default function Lesson13Page() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -72,11 +86,11 @@ export default function Lesson13Page() {
     }
   }, [])
 
-  const totalSlides = LESSON_11_SLIDES.length
+  const totalSlides = LESSON_13_SLIDES.length
 
   // Простая функция воспроизведения слайда
   const playSlide = useCallback((slideIndex: number) => {
-    const totalSlides = LESSON_11_SLIDES.length
+    const totalSlides = LESSON_13_SLIDES.length
     console.log(`Playing slide ${slideIndex + 1} of ${totalSlides}`)
     
     // Останавливаем предыдущее аудио
@@ -165,7 +179,7 @@ export default function Lesson13Page() {
         alert('Please click Play button to start audio')
       }
     })
-  }, [LESSON_11_SLIDES.length])
+  }, [LESSON_13_SLIDES.length])
 
   const togglePlay = () => {
     if (isPlaying) {
@@ -247,7 +261,7 @@ export default function Lesson13Page() {
     }
   }
 
-  const currentSlideData = LESSON_11_SLIDES[currentSlide]
+  const currentSlideData = LESSON_13_SLIDES[currentSlide]
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -258,7 +272,7 @@ export default function Lesson13Page() {
             <Link href="/lessons" className="text-stone-600 hover:text-stone-800 text-sm whitespace-nowrap">
               ← Back
             </Link>
-            
+                  
             <div className="flex items-center justify-center gap-3 flex-1">
               <button
                 onClick={() => goToSlide(Math.max(0, currentSlide - 1))}
@@ -267,14 +281,14 @@ export default function Lesson13Page() {
               >
                 ← Prev
               </button>
-              
+                    
               <button
                 onClick={togglePlay}
                 className="px-6 py-2 rounded-lg bg-amber-700 text-white font-semibold hover:bg-amber-800 transition shadow-md text-sm"
               >
-                {isPlaying ? '⏸ Pause' : '▶ Play'}
+                {isPlaying ? ' onPause' : '▶ Play'}
               </button>
-              
+                    
               <button
                 onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
                 disabled={currentSlide === totalSlides - 1}
@@ -283,14 +297,21 @@ export default function Lesson13Page() {
                 Next →
               </button>
             </div>
-            
+                  
             <div className="text-stone-500 text-sm whitespace-nowrap">
               {currentSlide + 1}/{totalSlides}
             </div>
           </div>
         </div>
       </div>
-      
+            
+      {/* Static Lesson Title */}
+      <div className="max-w-4xl mx-auto px-6 py-4 bg-amber-50 border-b border-amber-200">
+        <h1 className="text-2xl font-bold text-center text-amber-800">
+          {LESSON_13_SLIDES[0]?.title || 'The Algorithm of Algorithms'}
+        </h1>
+      </div>
+            
       {/* Scrollable Content */}
       <main className="max-w-4xl mx-auto px-6 py-10">
         

@@ -258,7 +258,7 @@ export default function Lesson9Page() {
             <Link href="/lessons" className="text-stone-600 hover:text-stone-800 text-sm whitespace-nowrap">
               ← Back
             </Link>
-            
+                  
             <div className="flex items-center justify-center gap-3 flex-1">
               <button
                 onClick={() => goToSlide(Math.max(0, currentSlide - 1))}
@@ -267,14 +267,14 @@ export default function Lesson9Page() {
               >
                 ← Prev
               </button>
-              
+                    
               <button
                 onClick={togglePlay}
                 className="px-6 py-2 rounded-lg bg-amber-700 text-white font-semibold hover:bg-amber-800 transition shadow-md text-sm"
               >
-                {isPlaying ? '⏸ Pause' : '▶ Play'}
+                {isPlaying ? ' onPause' : '▶ Play'}
               </button>
-              
+                    
               <button
                 onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
                 disabled={currentSlide === totalSlides - 1}
@@ -283,14 +283,21 @@ export default function Lesson9Page() {
                 Next →
               </button>
             </div>
-            
+                  
             <div className="text-stone-500 text-sm whitespace-nowrap">
               {currentSlide + 1}/{totalSlides}
             </div>
           </div>
         </div>
       </div>
-      
+            
+      {/* Static Lesson Title */}
+      <div className="max-w-4xl mx-auto px-6 py-4 bg-amber-50 border-b border-amber-200">
+        <h1 className="text-2xl font-bold text-center text-amber-800">
+          {LESSON_9_SLIDES[0]?.title || 'Sacred Text and Reality'}
+        </h1>
+      </div>
+            
       {/* Scrollable Content */}
       <main className="max-w-4xl mx-auto px-6 py-10">
         

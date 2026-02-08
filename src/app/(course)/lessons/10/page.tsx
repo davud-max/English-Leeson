@@ -298,6 +298,13 @@ export default function Lesson10Page() {
         </div>
       </div>
       
+      {/* Static Lesson Title */}
+      <div className="max-w-4xl mx-auto px-6 py-4 bg-amber-50 border-b border-amber-200">
+        <h1 className="text-2xl font-bold text-center text-amber-800">
+          {LESSON_10_SLIDES[0]?.title || 'How Thought Finds Us'}
+        </h1>
+      </div>
+      
       {/* Scrollable Content */}
       <main className="max-w-4xl mx-auto px-6 py-10">
         
