@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 
 const VoiceQuiz = dynamic(() => import('@/components/quiz/VoiceQuiz'), { ssr: false })
@@ -58,92 +58,192 @@ export default function Lesson9Page() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [audioError, setAudioError] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Cleanup при размонтировании
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    }
+  }, []);
 
   const totalSlides = LESSON_9_SLIDES.length;
 
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    const audioFile = `/audio/lesson9/slide${currentSlide + 1}.mp3`;
+  // Простая функция воспроизведения слайда
+  const playSlide = useCallback((slideIndex: number) => {
+    const totalSlides = LESSON_9_SLIDES.length;
+    console.log(`Playing slide ${slideIndex + 1} of ${totalSlides}`);
+    
+    // Останавливаем предыдущее аудио
     if (audioRef.current) {
-      audioRef.current.src = audioFile;
-      audioRef.current.play().catch(e => {
-        console.log("Audio not available, using timer fallback");
-        setAudioError(true);
-        const duration = LESSON_9_SLIDES[currentSlide].duration;
-        timerRef.current = setTimeout(() => {
-          if (currentSlide < totalSlides - 1) {
-            setCurrentSlide(prev => prev + 1);
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    
+    // Создаём новый Audio объект
+    const audio = new Audio(`/audio/lesson9/slide${slideIndex + 1}.mp3`);
+    audioRef.current = audio;
+    
+    // Обновление прогресса
+    audio.ontimeupdate = () => {
+      if (audio.duration) {
+        setProgress((audio.currentTime / audio.duration) * 100);
+      }
+    };
+    
+    // Когда аудио закончилось - переход к следующему слайду
+    audio.onended = () => {
+      console.log(`Slide ${slideIndex + 1} ended`);
+      if (slideIndex < totalSlides - 1) {
+        const nextSlide = slideIndex + 1;
+        setCurrentSlide(nextSlide);
+        setProgress(0);
+        // Рекурсивно запускаем следующий слайд
+        playSlide(nextSlide);
+      } else {
+        // Конец урока
+        setIsPlaying(false);
+        setProgress(100);
+      }
+    };
+    
+    // Ошибка загрузки - пробуем slide1.mp3 или пропускаем
+    audio.onerror = () => {
+      console.log(`Error loading slide ${slideIndex + 1}, trying slide1.mp3`);
+      // Пробуем fallback на slide1.mp3
+      const fallbackAudio = new Audio(`/audio/lesson9/slide1.mp3`);
+      audioRef.current = fallbackAudio;
+      
+      fallbackAudio.ontimeupdate = () => {
+        if (fallbackAudio.duration) {
+          setProgress((fallbackAudio.currentTime / fallbackAudio.duration) * 100);
+        }
+      };
+      
+      fallbackAudio.onended = () => {
+        if (slideIndex < totalSlides - 1) {
+          const nextSlide = slideIndex + 1;
+          setCurrentSlide(nextSlide);
+          setProgress(0);
+          playSlide(nextSlide);
+        } else {
+          setIsPlaying(false);
+          setProgress(100);
+        }
+      };
+      
+      fallbackAudio.onerror = () => {
+        // Нет аудио - используем таймер
+        console.log('No audio available, using timer');
+        setTimeout(() => {
+          if (slideIndex < totalSlides - 1) {
+            const nextSlide = slideIndex + 1;
+            setCurrentSlide(nextSlide);
+            setProgress(0);
+            playSlide(nextSlide);
           } else {
             setIsPlaying(false);
+            setProgress(100);
           }
-        }, duration);
-      });
-    }
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+        }, 20000);
+      };
+      
+      fallbackAudio.play().catch(console.error);
     };
-  }, [currentSlide, isPlaying, totalSlides]);
-
-  useEffect(() => {
-    if (!isPlaying || !audioError) return;
     
-    const duration = LESSON_9_SLIDES[currentSlide].duration;
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) return 0;
-        return prev + (100 / (duration / 100));
-      });
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [isPlaying, audioError, currentSlide]);
-
-  useEffect(() => {
-    if (!isPlaying || audioError) return;
-    
-    const interval = setInterval(() => {
-      if (audioRef.current && audioRef.current.duration) {
-        const percent = (audioRef.current.currentTime / audioRef.current.duration) * 100;
-        setProgress(percent);
+    // Запускаем воспроизведение
+    audio.play().catch((err) => {
+      console.error('Audio play error:', err);
+      if (err.name === 'NotSupportedError' || err.name === 'NotAllowedError') {
+        // Safari блокирует автовоспроизведение
+        setIsPlaying(false);
+        alert('Please click Play button to start audio');
       }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [isPlaying, audioError]);
-
-  const handleAudioEnded = () => {
-    if (currentSlide < totalSlides - 1) {
-      setCurrentSlide(prev => prev + 1);
-      setProgress(0);
-    } else {
-      setIsPlaying(false);
-      setProgress(100);
-    }
-  };
+    });
+  }, [LESSON_9_SLIDES.length]);
 
   const togglePlay = () => {
     if (isPlaying) {
-      audioRef.current?.pause();
-      if (timerRef.current) clearTimeout(timerRef.current);
+      // Пауза
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
       setIsPlaying(false);
     } else {
+      // Запуск - создаём и запускаем аудио синхронно в обработчике клика
       setIsPlaying(true);
       setProgress(0);
+      
+      // Останавливаем предыдущее аудио
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      
+      // Создаём аудио синхронно в обработчике клика (важно для Safari)
+      const audioPath = `/audio/lesson9/slide${currentSlide + 1}.mp3`;
+      console.log('Loading audio:', audioPath);
+      const audio = new Audio(audioPath);
+      audioRef.current = audio;
+      
+      audio.ontimeupdate = () => {
+        if (audio.duration) {
+          setProgress((audio.currentTime / audio.duration) * 100);
+        }
+      };
+      
+      audio.onended = () => {
+        if (currentSlide < totalSlides - 1) {
+          const nextSlide = currentSlide + 1;
+          setCurrentSlide(nextSlide);
+          setProgress(0);
+          playSlide(nextSlide);
+        } else {
+          setIsPlaying(false);
+          setProgress(100);
+        }
+      };
+      
+      audio.onerror = () => {
+        console.error(`Error loading slide ${currentSlide + 1}`);
+        // Переходим к следующему слайду
+        if (currentSlide < totalSlides - 1) {
+          const nextSlide = currentSlide + 1;
+          setCurrentSlide(nextSlide);
+          setProgress(0);
+          playSlide(nextSlide);
+        } else {
+          setIsPlaying(false);
+        }
+      };
+      
+      // Запускаем немедленно - это важно для Safari
+      audio.play().catch((err) => {
+        console.error('Play failed:', err);
+        setIsPlaying(false);
+        alert('Audio playback failed. Please try again.');
+      });
     }
   };
 
   const goToSlide = (index: number) => {
-    if (timerRef.current) clearTimeout(timerRef.current);
+    // Останавливаем текущее аудио
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    
     setCurrentSlide(index);
     setProgress(0);
+    
+    // Если играем - запускаем новый слайд
     if (isPlaying) {
-      setAudioError(false);
+      playSlide(index);
     }
   };
 
@@ -240,7 +340,7 @@ export default function Lesson9Page() {
         />
       )}
 
-      {/* Academic Footer */}
+      {/* Footer */}
       <footer className="bg-stone-800 text-stone-400 py-6 mt-16 border-t-4 border-amber-700">
         <div className="max-w-4xl mx-auto px-6">
           <div className="flex justify-between items-center">
@@ -248,14 +348,14 @@ export default function Lesson9Page() {
               href="/lessons/8"
               className="hover:text-white transition"
             >
-              ← Lecture VIII: Theory of Cognitive Resonance
+              ← Lecture VIII
             </Link>
             <span className="text-stone-500 text-sm font-serif">Lecture IX</span>
             <Link 
               href="/lessons/10"
               className="hover:text-white transition"
             >
-              Lecture X: How Thought Finds Us →
+              Lecture X →
             </Link>
           </div>
         </div>
