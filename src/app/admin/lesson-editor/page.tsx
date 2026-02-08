@@ -492,7 +492,23 @@ export default function LessonEditorComplete() {
     setAudioProgress(initialProgress)
 
     for (let i = 0; i < selectedLesson.slides.length; i++) {
-      await generateAudio(i)
+      try {
+        await generateAudio(i)
+      } catch (error) {
+        console.error(`Error generating audio for slide ${i + 1}:`, error)
+        
+        // Update progress to show error
+        const progressCopy = [...audioProgress]
+        progressCopy[i] = { 
+          slideIndex: i, 
+          status: 'error',
+          error: (error as Error).message 
+        }
+        setAudioProgress([...progressCopy])
+        
+        setSaveStatus(`❌ Ошибка при генерации слайда ${i + 1}: ${(error as Error).message}`)
+      }
+      
       if (i < selectedLesson.slides.length - 1) {
         await new Promise(resolve => setTimeout(resolve, 2000))
       }
