@@ -404,6 +404,8 @@ export default function LessonEditorComplete() {
     setSaveStatus(`🎵 Генерация ${slideIndex + 1}...`)
 
     try {
+      console.log(`Starting audio generation for lesson ${selectedLesson.order}, slide ${slideIndex + 1}`);
+      
       // 1. Generate audio
       const genRes = await fetch('/api/admin/generate-audio', {
         method: 'POST',
@@ -416,8 +418,10 @@ export default function LessonEditorComplete() {
         }),
       })
 
+      console.log(`Generate audio response status: ${genRes.status} for lesson ${selectedLesson.order}, slide ${slideIndex + 1}`);
+      
       if (!genRes.ok) {
-        const errorData = await genRes.json()
+        const errorData = await genRes.json().catch(() => ({ error: `HTTP ${genRes.status}` }));
         throw new Error(errorData.error || `HTTP ${genRes.status}`)
       }
 
@@ -431,6 +435,8 @@ export default function LessonEditorComplete() {
       progressCopy[slideIndex] = { slideIndex, status: 'uploading' }
       setAudioProgress([...progressCopy])
       setSaveStatus(`📤 Загрузка ${slideIndex + 1}...`)
+      
+      console.log(`Starting audio upload for lesson ${selectedLesson.order}, slide ${slideIndex + 1}`);
 
       const uploadRes = await fetch('/api/admin/upload-audio', {
         method: 'POST',
@@ -442,8 +448,10 @@ export default function LessonEditorComplete() {
         }),
       })
 
+      console.log(`Upload audio response status: ${uploadRes.status} for lesson ${selectedLesson.order}, slide ${slideIndex + 1}`);
+      
       if (!uploadRes.ok) {
-        const uploadError = await uploadRes.json()
+        const uploadError = await uploadRes.json().catch(() => ({ error: `Upload failed with status ${uploadRes.status}` }));
         throw new Error(uploadError.error || 'Upload failed')
       }
 
