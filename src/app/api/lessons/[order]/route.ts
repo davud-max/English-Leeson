@@ -1,31 +1,7 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-
-// Статический конфиг количества слайдов (из /public/data/slides-config.json)
-const SLIDES_CONFIG: Record<number, number> = {
-  1: 1,
-  2: 11,
-  3: 14,
-  4: 14,
-  5: 13,
-  6: 12,
-  7: 9,
-  8: 12,
-  9: 6,
-  10: 7,
-  11: 6,
-  12: 6,
-  13: 8,
-  14: 10,
-  15: 43,
-  21: 19,
-  22: 26,
-  23: 19,
-  24: 15,
-  25: 26,
-  26: 23,
-  27: 25
-};
 
 // GET /api/lessons/[order] - получить урок по номеру
 export async function GET(
@@ -42,6 +18,10 @@ export async function GET(
       );
     }
 
+    // Проверяем авторизацию
+    const session = await getServerSession(authOptions);
+    
+    // Получаем урок
     const lesson = await prisma.lesson.findFirst({
       where: {
         order: orderNum,
@@ -68,26 +48,45 @@ export async function GET(
       );
     }
 
-    // Если слайды не заполнены в базе - создаём на основе конфига
-    let slides = lesson.slides;
+    // Проверяем есть ли доступ к курсу
+    let hasAccess = false;
     
-    if (!slides || (Array.isArray(slides) && slides.length === 0)) {
-      const slideCount = SLIDES_CONFIG[orderNum] || 1;
+    if (session?.user?.id) {
+      // Проверяем enrollment или покупку
+      const enrollment = await prisma.enrollment.findFirst({
+        where: { userId: session.user.id },
+      });
       
-      slides = Array.from({ length: slideCount }, (_, index) => ({
-        id: index + 1,
-        title: `Part ${index + 1}`,
-        content: lesson.content || `Content for part ${index + 1}`,
-        emoji: lesson.emoji || '📖',
-        duration: 30000
-      }));
+      const purchase = await prisma.purchase.findFirst({
+        where: { 
+          userId: session.user.id,
+          status: 'COMPLETED',
+        },
+      });
+      
+      hasAccess = !!(enrollment || purchase);
     }
 
-    // Добавляем слайды к уроку
-    const lessonWithSlides = {
-      ...lesson,
-      slides
-    };
+    // Если нет доступа - возвращаем только превью
+    if (!hasAccess) {
+      return NextResponse.json({
+        success: true,
+        hasAccess: false,
+        lesson: {
+          id: lesson.id,
+          order: lesson.order,
+          title: lesson.title,
+          description: lesson.description,
+          duration: lesson.duration,
+          emoji: lesson.emoji,
+          color: lesson.color,
+          // НЕ отдаём content и slides
+          content: null,
+          slides: null,
+        },
+        navigation: null,
+      });
+    }
 
     // Получаем соседние уроки для навигации
     const [prevLesson, nextLesson] = await Promise.all([
@@ -108,7 +107,8 @@ export async function GET(
 
     return NextResponse.json({
       success: true,
-      lesson: lessonWithSlides,
+      hasAccess: true,
+      lesson,
       navigation: {
         prev: prevLesson,
         next: nextLesson,
