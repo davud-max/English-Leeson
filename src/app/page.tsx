@@ -25,30 +25,33 @@ export default function HomePage() {
       .catch(() => setLoading(false))
   }, [])
 
-  const displayLessons = lessons.slice(0, 8)
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+    <div className="min-h-screen bg-stone-50">
       {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
-        <div className="container mx-auto px-4 py-4">
+      <nav className="bg-stone-900 text-stone-100 border-b-4 border-amber-700">
+        <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">🧠</span>
-              <span className="font-bold text-gray-800">Thinking Course</span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-amber-700 rounded-full flex items-center justify-center">
+                <span className="text-xl">🎓</span>
+              </div>
+              <div>
+                <span className="font-serif text-lg font-bold">Academy of Thought</span>
+                <span className="hidden md:inline text-stone-400 text-sm ml-2">Est. 2025</span>
+              </div>
             </div>
             <div className="flex items-center gap-6">
-              <Link href="/lessons" className="text-gray-600 hover:text-gray-900 transition">
-                Lessons
+              <Link href="/lessons" className="text-stone-300 hover:text-white transition text-sm">
+                Curriculum
               </Link>
-              <Link href="/login" className="text-gray-600 hover:text-gray-900 transition">
+              <Link href="/login" className="text-stone-300 hover:text-white transition text-sm">
                 Sign In
               </Link>
               <Link
                 href="/checkout"
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition shadow-md"
+                className="bg-amber-700 hover:bg-amber-600 text-white px-5 py-2 rounded text-sm font-medium transition"
               >
-                Enroll Now
+                Enroll
               </Link>
             </div>
           </div>
@@ -56,273 +59,361 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 pt-20 pb-32">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-8">
-            <span>🎓</span>
-            <span>{lessons.length || 25}+ Interactive Lessons with AI</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-            Algorithms of
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"> Thinking</span>
-            <br />and Cognition
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Master critical thinking through philosophy, abstraction, and the science of cognition. 
-            Learn how knowledge is born.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/checkout"
-              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-10 py-4 rounded-xl text-lg transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
-            >
-              Start Learning — $30
-            </Link>
-            <Link
-              href="/lessons"
-              className="w-full sm:w-auto bg-white hover:bg-gray-50 text-gray-700 font-semibold px-10 py-4 rounded-xl text-lg transition border-2 border-gray-200 hover:border-gray-300"
-            >
-              Preview Course →
-            </Link>
-          </div>
-
-          <div className="mt-12 flex items-center justify-center gap-8 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <span className="text-green-500">✓</span> Lifetime Access
+      <section className="bg-stone-900 text-white">
+        <div className="max-w-6xl mx-auto px-6 py-20 md:py-32">
+          <div className="max-w-3xl">
+            <p className="text-amber-500 font-medium mb-4 tracking-wider uppercase text-sm">
+              Philosophy & Cognitive Science
+            </p>
+            <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 leading-tight">
+              Algorithms of Thinking and Cognition
+            </h1>
+            <p className="text-xl text-stone-300 mb-8 leading-relaxed">
+              A rigorous philosophical course exploring the foundations of human thought, 
+              the nature of abstraction, and the principles by which knowledge is created.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link
+                href="/checkout"
+                className="bg-amber-700 hover:bg-amber-600 text-white font-semibold px-8 py-4 rounded text-center transition"
+              >
+                Begin Your Studies — $30
+              </Link>
+              <Link
+                href="/lessons"
+                className="border border-stone-600 hover:border-stone-500 text-stone-300 hover:text-white font-medium px-8 py-4 rounded text-center transition"
+              >
+                View Curriculum
+              </Link>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-green-500">✓</span> AI Questions
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-green-500">✓</span> Voice Input
+            <div className="mt-8 flex items-center gap-6 text-stone-400 text-sm">
+              <span>📚 {lessons.length || 25}+ Lectures</span>
+              <span>⏱️ 12+ Hours</span>
+              <span>🎓 Certificate</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="bg-white py-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why This Course?</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              A unique approach to understanding how we think and learn
+      {/* About the Course */}
+      <section className="py-20 bg-white border-b border-stone-200">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl font-serif font-bold text-stone-900 mb-4">
+              About This Course
+            </h2>
+            <div className="w-16 h-1 bg-amber-700 mx-auto mb-6"></div>
+            <p className="text-lg text-stone-600 leading-relaxed">
+              This course presents a systematic investigation into the mechanisms of human cognition. 
+              Drawing from philosophy, mathematics, and cognitive science, we examine how abstract 
+              thought emerges, how rules govern knowledge, and how consciousness creates meaning.
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+
+          <div className="grid md:grid-cols-3 gap-8">
             {[
-              { emoji: '🎯', title: 'Structured Learning', desc: 'Progressive lessons from basic concepts to advanced philosophical ideas' },
-              { emoji: '🤖', title: 'AI-Powered Quiz', desc: 'Personalized questions generated by AI based on each lesson' },
-              { emoji: '🎤', title: 'Voice Interaction', desc: 'Answer questions using your voice for a more natural experience' },
-              { emoji: '📖', title: 'Audio Lectures', desc: 'Listen to professionally narrated content while following along' },
-              { emoji: '🧠', title: 'Deep Understanding', desc: 'Learn the fundamental principles behind how knowledge is created' },
-              { emoji: '🎓', title: 'Certificate', desc: 'Earn a certificate upon completing all lessons and quizzes' },
-            ].map((feature, i) => (
-              <div key={i} className="bg-gradient-to-br from-gray-50 to-white p-8 rounded-2xl border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="text-4xl mb-4">{feature.emoji}</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-600">{feature.desc}</p>
+              {
+                icon: '📐',
+                title: 'Foundations of Abstraction',
+                desc: 'Explore how the mind moves from concrete experience to abstract principles through systematic observation and analysis.'
+              },
+              {
+                icon: '🧠',
+                title: 'Theory of Cognition',
+                desc: 'Investigate the cognitive resonance model — a framework for understanding how thoughts arise and interact with reality.'
+              },
+              {
+                icon: '📜',
+                title: 'Philosophical Analysis',
+                desc: 'Apply rigorous philosophical methods to fundamental questions about knowledge, consciousness, and human purpose.'
+              },
+            ].map((item, i) => (
+              <div key={i} className="text-center p-6">
+                <div className="text-4xl mb-4">{item.icon}</div>
+                <h3 className="text-xl font-serif font-bold text-stone-900 mb-3">{item.title}</h3>
+                <p className="text-stone-600">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Course Preview */}
-      <section className="py-24 bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="container mx-auto px-4">
+      {/* Course Structure */}
+      <section className="py-20 bg-stone-100">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Course Content</h2>
-            <p className="text-xl text-gray-600">
-              {lessons.length || 25}+ comprehensive lessons covering all aspects of thinking
+            <h2 className="text-3xl font-serif font-bold text-stone-900 mb-4">
+              Course Structure
+            </h2>
+            <div className="w-16 h-1 bg-amber-700 mx-auto mb-6"></div>
+            <p className="text-stone-600 max-w-2xl mx-auto">
+              The curriculum is organized into four interconnected modules, each building upon the previous 
+              to construct a comprehensive understanding of cognitive processes.
             </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {[
+              {
+                module: 'I',
+                title: 'Foundations',
+                topics: ['Terms & Definitions', 'The Nature of Counting', 'Formulae & Parameters', 'Abstraction & Rules'],
+                lectures: '1-4'
+              },
+              {
+                module: 'II',
+                title: 'Human Activity',
+                topics: ['Praxeology', 'Economics & Ethics', 'Origins of Money', 'Civilization & Law'],
+                lectures: '5-7'
+              },
+              {
+                module: 'III',
+                title: 'Cognitive Theory',
+                topics: ['Cognitive Resonance I & II', 'Sacred Texts Analysis', 'The Number 666', 'Levels of Being'],
+                lectures: '8-13'
+              },
+              {
+                module: 'IV',
+                title: 'Synthesis',
+                topics: ['Consciousness & Creation', 'Theory of Everything', 'Minus-Space', 'The Path to Truth'],
+                lectures: '14-17'
+              },
+            ].map((mod, i) => (
+              <div key={i} className="bg-white rounded-lg border border-stone-200 p-6 hover:shadow-lg transition">
+                <div className="flex items-start gap-4">
+                  <div className="bg-stone-900 text-amber-500 w-12 h-12 rounded flex items-center justify-center font-serif font-bold text-lg flex-shrink-0">
+                    {mod.module}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-serif font-bold text-stone-900 mb-1">{mod.title}</h3>
+                    <p className="text-sm text-stone-500 mb-3">Lectures {mod.lectures}</p>
+                    <ul className="space-y-1">
+                      {mod.topics.map((topic, j) => (
+                        <li key={j} className="text-stone-600 text-sm flex items-center gap-2">
+                          <span className="text-amber-700">•</span> {topic}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* What You Will Learn */}
+      <section className="py-20 bg-white border-b border-stone-200">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-serif font-bold text-stone-900 mb-4">
+              Learning Outcomes
+            </h2>
+            <div className="w-16 h-1 bg-amber-700 mx-auto"></div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {[
+              'Understand the fundamental principles of abstraction and how knowledge emerges from observation',
+              'Apply praxeological analysis to human action and economic reasoning',
+              'Comprehend the theory of cognitive resonance and its implications for consciousness',
+              'Analyze philosophical texts using systematic interpretive methods',
+              'Recognize the relationship between language, mathematics, and thought',
+              'Develop critical thinking skills through rigorous philosophical inquiry',
+            ].map((outcome, i) => (
+              <div key={i} className="flex items-start gap-4">
+                <div className="bg-amber-100 text-amber-800 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                  {i + 1}
+                </div>
+                <p className="text-stone-700">{outcome}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Course Features */}
+      <section className="py-20 bg-stone-900 text-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-serif font-bold mb-4">
+              Course Features
+            </h2>
+            <div className="w-16 h-1 bg-amber-700 mx-auto"></div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { icon: '🎧', title: 'Audio Lectures', desc: 'Professional narration for each lecture, allowing study during commute or exercise' },
+              { icon: '🤖', title: 'AI Assessment', desc: 'Personalized questions generated by artificial intelligence to test comprehension' },
+              { icon: '🎤', title: 'Voice Interaction', desc: 'Respond to questions verbally for a more natural learning experience' },
+              { icon: '📝', title: 'Written Materials', desc: 'Complete transcripts and supplementary readings for in-depth study' },
+              { icon: '♾️', title: 'Lifetime Access', desc: 'Return to the material at any time, with all future updates included' },
+              { icon: '📜', title: 'Certificate', desc: 'Receive a certificate of completion upon finishing all lectures and assessments' },
+            ].map((feature, i) => (
+              <div key={i} className="text-center p-6 border border-stone-700 rounded-lg hover:border-amber-700 transition">
+                <div className="text-3xl mb-4">{feature.icon}</div>
+                <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
+                <p className="text-stone-400 text-sm">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Sample Lectures */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-serif font-bold text-stone-900 mb-4">
+              Lecture Preview
+            </h2>
+            <div className="w-16 h-1 bg-amber-700 mx-auto mb-6"></div>
+            <p className="text-stone-600">A selection of lectures from the curriculum</p>
           </div>
 
           {loading ? (
             <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900"></div>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-              {displayLessons.map((lesson) => (
-                <div key={lesson.order} className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="bg-blue-100 text-blue-700 text-sm font-bold px-3 py-1 rounded-full">
-                      {lesson.order}
-                    </span>
-                    <span className="text-sm text-gray-400">{lesson.duration} min</span>
+            <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+              {lessons.slice(0, 8).map((lesson) => (
+                <div key={lesson.order} className="flex items-center gap-4 p-4 border border-stone-200 rounded-lg hover:border-amber-700 transition">
+                  <div className="bg-stone-100 text-stone-700 w-12 h-12 rounded flex items-center justify-center font-serif font-bold">
+                    {lesson.order}
                   </div>
-                  <h3 className="font-bold text-gray-800 mb-2 line-clamp-2">{lesson.title}</h3>
-                  <p className="text-sm text-gray-500 line-clamp-2">{lesson.description}</p>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-stone-900 truncate">{lesson.title}</h3>
+                    <p className="text-sm text-stone-500">{lesson.duration} minutes</p>
+                  </div>
+                  <span className="text-stone-400">🔒</span>
                 </div>
               ))}
             </div>
           )}
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-8">
             <Link
               href="/lessons"
-              className="inline-flex items-center gap-2 bg-white text-blue-600 font-semibold px-8 py-4 rounded-xl border-2 border-blue-600 hover:bg-blue-600 hover:text-white transition-all"
+              className="text-amber-700 hover:text-amber-800 font-medium"
             >
-              View All {lessons.length || 25} Lessons
-              <span>→</span>
+              View Complete Curriculum →
             </Link>
           </div>
         </div>
       </section>
 
-      {/* What You'll Learn */}
-      <section className="bg-white py-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">What You&apos;ll Learn</h2>
+      {/* Enrollment */}
+      <section className="py-20 bg-stone-100">
+        <div className="max-w-2xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-serif font-bold text-stone-900 mb-4">
+            Begin Your Studies
+          </h2>
+          <div className="w-16 h-1 bg-amber-700 mx-auto mb-6"></div>
+          
+          <div className="bg-white rounded-lg border border-stone-200 p-8 shadow-lg">
+            <div className="mb-6">
+              <span className="text-5xl font-serif font-bold text-stone-900">$30</span>
+              <span className="text-stone-500 ml-2">one-time payment</span>
             </div>
             
-            <div className="space-y-6">
+            <ul className="text-left space-y-3 mb-8 max-w-sm mx-auto">
               {[
-                { title: 'Theory of Abstraction', desc: 'Understand how humans create knowledge through the process of abstraction and rule-based thinking' },
-                { title: 'Praxeology & Human Action', desc: 'Learn about the science of purposeful human behavior and economic reasoning' },
-                { title: 'Cognitive Resonance', desc: 'Discover how thoughts arise and how consciousness interacts with reality' },
-                { title: 'Philosophy of Reality', desc: 'Explore deep questions about the nature of existence, consciousness, and truth' },
-                { title: 'Critical Thinking Skills', desc: 'Develop practical tools for analysis, reasoning, and clear thinking' },
+                `${lessons.length || 25}+ comprehensive lectures`,
+                'Audio narration for all content',
+                'AI-powered assessment questions',
+                'Voice interaction capabilities',
+                'Lifetime access to materials',
+                'Certificate of completion',
+                '30-day satisfaction guarantee',
               ].map((item, i) => (
-                <div key={i} className="flex gap-6 items-start p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-                  <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold flex-shrink-0">
-                    {i + 1}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
-                    <p className="text-gray-600">{item.desc}</p>
-                  </div>
-                </div>
+                <li key={i} className="flex items-center gap-3 text-stone-700">
+                  <span className="text-amber-700">✓</span>
+                  {item}
+                </li>
               ))}
-            </div>
-          </div>
-        </div>
-      </section>
+            </ul>
 
-      {/* Pricing */}
-      <section className="py-24 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700">
-        <div className="container mx-auto px-4">
-          <div className="max-w-lg mx-auto">
-            <div className="bg-white rounded-3xl p-10 shadow-2xl text-center">
-              <div className="inline-block bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 px-4 py-1 rounded-full text-sm font-semibold mb-6">
-                LIFETIME ACCESS
-              </div>
-              
-              <h2 className="text-4xl font-bold text-gray-900 mb-2">Full Course</h2>
-              
-              <div className="my-8">
-                <span className="text-6xl font-bold text-gray-900">$30</span>
-                <span className="text-gray-500 ml-2">one-time payment</span>
-              </div>
-
-              <ul className="space-y-4 text-left mb-10">
-                {[
-                  `${lessons.length || 25}+ interactive lessons`,
-                  'AI-generated personalized questions',
-                  'Voice input for answers',
-                  'Audio narration for all lessons',
-                  'Lifetime access to all content',
-                  'Certificate of completion',
-                  'Future updates included',
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3">
-                    <span className="bg-green-100 text-green-600 rounded-full p-1">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </span>
-                    <span className="text-gray-700">{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href="/checkout"
-                className="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-xl text-lg transition shadow-lg hover:shadow-xl"
-              >
-                Enroll Now
-              </Link>
-              
-              <p className="text-sm text-gray-500 mt-6">
-                30-day money-back guarantee
-              </p>
-            </div>
+            <Link
+              href="/checkout"
+              className="block w-full bg-stone-900 hover:bg-stone-800 text-white font-semibold py-4 rounded transition"
+            >
+              Enroll Now
+            </Link>
+            
+            <p className="text-sm text-stone-500 mt-4">
+              Secure payment via Stripe
+            </p>
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="bg-white py-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold text-center text-gray-900 mb-12">
+      <section className="py-20 bg-white border-t border-stone-200">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-serif font-bold text-stone-900 mb-4">
               Frequently Asked Questions
             </h2>
-            
-            <div className="space-y-4">
-              {[
-                { q: 'How long do I have access?', a: 'Lifetime! Once you purchase, you can access all materials forever, including any future updates.' },
-                { q: 'Is there a refund policy?', a: 'Yes! We offer a 30-day money-back guarantee. If you\'re not satisfied, contact us for a full refund.' },
-                { q: 'Are there any prerequisites?', a: 'No prerequisites. The course starts from fundamentals and builds up progressively.' },
-                { q: 'How does the AI quiz work?', a: 'After each lesson, our AI generates unique questions based on the content. You can answer via voice or text.' },
-                { q: 'Can I download the content?', a: 'Yes, all audio files and transcripts can be downloaded for offline learning.' },
-              ].map((faq, i) => (
-                <details key={i} className="group bg-gray-50 rounded-xl overflow-hidden">
-                  <summary className="p-6 cursor-pointer font-semibold text-gray-900 flex items-center justify-between hover:bg-gray-100 transition">
-                    {faq.q}
-                    <span className="ml-4 text-gray-400 group-open:rotate-180 transition-transform">▼</span>
-                  </summary>
-                  <div className="px-6 pb-6 text-gray-600">
-                    {faq.a}
-                  </div>
-                </details>
-              ))}
-            </div>
+            <div className="w-16 h-1 bg-amber-700 mx-auto"></div>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              { 
+                q: 'What prerequisites are required?', 
+                a: 'No specific prerequisites are required. The course begins with foundational concepts and builds progressively. A genuine interest in philosophical inquiry is the only requirement.' 
+              },
+              { 
+                q: 'How long will I have access to the course?', 
+                a: 'Your enrollment provides lifetime access to all course materials, including any future updates or additions to the curriculum.' 
+              },
+              { 
+                q: 'Is there a refund policy?', 
+                a: 'Yes. We offer a 30-day satisfaction guarantee. If the course does not meet your expectations, contact us for a full refund.' 
+              },
+              { 
+                q: 'How does the AI assessment work?', 
+                a: 'After each lecture, our AI system generates personalized questions based on the material. You may respond via text or voice, and receive feedback on your understanding.' 
+              },
+              { 
+                q: 'Can I download the materials for offline study?', 
+                a: 'Yes. All audio lectures and written materials are available for download.' 
+              },
+            ].map((faq, i) => (
+              <details key={i} className="group border border-stone-200 rounded-lg">
+                <summary className="p-4 cursor-pointer font-medium text-stone-900 hover:bg-stone-50 transition flex items-center justify-between">
+                  {faq.q}
+                  <span className="text-stone-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div className="px-4 pb-4 text-stone-600">
+                  {faq.a}
+                </div>
+              </details>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="bg-gradient-to-r from-gray-900 to-gray-800 py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Ready to Transform Your Thinking?
-          </h2>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join students who are mastering the algorithms of cognition
-          </p>
-          <Link
-            href="/checkout"
-            className="inline-block bg-white text-gray-900 font-bold px-10 py-4 rounded-xl text-lg hover:bg-gray-100 transition shadow-xl"
-          >
-            Get Started Today — $30
-          </Link>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12 border-t border-gray-800">
-        <div className="container mx-auto px-4">
+      <footer className="bg-stone-900 text-stone-400 py-12 border-t-4 border-amber-700">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">🧠</span>
-              <span className="font-bold text-white">Thinking Course</span>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-amber-700 rounded-full flex items-center justify-center">
+                <span>🎓</span>
+              </div>
+              <span className="font-serif">Academy of Thought</span>
             </div>
             <div className="flex gap-8 text-sm">
-              <Link href="/lessons" className="hover:text-white transition">Lessons</Link>
+              <Link href="/lessons" className="hover:text-white transition">Curriculum</Link>
               <Link href="#" className="hover:text-white transition">Terms</Link>
               <Link href="#" className="hover:text-white transition">Privacy</Link>
               <Link href="#" className="hover:text-white transition">Contact</Link>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+          <div className="border-t border-stone-800 mt-8 pt-8 text-center text-sm">
             © 2025 Algorithms of Thinking and Cognition. All rights reserved.
           </div>
         </div>
