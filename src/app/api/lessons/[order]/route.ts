@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 // Статический конфиг количества слайдов (из /public/data/slides-config.json)
 const SLIDES_CONFIG: Record<number, number> = {
@@ -33,6 +35,19 @@ export async function GET(
   { params }: { params: { order: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    
+    // Проверяем, является ли пользователь администратором
+    const isAdmin = session?.user?.role === 'ADMIN';
+    
+    // Если пользователь не авторизован, возвращаем ошибку
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Access denied. Please log in to access lessons.' },
+        { status: 401 }
+      );
+    }
+    
     const orderNum = parseInt(params.order);
     
     if (isNaN(orderNum)) {
@@ -40,6 +55,25 @@ export async function GET(
         { error: 'Invalid lesson number' },
         { status: 400 }
       );
+    }
+    
+    // Если пользователь админ, пропускаем проверку покупки
+    if (!isAdmin) {
+      // Для обычных пользователей проверяем наличие покупки
+      const userHasPurchased = await prisma.purchase.findFirst({
+        where: {
+          userId: session!.user.id,
+          status: 'COMPLETED',
+        },
+      });
+      
+      // Если пользователь не приобрел курс, возвращаем ошибку
+      if (!userHasPurchased) {
+        return NextResponse.json(
+          { error: 'Access denied. Please purchase the course to access lessons.' },
+          { status: 403 }
+        );
+      }
     }
 
     const lesson = await prisma.lesson.findFirst({

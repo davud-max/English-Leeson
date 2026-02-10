@@ -43,6 +43,7 @@ export default function DynamicLessonPage() {
   const [navigation, setNavigation] = useState<Navigation | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [unauthorized, setUnauthorized] = useState(false)
   
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -70,6 +71,10 @@ export default function DynamicLessonPage() {
       const data = await res.json()
       
       if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          setUnauthorized(true)
+          return
+        }
         setError(data.error || 'Failed to load lesson')
         return
       }
@@ -280,6 +285,29 @@ export default function DynamicLessonPage() {
       }
     }
   }, [])
+
+  // Unauthorized state
+  if (unauthorized) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">🔒</div>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Access Denied</h2>
+          <p className="text-stone-600 mb-6">
+            Please log in to access the course lessons.
+          </p>
+          <div className="space-x-4">
+            <Link href="/login" className="px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 inline-block mr-2">
+              Sign In
+            </Link>
+            <Link href="/checkout" className="px-6 py-3 bg-stone-700 text-white rounded-lg hover:bg-stone-800 inline-block">
+              Enroll Now
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // Loading state
   if (loading) {

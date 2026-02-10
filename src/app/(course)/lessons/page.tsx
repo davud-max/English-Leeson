@@ -18,6 +18,7 @@ export default function LessonsPage() {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({ total: 0, available: 0 })
+  const [unauthorized, setUnauthorized] = useState(false)
 
   useEffect(() => {
     fetchLessons()
@@ -28,6 +29,11 @@ export default function LessonsPage() {
       const res = await fetch('/api/lessons')
       if (res.ok) {
         const data = await res.json()
+        if (res.status === 401 || res.status === 403) {
+          // Неавторизованный доступ или нет прав доступа
+          setUnauthorized(true)
+          return
+        }
         setLessons(data.lessons || [])
         setStats({ total: data.total || 0, available: data.available || 0 })
       }
@@ -76,8 +82,29 @@ export default function LessonsPage() {
           </div>
         </div>
 
-        {/* Loading State */}
-        {loading ? (
+        {/* Unauthorized State */}
+        {unauthorized ? (
+          <div className="text-center py-20">
+            <h3 className="text-2xl font-bold text-stone-700 mb-4">Access Denied</h3>
+            <p className="text-stone-500 mb-8 max-w-md mx-auto">
+              Please log in to access the course lessons.
+            </p>
+            <div className="space-x-4">
+              <Link 
+                href="/login" 
+                className="inline-block bg-amber-700 text-white hover:bg-amber-800 px-6 py-3 rounded-lg transition"
+              >
+                Sign In
+              </Link>
+              <Link 
+                href="/checkout" 
+                className="inline-block bg-stone-700 text-white hover:bg-stone-800 px-6 py-3 rounded-lg transition"
+              >
+                Enroll Now
+              </Link>
+            </div>
+          </div>
+        ) : loading ? (
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-700"></div>
           </div>
@@ -113,8 +140,8 @@ export default function LessonsPage() {
           </div>
         )}
 
-        {/* Empty State */}
-        {!loading && lessons.length === 0 && (
+        {/* Empty State - только если не unauthorized */}
+        {!loading && lessons.length === 0 && !unauthorized && (
           <div className="text-center py-20">
             <h3 className="text-xl font-semibold text-stone-700 mb-2">No lessons available</h3>
             <p className="text-stone-500">Check back soon for new content!</p>
