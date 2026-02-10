@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface Stats {
   totalUsers: number
@@ -13,15 +15,33 @@ interface Stats {
 }
 
 export default function AdminDashboard() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
   const [seeding, setSeeding] = useState(false)
   const [seedMessage, setSeedMessage] = useState('')
   const [seedError, setSeedError] = useState<string | null>(null)
 
+  // Проверяем, является ли пользователь администратором
   useEffect(() => {
-    fetchStats()
-  }, [])
+    if (status === "authenticated") {
+      if (session?.user?.role !== 'ADMIN') {
+        router.push('/'); // Перенаправляем не-админов на главную
+      }
+    } else if (status === "unauthenticated") {
+      router.push('/admin/login'); // Перенаправляем неавторизованных на страницу входа администратора
+    }
+  }, [session, status, router]);
+
+  // Загружаем статистику только если пользователь - администратор
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.role === 'ADMIN') {
+      fetchStats();
+    }
+  }, [status, session]);
+
+
 
   const fetchStats = async () => {
     try {
@@ -70,12 +90,23 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
               <p className="text-gray-600">Algorithms of Thinking and Cognition</p>
             </div>
-            <Link 
-              href="/" 
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              ← Back to Site
-            </Link>
+            <div className="flex gap-3">
+              <Link 
+                href="/" 
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              >
+                ← Back to Site
+              </Link>
+              <button 
+                onClick={() => {
+                  // Логика выхода из системы
+                  location.href = '/api/auth/signout';
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </header>
