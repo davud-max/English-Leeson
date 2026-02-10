@@ -57,53 +57,63 @@ export default function LessonsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-2xl">
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">📚 Course Lessons</h1>
-              <p className="text-blue-100">Algorithms of Thinking and Cognition</p>
-            </div>
-            <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-stone-50">
+      {/* Navigation */}
+      <nav className="bg-stone-900 text-stone-100 border-b-4 border-amber-700">
+        <div className="max-w-5xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-amber-700 rounded-full flex items-center justify-center">
+                <span>🎓</span>
+              </div>
+              <span className="font-serif font-bold">Academy of Thought</span>
+            </Link>
+            <div className="flex items-center gap-6">
               {session ? (
-                <Link 
-                  href="/dashboard" 
-                  className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg transition-all duration-300"
-                >
+                <Link href="/dashboard" className="text-stone-300 hover:text-white transition text-sm">
                   Dashboard
                 </Link>
               ) : (
-                <Link 
-                  href="/login" 
-                  className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg transition-all duration-300"
-                >
+                <Link href="/login" className="text-stone-300 hover:text-white transition text-sm">
                   Sign In
                 </Link>
               )}
-              <Link 
-                href="/" 
-                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg transition-all duration-300"
-              >
-                ← Home
-              </Link>
+              {!hasAccess && (
+                <Link
+                  href="/checkout"
+                  className="bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded text-sm font-medium transition"
+                >
+                  Enroll
+                </Link>
+              )}
             </div>
           </div>
         </div>
+      </nav>
+
+      {/* Header */}
+      <header className="bg-stone-900 text-white py-12 border-b-4 border-amber-700">
+        <div className="max-w-5xl mx-auto px-6">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">Course Curriculum</h1>
+          <p className="text-stone-400">
+            {stats.total} lectures • Algorithms of Thinking and Cognition
+          </p>
+        </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Access Status */}
+      <main className="max-w-5xl mx-auto px-6 py-10">
+        {/* Access Banner */}
         {sessionStatus !== 'loading' && !hasAccess && (
-          <div className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-6 text-white mb-8 shadow-xl">
+          <div className="bg-stone-800 text-white rounded-lg p-6 mb-10 border-l-4 border-amber-700">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold mb-2">🔐 {session ? 'Unlock Full Course' : 'Sign In to Access'}</h2>
-                <p className="text-amber-100">
+                <h2 className="text-lg font-serif font-bold mb-1">
+                  {session ? '🔐 Enrollment Required' : '🔐 Sign In Required'}
+                </h2>
+                <p className="text-stone-400 text-sm">
                   {session 
-                    ? 'Purchase the course to unlock all lessons and features.'
-                    : 'Create an account or sign in to access the course content.'
+                    ? 'Purchase the course to access all lecture materials.'
+                    : 'Sign in or create an account to access the curriculum.'
                   }
                 </p>
               </div>
@@ -111,99 +121,65 @@ export default function LessonsPage() {
                 {!session && (
                   <Link
                     href="/login"
-                    className="bg-white/20 hover:bg-white/30 text-white font-bold px-6 py-3 rounded-xl transition"
+                    className="border border-stone-600 hover:border-stone-500 text-stone-300 hover:text-white px-5 py-2 rounded text-sm transition"
                   >
                     Sign In
                   </Link>
                 )}
                 <Link
                   href="/checkout"
-                  className="bg-white text-amber-600 font-bold px-6 py-3 rounded-xl hover:bg-amber-50 transition shadow-lg"
+                  className="bg-amber-700 hover:bg-amber-600 text-white px-5 py-2 rounded text-sm font-medium transition"
                 >
-                  Enroll Now - $30
+                  Enroll — $30
                 </Link>
               </div>
             </div>
           </div>
         )}
 
-        {/* Course Info */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Course Overview</h2>
-              <p className="text-gray-600">
-                {stats.total} lessons • {hasAccess ? 'Full access' : 'Preview mode'}
-              </p>
-            </div>
-            {hasAccess && (
-              <div className="flex items-center gap-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600">✓</div>
-                  <div className="text-sm text-gray-500">Enrolled</div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Loading State */}
+        {/* Loading */}
         {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <div className="flex justify-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-800"></div>
           </div>
         ) : (
-          /* Lessons Grid */
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          /* Lessons List */
+          <div className="space-y-3">
             {lessons.map((lesson) => (
-              <div 
+              <Link
                 key={lesson.id}
-                className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 ${
-                  hasAccess 
-                    ? 'hover:shadow-2xl hover:-translate-y-1 cursor-pointer' 
-                    : 'opacity-90'
-                }`}
+                href={`/lessons/${lesson.order}`}
+                className="block bg-white border border-stone-200 rounded-lg p-5 hover:border-amber-700 hover:shadow-md transition group"
               >
-                {/* Card Header */}
-                <div className={`bg-gradient-to-r ${lesson.color || 'from-blue-500 to-indigo-600'} p-4 text-white relative`}>
-                  {!hasAccess && (
-                    <div className="absolute top-2 right-2 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full text-xs">
-                      🔒 Locked
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                      Lesson {lesson.order}
-                    </span>
-                    <span className="text-sm">⏱️ {lesson.duration} min</span>
+                <div className="flex items-center gap-5">
+                  {/* Lesson Number */}
+                  <div className="bg-stone-100 group-hover:bg-amber-700 group-hover:text-white text-stone-600 w-12 h-12 rounded flex items-center justify-center font-serif font-bold text-lg transition flex-shrink-0">
+                    {lesson.order}
                   </div>
-                  <div className="text-4xl mt-2">{lesson.emoji || '📖'}</div>
-                </div>
-                
-                {/* Card Body */}
-                <div className="p-5">
-                  <h3 className="text-lg font-bold text-gray-800 mb-2">{lesson.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {lesson.description || 'No description available'}
-                  </p>
                   
-                  {hasAccess ? (
-                    <Link 
-                      href={`/lessons/${lesson.order}`}
-                      className={`block w-full text-center bg-gradient-to-r ${lesson.color || 'from-blue-500 to-indigo-600'} text-white py-3 rounded-xl font-medium hover:opacity-90 transition-opacity`}
-                    >
-                      Start Lesson →
-                    </Link>
-                  ) : (
-                    <Link
-                      href={`/lessons/${lesson.order}`}
-                      className="block w-full text-center bg-gray-100 text-gray-500 py-3 rounded-xl font-medium hover:bg-gray-200 transition"
-                    >
-                      Preview →
-                    </Link>
-                  )}
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-serif font-bold text-stone-900 text-lg group-hover:text-amber-800 transition">
+                      {lesson.title}
+                    </h3>
+                    <p className="text-stone-500 text-sm mt-1 line-clamp-1">
+                      {lesson.description || 'No description available'}
+                    </p>
+                  </div>
+
+                  {/* Meta */}
+                  <div className="flex items-center gap-4 flex-shrink-0">
+                    <span className="text-stone-400 text-sm hidden sm:inline">
+                      {lesson.duration} min
+                    </span>
+                    {!hasAccess ? (
+                      <span className="text-stone-400">🔒</span>
+                    ) : (
+                      <span className="text-stone-400 group-hover:text-amber-700 transition">→</span>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
@@ -211,33 +187,34 @@ export default function LessonsPage() {
         {/* Empty State */}
         {!loading && lessons.length === 0 && (
           <div className="text-center py-20">
-            <div className="text-6xl mb-4">📚</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No lessons available</h3>
-            <p className="text-gray-500">Check back soon for new content!</p>
+            <div className="text-5xl mb-4">📚</div>
+            <h3 className="text-xl font-serif font-bold text-stone-800 mb-2">No lectures available</h3>
+            <p className="text-stone-500">Check back soon for new content.</p>
           </div>
         )}
 
-        {/* CTA Section */}
-        {!hasAccess && (
-          <div className="mt-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 rounded-3xl p-10 text-white text-center shadow-2xl">
-            <h2 className="text-3xl font-bold mb-4">🚀 Unlock All {stats.total} Lessons!</h2>
-            <p className="text-blue-100 mb-8 text-xl max-w-2xl mx-auto">
-              Get lifetime access to the complete course with AI-generated questions, voice input, and a certificate of completion.
+        {/* CTA */}
+        {!hasAccess && lessons.length > 0 && (
+          <div className="mt-12 bg-stone-900 rounded-lg p-8 text-center text-white">
+            <h2 className="text-2xl font-serif font-bold mb-3">Ready to Begin?</h2>
+            <p className="text-stone-400 mb-6 max-w-lg mx-auto">
+              Gain lifetime access to all {stats.total} lectures, audio narration, 
+              AI assessments, and a certificate of completion.
             </p>
-            <Link 
-              href="/checkout" 
-              className="inline-block bg-white text-blue-600 hover:bg-blue-50 px-10 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-xl"
+            <Link
+              href="/checkout"
+              className="inline-block bg-amber-700 hover:bg-amber-600 text-white font-semibold px-8 py-3 rounded transition"
             >
-              Enroll Now - $30
+              Enroll Now — $30
             </Link>
           </div>
         )}
-      </div>
+      </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-8 mt-16">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2025 Algorithms of Thinking and Cognition. All rights reserved.</p>
+      <footer className="bg-stone-900 text-stone-500 py-8 mt-16 border-t-4 border-amber-700">
+        <div className="max-w-5xl mx-auto px-6 text-center text-sm">
+          <p>© 2025 Algorithms of Thinking and Cognition. All rights reserved.</p>
         </div>
       </footer>
     </div>
