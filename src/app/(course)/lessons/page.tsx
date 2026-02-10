@@ -49,7 +49,7 @@ export default function LessonsPage() {
       const res = await fetch('/api/user/progress')
       if (res.ok) {
         const data = await res.json()
-        setHasAccess(data.hasPurchased || !!data.enrollment)
+        setHasAccess(data.hasAccess || data.isAdmin || data.hasPurchased || !!data.enrollment)
       }
     } catch (error) {
       console.error('Failed to check access:', error)

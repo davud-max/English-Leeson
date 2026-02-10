@@ -31,6 +31,8 @@ export default function DashboardPage() {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [progress, setProgress] = useState<Progress[]>([])
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null)
+  const [hasAccess, setHasAccess] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -58,6 +60,8 @@ export default function DashboardPage() {
         const progressData = await progressRes.json()
         setProgress(progressData.progress || [])
         setEnrollment(progressData.enrollment || null)
+        setIsAdmin(progressData.isAdmin || false)
+        setHasAccess(progressData.hasAccess || progressData.isAdmin || false)
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
@@ -93,6 +97,11 @@ export default function DashboardPage() {
               <span>Thinking Course</span>
             </Link>
             <div className="flex items-center gap-4">
+              {isAdmin && (
+                <Link href="/admin" className="text-amber-600 hover:text-amber-700 text-sm font-medium">
+                  Admin Panel
+                </Link>
+              )}
               <span className="text-gray-600 text-sm">
                 {session.user?.email}
               </span>
@@ -112,14 +121,28 @@ export default function DashboardPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome back, {session.user?.name || 'Student'}! 👋
+            {isAdmin && <span className="ml-2 text-amber-600 text-lg">(Admin)</span>}
           </h1>
           <p className="text-gray-600">
             Continue your journey through the algorithms of thinking and cognition.
           </p>
         </div>
 
-        {/* Enrollment Status */}
-        {!enrollment && (
+        {/* Admin Access Banner */}
+        {isAdmin && !enrollment && (
+          <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl p-6 text-white mb-8">
+            <div className="flex items-center gap-4">
+              <span className="text-4xl">👑</span>
+              <div>
+                <h2 className="text-xl font-bold mb-1">Admin Access</h2>
+                <p className="text-amber-100">You have full access to all lessons as an administrator.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Enrollment Status - only show if not admin and not enrolled */}
+        {!isAdmin && !hasAccess && (
           <div className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-6 text-white mb-8">
             <div className="flex items-center justify-between">
               <div>
@@ -137,13 +160,15 @@ export default function DashboardPage() {
         )}
 
         {/* Progress Card */}
-        {enrollment && (
+        {hasAccess && (
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-gray-900">Your Progress</h2>
-              <span className="text-sm text-gray-500">
-                Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString()}
-              </span>
+              {enrollment && (
+                <span className="text-sm text-gray-500">
+                  Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                </span>
+              )}
             </div>
             
             <div className="flex items-center gap-8 mb-4">
@@ -193,7 +218,7 @@ export default function DashboardPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {lessons.slice(0, 9).map((lesson) => {
               const isCompleted = progress.some(p => p.lessonId === lesson.id && p.completed)
-              const isUnlocked = enrollment || lesson.order <= 2 // Free preview for first 2 lessons
+              const isUnlocked = hasAccess
 
               return (
                 <Link
@@ -253,13 +278,24 @@ export default function DashboardPage() {
             <p className="text-sm text-blue-100">Pick up where you left off</p>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div className="text-2xl mb-2">🎓</div>
-            <h3 className="font-bold text-gray-900 mb-1">Certificate</h3>
-            <p className="text-sm text-gray-500">
-              {progressPercent === 100 ? 'Download your certificate' : `Complete ${totalLessons - completedLessons} more lessons`}
-            </p>
-          </div>
+          {isAdmin ? (
+            <Link
+              href="/admin"
+              className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl p-6 shadow-md text-white hover:opacity-90 transition"
+            >
+              <div className="text-2xl mb-2">⚙️</div>
+              <h3 className="font-bold mb-1">Admin Panel</h3>
+              <p className="text-sm text-amber-100">Manage course content</p>
+            </Link>
+          ) : (
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <div className="text-2xl mb-2">🎓</div>
+              <h3 className="font-bold text-gray-900 mb-1">Certificate</h3>
+              <p className="text-sm text-gray-500">
+                {progressPercent === 100 ? 'Download your certificate' : `Complete ${totalLessons - completedLessons} more lessons`}
+              </p>
+            </div>
+          )}
         </div>
       </main>
     </div>

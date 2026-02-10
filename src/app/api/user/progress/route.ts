@@ -11,6 +11,14 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // Get user with role
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true },
+    })
+
+    const isAdmin = user?.role === 'ADMIN'
+
     // Get user's progress
     const progress = await prisma.progress.findMany({
       where: { userId: session.user.id },
@@ -46,6 +54,9 @@ export async function GET(req: NextRequest) {
       progress,
       enrollment,
       hasPurchased: !!purchase,
+      isAdmin,
+      // Admin has full access even without purchase
+      hasAccess: isAdmin || !!purchase || !!enrollment,
     })
   } catch (error) {
     console.error('Error fetching progress:', error)

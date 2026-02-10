@@ -52,19 +52,30 @@ export async function GET(
     let hasAccess = false;
     
     if (session?.user?.id) {
-      // Проверяем enrollment или покупку
-      const enrollment = await prisma.enrollment.findFirst({
-        where: { userId: session.user.id },
+      // Получаем пользователя с ролью
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true },
       });
-      
-      const purchase = await prisma.purchase.findFirst({
-        where: { 
-          userId: session.user.id,
-          status: 'COMPLETED',
-        },
-      });
-      
-      hasAccess = !!(enrollment || purchase);
+
+      // Админ имеет полный доступ
+      if (user?.role === 'ADMIN') {
+        hasAccess = true;
+      } else {
+        // Проверяем enrollment или покупку
+        const enrollment = await prisma.enrollment.findFirst({
+          where: { userId: session.user.id },
+        });
+        
+        const purchase = await prisma.purchase.findFirst({
+          where: { 
+            userId: session.user.id,
+            status: 'COMPLETED',
+          },
+        });
+        
+        hasAccess = !!(enrollment || purchase);
+      }
     }
 
     // Если нет доступа - возвращаем только превью
