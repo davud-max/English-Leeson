@@ -1,5 +1,12 @@
-#!/bin/sh
+#!/bin/bash
+
+# Устанавливаем переменные окружения
+export NODE_ENV=production
+
+# Выполняем миграцию базы данных
 echo "Running database migrations..."
-npx prisma db push --accept-data-loss
+npx prisma migrate deploy --skip-generate
+
+# Запускаем приложение
 echo "Starting application..."
-npm start
+exec npm start
