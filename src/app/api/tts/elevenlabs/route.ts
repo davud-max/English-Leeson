@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { 
       text, 
-      voiceId = 'pNInz6obpgDQGcFmaJgB', // Adam by default
+      voiceId = 'erDx71FK2teMZ7g6khzw', // New Voice by default
       stability = 0.5,
       similarityBoost = 0.75 
     } = body

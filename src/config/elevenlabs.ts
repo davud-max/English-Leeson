@@ -25,7 +25,7 @@ export const ELEVENLABS_CONFIG = {
   },
   
   // Default settings
-  defaultVoice: 'pNInz6obpgDQGcFmaJgB', // Adam - male deep voice
+  defaultVoice: 'erDx71FK2teMZ7g6khzw', // New Voice - male voice
   model: 'eleven_multilingual_v2',
   
   // Voice settings

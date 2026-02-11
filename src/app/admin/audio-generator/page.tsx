@@ -43,7 +43,7 @@ export default function AudioGeneratorPage() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [slides, setSlides] = useState<Slide[]>([]);
-  const [selectedVoice, setSelectedVoice] = useState('TxGEqnHWrfWFTfGW9XjX'); // Josh by default
+  const [selectedVoice, setSelectedVoice] = useState('erDx71FK2teMZ7g6khzw'); // New Voice by default
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);

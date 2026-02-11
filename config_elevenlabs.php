@@ -27,7 +27,7 @@ define('ELEVENLABS_VOICE_ELLI', '21m00Tcm4TlvDq8ikWAM');    // Elli - Female Eng
 define('ELEVENLABS_MODEL', 'eleven_multilingual_v2');
 
 // Default voice for quiz
-define('ELEVENLABS_DEFAULT_VOICE', ELEVENLABS_VOICE_JOSH);
+define('ELEVENLABS_DEFAULT_VOICE', ELEVENLABS_VOICE_NEW);
 
 // Default voice for lessons (English)
 define('ELEVENLABS_LESSON_VOICE', ELEVENLABS_VOICE_JOSH);

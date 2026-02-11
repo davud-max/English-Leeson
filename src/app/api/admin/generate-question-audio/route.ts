@@ -70,7 +70,7 @@ async function generateViaDirect(text: string, voiceId: string): Promise<string>
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { lessonId, questions, adminKey } = body
+    const { lessonId, questions, adminKey, voiceId = 'pNInz6obpgDQGcFmaJgB' } = body // Используем Adam как голос по умолчанию
 
     // Verify admin key
     if (adminKey !== process.env.ADMIN_SECRET_KEY) {
@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`🎤 Starting audio generation for Lesson ${lessonId} questions...`)
+    console.log(`🔊 Using voice ID: ${voiceId}`)
 
     const results = []
     let successCount = 0
@@ -105,10 +106,10 @@ export async function POST(request: NextRequest) {
         // Try proxy first, then direct API
         let audioBase64: string
         try {
-          audioBase64 = await generateViaProxy(questionText, VOICE_ID)
+          audioBase64 = await generateViaProxy(questionText, voiceId)
         } catch (proxyError) {
           console.log('Proxy failed, trying direct API...', proxyError)
-          audioBase64 = await generateViaDirect(questionText, VOICE_ID)
+          audioBase64 = await generateViaDirect(questionText, voiceId)
         }
         
         const sizeKB = Math.round((audioBase64.length * 3 / 4) / 1024)

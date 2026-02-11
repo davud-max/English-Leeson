@@ -46,6 +46,7 @@ export default function AdminQuestionsPage() {
   const [count, setCount] = useState(5)
   const [difficulty, setDifficulty] = useState('mixed')
   const [adminKey, setAdminKey] = useState('')
+  const [voiceId, setVoiceId] = useState('pNInz6obpgDQGcFmaJgB') // Adam по умолчанию
   const [isGenerating, setIsGenerating] = useState(false)
   const [result, setResult] = useState<{ success: boolean; message: string; questions?: Question[] } | null>(null)
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
@@ -128,6 +129,7 @@ export default function AdminQuestionsPage() {
           lessonId: selectedLesson,
           questions: result.questions,
           adminKey,
+          voiceId,
         }),
       })
 
@@ -364,6 +366,29 @@ export default function AdminQuestionsPage() {
               <div className="border-t border-slate-700 pt-6 space-y-4">
                 <h3 className="text-xl font-bold text-white">🎙️ Audio Generation</h3>
                 
+                {/* Voice Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Voice for Audio Generation
+                  </label>
+                  <select
+                    value={voiceId}
+                    onChange={(e) => setVoiceId(e.target.value)}
+                    className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  >
+                    <option value="pNInz6obpgDQGcFmaJgB">Adam (default)</option>
+                    <option value="21m00Tcm4TlvDq8ikWAM">Antoni</option>
+                    <option value="l69JV1jh1h6FUJhOsxHe">Josh</option>
+                    <option value="XB0fD6dbPRx3HKNjwvxu">Arnold</option>
+                    <option value="VR6AewLTigWG4xSOO92w">Sam</option>
+                    <option value="onwK4e9ZLuT6aEGHFuLU">Matthew</option>
+                    <option value="Yko7PKHZNXotIU88wEQ5">Michael</option>
+                    <option value="AZnzlk1XVDkiWZQ1jQtc">Rachel</option>
+                    <option value="2EiwWnXFnvU5JabPBFxf">Zoe</option>
+                    <option value="EXAVITQu4vr4xnSDxMaL">Chloe</option>
+                  </select>
+                </div>
+
                 {/* Generate Audio Button */}
                 <button
                   onClick={generateAudioNow}
