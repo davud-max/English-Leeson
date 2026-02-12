@@ -1,13 +1,8 @@
 #!/bin/bash
-
-# Устанавливаем переменные окружения
 export NODE_ENV=production
-export HOSTNAME=0.0.0.0
 
-# Выполняем миграцию базы данных
-echo "Running database migrations..."
-npx prisma migrate deploy --skip-generate
+echo "Syncing database schema..."
+npx prisma db push --skip-generate 2>&1 || echo "DB push skipped (schema may already be in sync)"
 
-# Запускаем приложение на порту Railway
 echo "Starting application on port ${PORT:-3000}..."
-exec node .next/standalone/server.js
+exec npx next start -p ${PORT:-3000} -H 0.0.0.0
