@@ -1,6 +1,6 @@
 [build]
-builder = "nixpacks"
-buildCommand = "npm install && npx prisma generate && npm run build"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
 startCommand = "node .next/standalone/server.js"

@@ -26,4 +26,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Запускаем приложение
-CMD ["npm", "start"]
+CMD ["sh", "start.sh"]

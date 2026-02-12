@@ -8,7 +8,7 @@ export default withAuth(
     const isAdmin = token?.role === "ADMIN"
     const pathname = req.nextUrl.pathname
 
-    const publicPages = ["/", "/login", "/register", "/checkout", "/api/auth", "/api/checkout", "/api/webhooks"]
+    const publicPages = ["/", "/login", "/register", "/checkout", "/api/auth", "/api/checkout", "/api/webhooks", "/admin/login", "/api/admin/login"]
     const adminPages = ["/admin"]
     const coursePages = ["/lessons", "/dashboard"]
 
@@ -19,7 +19,7 @@ export default withAuth(
     if (isPublicPage) return NextResponse.next()
 
     if (isAdminPage) {
-      if (!isAuth) return NextResponse.redirect(new URL("/login?callbackUrl=/admin", req.url))
+      if (!isAuth) return NextResponse.redirect(new URL("/admin/login", req.url))
       if (!isAdmin) return NextResponse.redirect(new URL("/dashboard?error=admin_only", req.url))
       return NextResponse.next()
     }
@@ -36,7 +36,14 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token, req }) => {
+        const pathname = req.nextUrl.pathname;
+        // Пропускаем публичные страницы без авторизации
+        const publicPaths = ["/", "/login", "/register", "/checkout", "/admin/login", "/api/auth", "/api/checkout", "/api/webhooks", "/api/admin/login"];
+        if (publicPaths.some(p => pathname.startsWith(p))) return true;
+        // Для остальных страниц требуется токен
+        return !!token;
+      },
     },
   }
 )
