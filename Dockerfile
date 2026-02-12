@@ -22,6 +22,16 @@ RUN npx prisma generate
 # Собираем приложение
 RUN npm run build
 
+# Копируем static и public в standalone (нужно для standalone output)
+RUN cp -r .next/static .next/standalone/.next/static || true
+RUN cp -r public .next/standalone/public || true
+
+# Копируем prisma и start.sh в standalone
+RUN cp -r prisma .next/standalone/prisma || true
+RUN cp start.sh .next/standalone/start.sh || true
+RUN cp -r node_modules/.prisma .next/standalone/node_modules/.prisma || true
+RUN cp -r node_modules/@prisma .next/standalone/node_modules/@prisma || true
+
 # Экспортируем порт
 EXPOSE 3000
 
