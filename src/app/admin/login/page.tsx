@@ -35,7 +35,7 @@ export default function AdminLoginPage() {
       const signInResult = await signIn('credentials', {
         redirect: false,
         email: 'admin@davudx.com',
-        password: '', // специальный пароль для аутентификации администратора
+        password: '114422', // специальный пароль для аутентификации администратора
       });
 
       if (signInResult?.ok) {
