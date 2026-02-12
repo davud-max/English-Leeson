@@ -1,5 +1,8 @@
 # Используем официальный образ Node.js
-FROM node:18-alpine
+FROM node:18-slim
+
+# Устанавливаем зависимости для Prisma
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
