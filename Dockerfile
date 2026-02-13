@@ -4,6 +4,9 @@ RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/
 
 WORKDIR /app
 
+# Cache bust
+ENV CACHE_BUST=2026-02-13
+
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
 
