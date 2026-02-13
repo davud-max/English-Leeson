@@ -1,17 +1,21 @@
 // Test GitHub Token API
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'ADMIN') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-  const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY;
   
   const results = {
     timestamp: new Date().toISOString(),
     environment: {
       GITHUB_TOKEN_EXISTS: !!GITHUB_TOKEN,
-      GITHUB_TOKEN_LENGTH: GITHUB_TOKEN?.length || 0,
-      GITHUB_TOKEN_PREFIX: GITHUB_TOKEN?.substring(0, 4) || 'N/A',
-      ADMIN_SECRET_KEY_EXISTS: !!ADMIN_SECRET_KEY,
+      ADMIN_SECRET_KEY_EXISTS: !!process.env.ADMIN_SECRET_KEY,
     },
     githubTest: null as null | { success: boolean; user?: string; scopes?: string; error?: string },
   };

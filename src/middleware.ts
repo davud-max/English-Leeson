@@ -8,42 +8,55 @@ export default withAuth(
     const isAdmin = token?.role === "ADMIN"
     const pathname = req.nextUrl.pathname
 
-    const publicPages = ["/", "/login", "/register", "/checkout", "/api/auth", "/api/checkout", "/api/webhooks", "/admin/login", "/api/admin/login", "/api/health"]
-    const adminPages = ["/admin"]
-    const coursePages = ["/lessons", "/dashboard"]
+    const isPublicExact =
+      pathname === "/" ||
+      pathname === "/login" ||
+      pathname === "/register" ||
+      pathname === "/admin/login" ||
+      pathname === "/api/admin/login" ||
+      pathname === "/api/health"
 
-    const isPublicPage = publicPages.some(page => pathname.startsWith(page))
-    const isAdminPage = adminPages.some(page => pathname.startsWith(page))
-    const isCoursePage = coursePages.some(page => pathname.startsWith(page))
+    const isPublicPrefix =
+      pathname.startsWith("/checkout") ||
+      pathname.startsWith("/api/auth") ||
+      pathname.startsWith("/api/checkout") ||
+      pathname.startsWith("/api/webhooks")
 
-    if (isPublicPage) return NextResponse.next()
+    if (isPublicExact || isPublicPrefix) return NextResponse.next()
 
-    if (isAdminPage) {
-      if (!isAuth) return NextResponse.redirect(new URL("/admin/login", req.url))
-      if (!isAdmin) return NextResponse.redirect(new URL("/dashboard?error=admin_only", req.url))
+    const isAdminPage = pathname === "/admin" || pathname.startsWith("/admin/")
+    const isAdminApi = pathname === "/api/admin" || pathname.startsWith("/api/admin/")
+    const isCoursePage = pathname === "/lessons" || pathname.startsWith("/lessons/") || pathname === "/dashboard" || pathname.startsWith("/dashboard/")
+
+    if (isAdminPage || isAdminApi) {
+      if (!isAuth) {
+        if (pathname.startsWith("/api/")) {
+          return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+        return NextResponse.redirect(new URL("/admin/login", req.url))
+      }
+      if (!isAdmin) {
+        if (pathname.startsWith("/api/")) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+        }
+        return NextResponse.redirect(new URL("/dashboard?error=admin_only", req.url))
+      }
       return NextResponse.next()
     }
 
-    if (isCoursePage) {
-      if (!isAuth) {
-        const callbackUrl = encodeURIComponent(pathname)
-        return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, req.url))
+    if (isCoursePage && !isAuth) {
+      if (pathname.startsWith("/api/")) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
       }
-      return NextResponse.next()
+      const callbackUrl = encodeURIComponent(pathname)
+      return NextResponse.redirect(new URL(`/login?callbackUrl=${callbackUrl}`, req.url))
     }
 
     return NextResponse.next()
   },
   {
     callbacks: {
-      authorized: ({ token, req }) => {
-        const pathname = req.nextUrl.pathname;
-        // Пропускаем публичные страницы без авторизации
-        const publicPaths = ["/", "/login", "/register", "/checkout", "/admin/login", "/api/auth", "/api/checkout", "/api/webhooks", "/api/admin/login", "/api/health"];
-        if (publicPaths.some(p => pathname.startsWith(p))) return true;
-        // Для остальных страниц требуется токен
-        return !!token;
-      },
+      authorized: () => true,
     },
   }
 )

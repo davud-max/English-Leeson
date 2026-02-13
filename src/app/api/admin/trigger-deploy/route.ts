@@ -1,15 +1,22 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 const RAILWAY_API_TOKEN = process.env.RAILWAY_API_TOKEN;
 const RAILWAY_PROJECT_ID = process.env.RAILWAY_PROJECT_ID;
 const RAILWAY_SERVICE_ID = process.env.RAILWAY_SERVICE_ID;
 
 export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'ADMIN') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   try {
     const body = await request.json();
     const { adminKey } = body;
 
-    // Verify admin key (optional, for extra security)
+    // Verify admin key (optional, extra protection for clients that pass it)
     if (adminKey && adminKey !== process.env.ADMIN_SECRET_KEY) {
       return NextResponse.json(
         { error: 'Invalid admin key' },

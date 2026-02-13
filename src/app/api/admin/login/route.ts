@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +15,8 @@ export async function POST(request: Request) {
       );
     }
 
+    const hashedPassword = await bcrypt.hash(adminSecretKey, 10);
+
     // Находим или создаем администратора
     let adminUser = await prisma.user.findFirst({
       where: { email: 'admin@davudx.com' }
@@ -26,14 +29,17 @@ export async function POST(request: Request) {
           email: 'admin@davudx.com',
           name: 'Administrator',
           role: 'ADMIN',
-          password: '', // Без пароля, т.к. используется специальный вход
+          password: hashedPassword,
         }
       });
     } else {
-      // Обновляем роль на ADMIN, если пользователь уже существует
+      // Обновляем роль и пароль администратора
       adminUser = await prisma.user.update({
         where: { id: adminUser.id },
-        data: { role: 'ADMIN' },
+        data: {
+          role: 'ADMIN',
+          password: hashedPassword,
+        },
       });
     }
 
