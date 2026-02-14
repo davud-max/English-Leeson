@@ -198,16 +198,15 @@ export default function DashboardPage() {
                   }`}
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl bg-gradient-to-br ${lesson.color || 'from-blue-500 to-indigo-600'} text-white`}>
-                      {lesson.emoji || '📖'}
-                    </div>
+                    <span className="inline-flex items-center rounded-sm border border-stone-300 bg-stone-100 px-2 py-1 text-xs font-semibold text-stone-700">
+                      Lesson {lesson.order}
+                    </span>
                     {isCompleted ? (
                       <span className="text-emerald-600 text-xl">✓</span>
                     ) : !isUnlocked ? (
                       <span className="text-stone-400">🔒</span>
                     ) : null}
                   </div>
-                  <div className="text-xs text-stone-400 mb-1">Lesson {lesson.order}</div>
                   <h3 className="font-semibold text-stone-800 text-sm line-clamp-2">{lesson.title}</h3>
                   <div className="text-xs text-stone-400 mt-2">{lesson.duration} min</div>
                 </Link>
