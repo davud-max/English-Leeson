@@ -30,7 +30,6 @@ export default function LessonsPage() {
       if (res.ok) {
         const data = await res.json()
         if (res.status === 401 || res.status === 403) {
-          // Неавторизованный доступ или нет прав доступа
           setUnauthorized(true)
           return
         }
@@ -140,7 +139,6 @@ export default function LessonsPage() {
           </div>
         )}
 
-        {/* Empty State - только если не unauthorized */}
         {!loading && lessons.length === 0 && !unauthorized && (
           <div className="text-center py-20">
             <h3 className="text-xl font-semibold text-stone-700 mb-2">No lessons available</h3>

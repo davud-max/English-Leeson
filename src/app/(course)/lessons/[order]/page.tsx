@@ -52,7 +52,6 @@ export default function DynamicLessonPage() {
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  // Загрузка урока
   useEffect(() => {
     if (isNaN(lessonOrder)) {
       setError('Invalid lesson number')
@@ -88,7 +87,6 @@ export default function DynamicLessonPage() {
     }
   }
 
-  // Создаём слайды из контента если нет готовых
   const slides: Slide[] = lesson?.slides || (lesson?.content ? [{
     id: 1,
     title: lesson.title,
@@ -99,48 +97,39 @@ export default function DynamicLessonPage() {
 
   const totalSlides = slides.length
 
-  // Простая функция воспроизведения слайда
   const playSlide = useCallback((slideIndex: number) => {
     const totalSlides = slides.length
     console.log(`Playing slide ${slideIndex + 1} of ${totalSlides}`)
     
-    // Останавливаем предыдущее аудио
     if (audioRef.current) {
       audioRef.current.pause()
       audioRef.current = null
     }
     
-    // Создаём новый Audio объект
     const audio = new Audio(`/audio/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`)
     audioRef.current = audio
     
-    // Обновление прогресса
     audio.ontimeupdate = () => {
       if (audio.duration) {
         setProgress((audio.currentTime / audio.duration) * 100)
       }
     }
     
-    // Когда аудио закончилось - переход к следующему слайду
     audio.onended = () => {
       console.log(`Slide ${slideIndex + 1} ended`)
       if (slideIndex < totalSlides - 1) {
         const nextSlide = slideIndex + 1
         setCurrentSlide(nextSlide)
         setProgress(0)
-        // Рекурсивно запускаем следующий слайд
         playSlide(nextSlide)
       } else {
-        // Конец урока
         setIsPlaying(false)
         setProgress(100)
       }
     }
     
-    // Ошибка загрузки - пробуем slide1.mp3 или пропускаем
     audio.onerror = () => {
       console.log(`Error loading slide ${slideIndex + 1}, trying slide1.mp3`)
-      // Пробуем fallback на slide1.mp3
       const fallbackAudio = new Audio(`/audio/lesson${lessonOrder}/slide1.mp3`)
       audioRef.current = fallbackAudio
       
@@ -163,7 +152,6 @@ export default function DynamicLessonPage() {
       }
       
       fallbackAudio.onerror = () => {
-        // Нет аудио - используем таймер
         console.log('No audio available, using timer')
         setTimeout(() => {
           if (slideIndex < totalSlides - 1) {
@@ -181,11 +169,9 @@ export default function DynamicLessonPage() {
       fallbackAudio.play().catch(console.error)
     }
     
-    // Запускаем воспроизведение
     audio.play().catch((err) => {
       console.error('Audio play error:', err)
       if (err.name === 'NotSupportedError' || err.name === 'NotAllowedError') {
-        // Safari блокирует автовоспроизведение
         setIsPlaying(false)
         alert('Please click Play button to start audio')
       }
@@ -194,16 +180,13 @@ export default function DynamicLessonPage() {
 
   const togglePlay = () => {
     if (isPlaying) {
-      // Пауза - просто останавливаем, НЕ удаляем аудио объект
       if (audioRef.current) {
         audioRef.current.pause()
       }
       setIsPlaying(false)
     } else {
-      // Воспроизведение
       setIsPlaying(true)
       
-      // Если аудио уже существует - просто продолжаем воспроизведение
       if (audioRef.current) {
         audioRef.current.play().catch((err) => {
           console.error('Play failed:', err)
@@ -211,7 +194,6 @@ export default function DynamicLessonPage() {
           alert('Audio playback failed. Please try again.')
         })
       } else {
-        // Создаём новый аудио объект только если его нет
         setProgress(0)
         
         const audioPath = `/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`
@@ -239,7 +221,6 @@ export default function DynamicLessonPage() {
         
         audio.onerror = () => {
           console.error(`Error loading slide ${currentSlide + 1}`)
-          // Переходим к следующему слайду
           if (currentSlide < totalSlides - 1) {
             const nextSlide = currentSlide + 1
             setCurrentSlide(nextSlide)
@@ -250,7 +231,6 @@ export default function DynamicLessonPage() {
           }
         }
         
-        // Запускаем немедленно - это важно для Safari
         audio.play().catch((err) => {
           console.error('Play failed:', err)
           setIsPlaying(false)
@@ -261,7 +241,6 @@ export default function DynamicLessonPage() {
   }
 
   const goToSlide = (index: number) => {
-    // Останавливаем текущее аудио
     if (audioRef.current) {
       audioRef.current.pause()
       audioRef.current = null
@@ -270,13 +249,11 @@ export default function DynamicLessonPage() {
     setCurrentSlide(index)
     setProgress(0)
     
-    // Если играем - запускаем новый слайд
     if (isPlaying) {
       playSlide(index)
     }
   }
 
-  // Cleanup при размонтировании
   useEffect(() => {
     return () => {
       if (audioRef.current) {

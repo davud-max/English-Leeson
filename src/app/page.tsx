@@ -29,22 +29,22 @@ export default function HomePage() {
   const lessonsCount = lessons.length || 27
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900">
-      <header className="sticky top-0 z-40 border-b border-stone-200 bg-stone-50/95 backdrop-blur">
+    <div className="min-h-screen bg-amber-50/40 text-stone-900">
+      <header className="sticky top-0 z-40 border-b border-amber-200 bg-amber-50/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <div className="font-serif text-lg font-semibold tracking-wide">
-            Algorithms of Thinking
+          <div className="font-serif text-lg font-semibold tracking-wide text-stone-900">
+            Algorithms of Thinking and Cognition
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/login"
-              className="rounded-md border border-stone-300 px-3 py-2 text-sm font-medium hover:bg-stone-100"
+              className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium hover:bg-stone-100"
             >
               Sign In
             </Link>
             <Link
               href="/checkout"
-              className="rounded-md bg-stone-900 px-3 py-2 text-sm font-semibold text-white hover:bg-stone-800"
+              className="rounded-md bg-amber-900 px-3 py-2 text-sm font-semibold text-amber-50 hover:bg-amber-800"
             >
               Enroll
             </Link>
@@ -53,53 +53,53 @@ export default function HomePage() {
       </header>
 
       <main>
-        <section className="border-b border-stone-200">
+        <section className="border-b border-amber-200">
           <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1.2fr,0.8fr]">
             <div>
               <p className="mb-4 text-xs uppercase tracking-[0.14em] text-stone-600">
                 Structured online course
               </p>
               <h1 className="font-serif text-3xl leading-tight sm:text-4xl lg:text-5xl">
-                Philosophical and practical foundations of disciplined thinking
+                Algorithms of Thinking and Cognition
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-relaxed text-stone-700 sm:text-lg">
-                A step-by-step curriculum on abstraction, definitions, reasoning,
-                and decision-making. Learn in a clear sequence with lessons,
-                audio narration, and question-based reinforcement.
+                A philosophical course on the structure of thinking,
+                abstraction, and knowledge. A coherent sequence of lessons with
+                audio explanations and question-based reinforcement.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/checkout"
-                  className="rounded-md bg-stone-900 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-stone-800"
+                  className="rounded-md bg-amber-900 px-6 py-3 text-center text-sm font-semibold text-amber-50 hover:bg-amber-800"
                 >
                   Start Course - $30
                 </Link>
                 <Link
                   href="/lessons"
-                  className="rounded-md border border-stone-300 px-6 py-3 text-center text-sm font-semibold text-stone-800 hover:bg-stone-100"
+                  className="rounded-md border border-amber-300 bg-white px-6 py-3 text-center text-sm font-semibold text-stone-800 hover:bg-amber-100/40"
                 >
                   View Curriculum
                 </Link>
               </div>
 
               <div className="mt-8 grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
-                <div className="rounded-md border border-stone-200 bg-white p-3">
+                <div className="rounded-md border border-amber-200 bg-white p-3">
                   <div className="font-semibold">{lessonsCount} lessons</div>
                   <div className="text-stone-600">Structured sequence</div>
                 </div>
-                <div className="rounded-md border border-stone-200 bg-white p-3">
+                <div className="rounded-md border border-amber-200 bg-white p-3">
                   <div className="font-semibold">One-time payment</div>
                   <div className="text-stone-600">Lifetime access</div>
                 </div>
-                <div className="rounded-md border border-stone-200 bg-white p-3 col-span-2 sm:col-span-1">
+                <div className="rounded-md border border-amber-200 bg-white p-3 col-span-2 sm:col-span-1">
                   <div className="font-semibold">Audio + quizzes</div>
                   <div className="text-stone-600">Practice and review</div>
                 </div>
               </div>
             </div>
 
-            <aside className="rounded-lg border border-stone-300 bg-white p-6">
+            <aside className="rounded-lg border border-amber-300 bg-white p-6">
               <h2 className="font-serif text-xl">Program at a glance</h2>
               <div className="mt-4 space-y-3 text-sm text-stone-700">
                 <p>
@@ -121,7 +121,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="border-b border-stone-200 bg-white">
+        <section className="border-b border-amber-200 bg-white">
           <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
             <div className="mb-8 flex items-end justify-between gap-4">
               <div>
@@ -139,7 +139,7 @@ export default function HomePage() {
             </div>
 
             {loading ? (
-              <div className="rounded-lg border border-stone-200 p-6 text-sm text-stone-600">
+              <div className="rounded-lg border border-amber-200 p-6 text-sm text-stone-600">
                 Loading curriculum...
               </div>
             ) : (
@@ -147,7 +147,7 @@ export default function HomePage() {
                 {displayLessons.map((lesson) => (
                   <article
                     key={lesson.order}
-                    className="rounded-md border border-stone-200 p-4"
+                    className="rounded-md border border-amber-200 p-4"
                   >
                     <div className="flex items-center justify-between text-xs uppercase tracking-wide text-stone-500">
                       <span>Lesson {lesson.order}</span>
@@ -164,9 +164,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="bg-stone-100">
+        <section className="bg-amber-100/50">
           <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-            <div className="mx-auto max-w-3xl rounded-lg border border-stone-300 bg-white p-6 sm:p-8">
+            <div className="mx-auto max-w-3xl rounded-lg border border-amber-300 bg-white p-6 sm:p-8">
               <h2 className="font-serif text-2xl sm:text-3xl">Enrollment</h2>
               <p className="mt-3 text-sm leading-relaxed text-stone-700 sm:text-base">
                 One payment gives full access to all current modules and future
@@ -179,7 +179,7 @@ export default function HomePage() {
                 </div>
                 <Link
                   href="/checkout"
-                  className="rounded-md bg-stone-900 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-stone-800"
+                  className="rounded-md bg-amber-900 px-6 py-3 text-center text-sm font-semibold text-amber-50 hover:bg-amber-800"
                 >
                   Proceed to Checkout
                 </Link>
@@ -189,7 +189,7 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-stone-200 bg-stone-50">
+      <footer className="border-t border-amber-200 bg-amber-50">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-stone-600 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <p>© 2026 Algorithms of Thinking and Cognition</p>
           <div className="flex gap-5">

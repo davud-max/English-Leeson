@@ -76,7 +76,6 @@ export default function Lesson13Page() {
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  // Cleanup при размонтировании
   useEffect(() => {
     return () => {
       if (audioRef.current) {
@@ -88,48 +87,39 @@ export default function Lesson13Page() {
 
   const totalSlides = LESSON_13_SLIDES.length
 
-  // Простая функция воспроизведения слайда
   const playSlide = useCallback((slideIndex: number) => {
     const totalSlides = LESSON_13_SLIDES.length
     console.log(`Playing slide ${slideIndex + 1} of ${totalSlides}`)
     
-    // Останавливаем предыдущее аудио
     if (audioRef.current) {
       audioRef.current.pause()
       audioRef.current = null
     }
     
-    // Создаём новый Audio объект
     const audio = new Audio(`/audio/lesson13/slide${slideIndex + 1}.mp3`)
     audioRef.current = audio
     
-    // Обновление прогресса
     audio.ontimeupdate = () => {
       if (audio.duration) {
         setProgress((audio.currentTime / audio.duration) * 100)
       }
     }
     
-    // Когда аудио закончилось - переход к следующему слайду
     audio.onended = () => {
       console.log(`Slide ${slideIndex + 1} ended`)
       if (slideIndex < totalSlides - 1) {
         const nextSlide = slideIndex + 1
         setCurrentSlide(nextSlide)
         setProgress(0)
-        // Рекурсивно запускаем следующий слайд
         playSlide(nextSlide)
       } else {
-        // Конец урока
         setIsPlaying(false)
         setProgress(100)
       }
     }
     
-    // Ошибка загрузки - пробуем slide1.mp3 или пропускаем
     audio.onerror = () => {
       console.log(`Error loading slide ${slideIndex + 1}, trying slide1.mp3`)
-      // Пробуем fallback на slide1.mp3
       const fallbackAudio = new Audio(`/audio/lesson13/slide1.mp3`)
       audioRef.current = fallbackAudio
       
@@ -152,7 +142,6 @@ export default function Lesson13Page() {
       }
       
       fallbackAudio.onerror = () => {
-        // Нет аудио - используем таймер
         console.log('No audio available, using timer')
         setTimeout(() => {
           if (slideIndex < totalSlides - 1) {
@@ -170,11 +159,9 @@ export default function Lesson13Page() {
       fallbackAudio.play().catch(console.error)
     }
     
-    // Запускаем воспроизведение
     audio.play().catch((err) => {
       console.error('Audio play error:', err)
       if (err.name === 'NotSupportedError' || err.name === 'NotAllowedError') {
-        // Safari блокирует автовоспроизведение
         setIsPlaying(false)
         alert('Please click Play button to start audio')
       }
@@ -183,23 +170,19 @@ export default function Lesson13Page() {
 
   const togglePlay = () => {
     if (isPlaying) {
-      // Пауза
       if (audioRef.current) {
         audioRef.current.pause()
       }
       setIsPlaying(false)
     } else {
-      // Запуск - создаём и запускаем аудио синхронно в обработчике клика
       setIsPlaying(true)
       setProgress(0)
       
-      // Останавливаем предыдущее аудио
       if (audioRef.current) {
         audioRef.current.pause()
         audioRef.current = null
       }
       
-      // Создаём аудио синхронно в обработчике клика (важно для Safari)
       const audioPath = `/audio/lesson13/slide${currentSlide + 1}.mp3`
       console.log('Loading audio:', audioPath)
       const audio = new Audio(audioPath)
@@ -225,7 +208,6 @@ export default function Lesson13Page() {
       
       audio.onerror = () => {
         console.error(`Error loading slide ${currentSlide + 1}`)
-        // Переходим к следующему слайду
         if (currentSlide < totalSlides - 1) {
           const nextSlide = currentSlide + 1
           setCurrentSlide(nextSlide)
@@ -236,7 +218,6 @@ export default function Lesson13Page() {
         }
       }
       
-      // Запускаем немедленно - это важно для Safari
       audio.play().catch((err) => {
         console.error('Play failed:', err)
         setIsPlaying(false)
@@ -246,7 +227,6 @@ export default function Lesson13Page() {
   }
 
   const goToSlide = (index: number) => {
-    // Останавливаем текущее аудио
     if (audioRef.current) {
       audioRef.current.pause()
       audioRef.current = null
@@ -255,7 +235,6 @@ export default function Lesson13Page() {
     setCurrentSlide(index)
     setProgress(0)
     
-    // Если играем - запускаем новый слайд
     if (isPlaying) {
       playSlide(index)
     }

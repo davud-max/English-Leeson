@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 
-// 🖐️ Интерактивная иллюстрация: Счет на пальцах
 export function FingerCountingIllustration() {
   const [activeFingers, setActiveFingers] = useState<number[]>([])
   const [isAnimating, setIsAnimating] = useState(false)
@@ -155,7 +154,6 @@ export function FingerCountingIllustration() {
   )
 }
 
-// 📦 Интерактивная иллюстрация: Группировка объектов
 export function GroupingIllustration() {
   const [selectedGroup, setSelectedGroup] = useState<'all' | 'pencils' | 'pens' | 'markers'>('all')
   
@@ -295,7 +293,6 @@ export function GroupingIllustration() {
   )
 }
 
-// 🧮 Интерактивная иллюстрация: Системы счисления
 export function NumberSystemsIllustration() {
   const [selectedSystem, setSelectedSystem] = useState<'decimal' | 'dozen' | 'sexagesimal'>('decimal')
   
