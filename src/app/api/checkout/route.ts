@@ -126,8 +126,8 @@ export async function POST(req: NextRequest) {
           },
         ],
         mode: 'payment',
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://english-leeson-production.up.railway.app'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://english-leeson-production.up.railway.app'}/checkout`,
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://davudx.com'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://davudx.com'}/checkout`,
         customer_email: user.email,
         metadata: {
           userId: user.id,
