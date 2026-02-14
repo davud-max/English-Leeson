@@ -18,6 +18,18 @@ function getEmailConfig() {
   return { apiKey, from }
 }
 
+export function getEmailConfigStatus() {
+  const hasResendApiKey = Boolean(process.env.RESEND_API_KEY)
+  const hasEmailFrom = Boolean(process.env.EMAIL_FROM)
+
+  return {
+    configured: hasResendApiKey && hasEmailFrom,
+    hasResendApiKey,
+    hasEmailFrom,
+    from: process.env.EMAIL_FROM || null,
+  }
+}
+
 export async function sendEmail(params: SendEmailParams) {
   const config = getEmailConfig()
   if (!config) {
