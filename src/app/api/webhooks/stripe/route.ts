@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import Stripe from 'stripe'
+import { sendPurchaseSuccessEmail } from '@/lib/email'
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
@@ -82,6 +83,29 @@ export async function POST(req: NextRequest) {
           },
         },
       })
+
+      const [user, course] = await Promise.all([
+        prisma.user.findUnique({
+          where: { id: userId },
+          select: { email: true },
+        }),
+        prisma.course.findUnique({
+          where: { id: courseId },
+          select: { title: true },
+        }),
+      ])
+
+      if (user?.email && course?.title) {
+        try {
+          await sendPurchaseSuccessEmail({
+            to: user.email,
+            courseTitle: course.title,
+            amountUsd: session.amount_total ? session.amount_total / 100 : undefined,
+          })
+        } catch (emailError) {
+          console.error('Purchase email error:', emailError)
+        }
+      }
 
       console.log('Successfully processed checkout for user:', userId)
     } catch (error) {
