@@ -292,7 +292,7 @@ export default function Lesson13Page() {
       </div>
             
       {/* Scrollable Content */}
-      <main className="max-w-4xl mx-auto px-6 py-10">
+      <main className="max-w-4xl mx-auto px-6 py-10 pb-28">
         
         {/* Content Card */}
         <article className="bg-white rounded-lg shadow-lg border border-stone-200 p-8 md:p-12 mb-8">
@@ -320,15 +320,6 @@ export default function Lesson13Page() {
           </div>
         </article>
 
-        {/* Voice Quiz Button */}
-        <div className="text-center mb-10">
-          <button
-            onClick={() => setShowQuiz(true)}
-            className="px-6 py-2 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-800 transition shadow"
-          >
-            Start Voice Test
-          </button>
-        </div>
       </main>
 
       {/* Voice Quiz Modal */}
@@ -340,26 +331,21 @@ export default function Lesson13Page() {
         />
       )}
 
-      {/* Footer */}
-      <footer className="bg-stone-800 text-stone-400 py-6 mt-16 border-t-4 border-amber-700">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="flex justify-between items-center">
-            <Link 
-              href="/lessons/12"
-              className="hover:text-white transition"
-            >
-              ← Lecture XII
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t-2 border-amber-700 bg-white shadow-[0_-6px_16px_rgba(0,0,0,0.12)]">
+        <div className="max-w-4xl mx-auto px-3 py-3">
+          <div className="grid grid-cols-3 items-center gap-2 text-sm">
+            <Link href="/lessons/12" className="justify-self-start rounded-md border border-stone-300 px-3 py-2 font-medium text-stone-700 hover:bg-stone-100">
+              ← Prev Lesson
             </Link>
-            <span className="text-stone-500 text-sm font-serif">Lecture XIII</span>
-            <Link 
-              href="/lessons/14"
-              className="hover:text-white transition"
-            >
-              Lecture XIV →
+            <button onClick={() => setShowQuiz(true)} className="justify-self-center rounded-md bg-amber-700 px-4 py-2 font-semibold text-white hover:bg-amber-800">
+              Start Voice Test
+            </button>
+            <Link href="/lessons/14" className="justify-self-end rounded-md border border-stone-300 px-3 py-2 font-medium text-stone-700 hover:bg-stone-100">
+              Next Lesson →
             </Link>
           </div>
         </div>
-      </footer>
+      </div>
     </div>
   )
 }
