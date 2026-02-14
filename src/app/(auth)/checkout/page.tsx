@@ -147,7 +147,7 @@ export default function CheckoutPage() {
               <div className="bg-white rounded-2xl shadow-xl p-8">
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">Complete Your Purchase</h1>
                 <p className="text-gray-600 mb-8">
-                  {session ? 'You are logged in. Complete payment below.' : 'Create an account or sign in to continue'}
+                  {session ? 'You are logged in. Complete payment below.' : 'Create your account and pay in one step'}
                 </p>
 
                 {error && (
