@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
+import { getLegacyLessonContent } from '@/lib/legacy-lesson-content';
 
 export async function POST() {
   try {
@@ -12,46 +13,51 @@ export async function POST() {
     for (const lessonOrder of allLessons) {
       // Читаем статический файл урока
       const filePath = path.join(process.cwd(), 'src', 'app', '(course)', 'lessons', String(lessonOrder), 'page.tsx');
-      
-      if (!fs.existsSync(filePath)) {
-        updates.push({ order: lessonOrder, status: 'file not found', path: filePath });
-        continue;
-      }
-      
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      
-      // Извлекаем массив слайдов из кода - УЛУЧШЕННЫЙ ПАРСИНГ
-      const slidesArrayMatch = fileContent.match(/const LESSON_\d+_SLIDES = \[([\s\S]*?)\];/);
-      
-      if (!slidesArrayMatch) {
-        updates.push({ order: lessonOrder, status: 'slides array not found' });
-        continue;
-      }
-      
-      // Парсим слайды
-      const slidesText = slidesArrayMatch[1];
       const slides = [];
-      
-      // Ищем все объекты слайдов
-      const slideMatches = slidesText.matchAll(/\{[\s\S]*?id:\s*(\d+),[\s\S]*?title:\s*"([^"]+)",[\s\S]*?content:\s*"([\s\S]*?)",[\s\S]*?emoji:\s*"([^"]+)",[\s\S]*?duration:\s*(\d+)[\s\S]*?\}/g);
-      
-      for (const match of slideMatches) {
-        const [, id, title, content, emoji, duration] = match;
-        
-        if (content && content.length > 10) {
-          slides.push({
-            id: parseInt(id),
-            title: title,
-            content: content.replace(/\\n/g, '\n').replace(/\\"/g, '"'), // Убираем экранирование
-            emoji: emoji,
-            duration: parseInt(duration)
-          });
+      const legacyLesson = getLegacyLessonContent(lessonOrder);
+
+      if (legacyLesson?.slides?.length) {
+        slides.push(...legacyLesson.slides);
+      } else {
+        if (!fs.existsSync(filePath)) {
+          updates.push({ order: lessonOrder, status: 'file not found', path: filePath });
+          continue;
         }
-      }
-      
-      if (slides.length === 0) {
-        updates.push({ order: lessonOrder, status: 'no slides parsed' });
-        continue;
+        
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        
+        // Извлекаем массив слайдов из кода - УЛУЧШЕННЫЙ ПАРСИНГ
+        const slidesArrayMatch = fileContent.match(/const LESSON_\d+_SLIDES = \[([\s\S]*?)\]\s*;?/);
+        
+        if (!slidesArrayMatch) {
+          updates.push({ order: lessonOrder, status: 'slides array not found' });
+          continue;
+        }
+        
+        // Парсим слайды
+        const slidesText = slidesArrayMatch[1];
+        
+        // Ищем все объекты слайдов
+        const slideMatches = slidesText.matchAll(/\{[\s\S]*?id:\s*(\d+),[\s\S]*?title:\s*"([^"]+)",[\s\S]*?content:\s*"([\s\S]*?)",[\s\S]*?emoji:\s*"([^"]+)",[\s\S]*?duration:\s*(\d+)[\s\S]*?\}/g);
+        
+        for (const match of slideMatches) {
+          const [, id, title, content, emoji, duration] = match;
+          
+          if (content && content.length > 10) {
+            slides.push({
+              id: parseInt(id),
+              title: title,
+              content: content.replace(/\\n/g, '\n').replace(/\\"/g, '"'), // Убираем экранирование
+              emoji: emoji,
+              duration: parseInt(duration)
+            });
+          }
+        }
+        
+        if (slides.length === 0) {
+          updates.push({ order: lessonOrder, status: 'no slides parsed' });
+          continue;
+        }
       }
       
       // Находим урок в базе

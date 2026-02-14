@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { getLegacyLessonContent } from '@/lib/legacy-lesson-content';
 
 // Статический конфиг количества слайдов (из /public/data/slides-config.json)
 const SLIDES_CONFIG: Record<number, number> = {
@@ -95,33 +96,57 @@ export async function GET(
       },
     });
 
-    if (!lesson) {
+    const legacyLesson = getLegacyLessonContent(orderNum);
+
+    if (!lesson && !legacyLesson) {
       return NextResponse.json(
         { error: 'Lesson not found' },
         { status: 404 }
       );
     }
 
-    // Если слайды не заполнены в базе - создаём на основе конфига
-    let slides = lesson.slides;
-    
-    if (!slides || (Array.isArray(slides) && slides.length === 0)) {
-      const slideCount = SLIDES_CONFIG[orderNum] || 1;
-      
-      slides = Array.from({ length: slideCount }, (_, index) => ({
-        id: index + 1,
-        title: `Part ${index + 1}`,
-        content: lesson.content || `Content for part ${index + 1}`,
-        emoji: lesson.emoji || '📖',
-        duration: 30000
-      }));
-    }
+    // If DB lesson is missing or does not contain usable slide/content data, use legacy fallback.
+    const hasValidDbSlides = Array.isArray(lesson?.slides) && lesson!.slides.length > 0;
+    const hasValidDbContent = Boolean(lesson?.content && lesson.content.trim().length > 0);
 
-    // Добавляем слайды к уроку
-    const lessonWithSlides = {
-      ...lesson,
-      slides
-    };
+    let lessonWithSlides = lesson
+      ? {
+          ...lesson,
+          slides: lesson.slides,
+        }
+      : null;
+
+    if (!lessonWithSlides && legacyLesson) {
+      lessonWithSlides = {
+        id: `legacy-${orderNum}`,
+        order: legacyLesson.order,
+        title: legacyLesson.title,
+        description: legacyLesson.slides[0]?.content.slice(0, 160) || `Lesson ${orderNum}`,
+        content: legacyLesson.slides.map(slide => slide.content).join('\n\n---\n\n'),
+        duration: Math.max(1, Math.round(legacyLesson.slides.reduce((sum, s) => sum + s.duration, 0) / 60000)),
+        emoji: legacyLesson.slides[0]?.emoji || '📖',
+        color: 'from-amber-600 to-stone-700',
+        available: true,
+        slides: legacyLesson.slides,
+      };
+    } else if (lessonWithSlides) {
+      if (!hasValidDbSlides && legacyLesson) {
+        lessonWithSlides.slides = legacyLesson.slides;
+      } else if (!hasValidDbSlides) {
+        const slideCount = SLIDES_CONFIG[orderNum] || 1;
+        lessonWithSlides.slides = Array.from({ length: slideCount }, (_, index) => ({
+          id: index + 1,
+          title: `Part ${index + 1}`,
+          content: lessonWithSlides?.content || `Content for part ${index + 1}`,
+          emoji: lessonWithSlides?.emoji || '📖',
+          duration: 30000
+        }));
+      }
+
+      if (!hasValidDbContent && legacyLesson) {
+        lessonWithSlides.content = legacyLesson.slides.map(slide => slide.content).join('\n\n---\n\n');
+      }
+    }
 
     // Получаем соседние уроки для навигации
     const [prevLesson, nextLesson] = await Promise.all([
