@@ -5,7 +5,15 @@ import bcrypt from 'bcryptjs';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { adminSecretKey } = body;
+    const adminSecretKey =
+      typeof body?.adminSecretKey === 'string' ? body.adminSecretKey.trim() : '';
+
+    if (!adminSecretKey) {
+      return NextResponse.json(
+        { error: 'Admin secret key is required' },
+        { status: 400 }
+      );
+    }
 
     // Проверяем секретный ключ администратора
     if (adminSecretKey !== process.env.ADMIN_SECRET_KEY) {

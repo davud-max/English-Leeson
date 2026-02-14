@@ -15,12 +15,13 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    const normalizedSecretKey = secretKey.trim();
 
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminSecretKey: secretKey }),
+        body: JSON.stringify({ adminSecretKey: normalizedSecretKey }),
       });
 
       const data = await res.json();
@@ -35,14 +36,14 @@ export default function AdminLoginPage() {
       const signInResult = await signIn('credentials', {
         redirect: false,
         email: 'admin@davudx.com',
-        password: secretKey,
+        password: normalizedSecretKey,
       });
 
       if (signInResult?.ok) {
         router.push('/admin');
         router.refresh();
       } else {
-        setError('Failed to establish session');
+        setError(signInResult?.error || 'Failed to establish session');
       }
     } catch (err) {
       setError('An error occurred during login');
