@@ -72,8 +72,8 @@ export default function DashboardPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-amber-50/40 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-900"></div>
       </div>
     )
   }
@@ -83,22 +83,20 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4">
+    <div className="min-h-screen bg-amber-50/40 text-stone-900">
+      <header className="border-b border-amber-200 bg-amber-50/90 backdrop-blur">
+        <div className="max-w-6xl mx-auto px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 text-xl font-bold text-gray-800">
-              <span>🧠</span>
-              <span>Thinking Course</span>
+            <Link href="/" className="font-serif text-lg font-semibold tracking-wide">
+              Student Portal
             </Link>
             <div className="flex items-center gap-4">
-              <span className="text-gray-600 text-sm">
+              <span className="hidden sm:block text-stone-600 text-sm">
                 {session.user?.email}
               </span>
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="text-gray-500 hover:text-gray-700 text-sm"
+                className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium hover:bg-stone-100"
               >
                 Sign Out
               </button>
@@ -107,62 +105,59 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {session.user?.name || 'Student'}! 👋
+      <main className="max-w-6xl mx-auto px-4 py-8 sm:px-6 space-y-6">
+        <section className="rounded-lg border border-amber-200 bg-white p-6">
+          <h1 className="font-serif text-3xl mb-2">
+            Welcome back, {session.user?.name || 'Student'}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-stone-600">
             Continue your journey through the algorithms of thinking and cognition.
           </p>
-        </div>
+        </section>
 
-        {/* Enrollment Status */}
         {!enrollment && (
-          <div className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-6 text-white mb-8">
-            <div className="flex items-center justify-between">
+          <section className="rounded-lg border border-amber-300 bg-amber-50 p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-xl font-bold mb-2">🔒 Course Not Purchased</h2>
-                <p className="text-amber-100">Unlock all lessons with lifetime access</p>
+                <h2 className="text-xl font-semibold text-amber-900 mb-1">Course access required</h2>
+                <p className="text-amber-900/80 text-sm">Unlock all lessons with one-time enrollment.</p>
               </div>
               <Link
                 href="/checkout"
-                className="bg-white text-amber-600 font-bold px-6 py-3 rounded-xl hover:bg-amber-50 transition"
+                className="rounded-md bg-amber-900 px-5 py-3 text-center text-sm font-semibold text-amber-50 hover:bg-amber-800"
               >
                 Enroll Now - $30
               </Link>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Progress Card */}
         {enrollment && (
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+          <section className="rounded-lg border border-amber-200 bg-white p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Your Progress</h2>
-              <span className="text-sm text-gray-500">
+              <h2 className="text-xl font-semibold text-stone-900">Your Progress</h2>
+              <span className="text-sm text-stone-500">
                 Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString()}
               </span>
             </div>
             
-            <div className="flex items-center gap-8 mb-4">
-              <div>
-                <div className="text-4xl font-bold text-blue-600">{completedLessons}</div>
-                <div className="text-sm text-gray-500">Completed</div>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-[120px,120px,1fr] sm:items-center mb-4">
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-3">
+                <div className="text-3xl font-semibold text-amber-900">{completedLessons}</div>
+                <div className="text-sm text-stone-600">Completed</div>
               </div>
-              <div>
-                <div className="text-4xl font-bold text-gray-300">{totalLessons - completedLessons}</div>
-                <div className="text-sm text-gray-500">Remaining</div>
+              <div className="rounded-md border border-stone-200 bg-stone-50 p-3">
+                <div className="text-3xl font-semibold text-stone-500">{totalLessons - completedLessons}</div>
+                <div className="text-sm text-stone-600">Remaining</div>
               </div>
-              <div className="flex-1">
+              <div className="col-span-2 sm:col-span-1">
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">Progress</span>
-                  <span className="font-medium text-gray-900">{progressPercent}%</span>
+                  <span className="text-stone-600">Progress</span>
+                  <span className="font-medium text-stone-900">{progressPercent}%</span>
                 </div>
-                <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-3 bg-stone-200 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-500"
+                    className="h-full bg-amber-900 transition-all duration-500"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -170,23 +165,22 @@ export default function DashboardPage() {
             </div>
 
             {progressPercent === 100 && (
-              <div className="bg-green-50 text-green-700 p-4 rounded-xl flex items-center gap-3">
-                <span className="text-2xl">🎉</span>
+              <div className="bg-emerald-50 text-emerald-700 p-4 rounded-md flex items-center gap-3">
+                <span className="text-xl">✓</span>
                 <div>
-                  <div className="font-bold">Congratulations!</div>
+                  <div className="font-bold">Congratulations</div>
                   <div className="text-sm">You&apos;ve completed all lessons. Download your certificate!</div>
                 </div>
               </div>
             )}
-          </div>
+          </section>
         )}
 
-        {/* Lessons Grid */}
-        <div className="mb-8">
+        <section className="rounded-lg border border-amber-200 bg-white p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Course Lessons</h2>
-            <Link href="/lessons" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-              View All →
+            <h2 className="text-xl font-semibold text-stone-900">Course Lessons</h2>
+            <Link href="/lessons" className="text-stone-700 hover:text-stone-900 text-sm font-medium underline-offset-4 hover:underline">
+              View all
             </Link>
           </div>
 
@@ -199,8 +193,8 @@ export default function DashboardPage() {
                 <Link
                   key={lesson.id}
                   href={isUnlocked ? `/lessons/${lesson.order}` : '/checkout'}
-                  className={`bg-white rounded-xl p-4 shadow-sm border transition hover:shadow-md ${
-                    isCompleted ? 'border-green-200 bg-green-50/50' : 'border-gray-100'
+                  className={`rounded-md p-4 border transition hover:bg-stone-50 ${
+                    isCompleted ? 'border-emerald-200 bg-emerald-50/30' : 'border-stone-200'
                   }`}
                 >
                   <div className="flex items-start justify-between mb-3">
@@ -208,14 +202,14 @@ export default function DashboardPage() {
                       {lesson.emoji || '📖'}
                     </div>
                     {isCompleted ? (
-                      <span className="text-green-500 text-xl">✓</span>
+                      <span className="text-emerald-600 text-xl">✓</span>
                     ) : !isUnlocked ? (
-                      <span className="text-gray-400">🔒</span>
+                      <span className="text-stone-400">🔒</span>
                     ) : null}
                   </div>
-                  <div className="text-xs text-gray-400 mb-1">Lesson {lesson.order}</div>
-                  <h3 className="font-semibold text-gray-800 text-sm line-clamp-2">{lesson.title}</h3>
-                  <div className="text-xs text-gray-400 mt-2">{lesson.duration} min</div>
+                  <div className="text-xs text-stone-400 mb-1">Lesson {lesson.order}</div>
+                  <h3 className="font-semibold text-stone-800 text-sm line-clamp-2">{lesson.title}</h3>
+                  <div className="text-xs text-stone-400 mt-2">{lesson.duration} min</div>
                 </Link>
               )
             })}
@@ -225,42 +219,41 @@ export default function DashboardPage() {
             <div className="text-center mt-6">
               <Link
                 href="/lessons"
-                className="inline-block bg-gray-100 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-200 transition"
+                className="inline-block border border-stone-300 bg-white text-stone-700 px-6 py-2 rounded-md hover:bg-stone-100 transition"
               >
                 View all {lessons.length} lessons
               </Link>
             </div>
           )}
-        </div>
+        </section>
 
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-3 gap-4">
+        <section className="grid md:grid-cols-3 gap-4">
           <Link
             href="/lessons"
-            className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition"
+            className="rounded-lg p-6 border border-amber-200 bg-white hover:bg-stone-50 transition"
           >
             <div className="text-2xl mb-2">📚</div>
-            <h3 className="font-bold text-gray-900 mb-1">All Lessons</h3>
-            <p className="text-sm text-gray-500">Browse the complete course</p>
+            <h3 className="font-bold text-stone-900 mb-1">All Lessons</h3>
+            <p className="text-sm text-stone-500">Browse the complete course</p>
           </Link>
           
           <Link
             href={`/lessons/${Math.max(1, completedLessons + 1)}`}
-            className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-6 shadow-md text-white hover:opacity-90 transition"
+            className="rounded-lg p-6 border border-amber-800 bg-amber-900 text-amber-50 hover:bg-amber-800 transition"
           >
             <div className="text-2xl mb-2">▶️</div>
             <h3 className="font-bold mb-1">Continue Learning</h3>
-            <p className="text-sm text-blue-100">Pick up where you left off</p>
+            <p className="text-sm text-amber-100">Pick up where you left off</p>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <div className="rounded-lg p-6 border border-amber-200 bg-white">
             <div className="text-2xl mb-2">🎓</div>
-            <h3 className="font-bold text-gray-900 mb-1">Certificate</h3>
-            <p className="text-sm text-gray-500">
+            <h3 className="font-bold text-stone-900 mb-1">Certificate</h3>
+            <p className="text-sm text-stone-500">
               {progressPercent === 100 ? 'Download your certificate' : `Complete ${totalLessons - completedLessons} more lessons`}
             </p>
           </div>
-        </div>
+        </section>
       </main>
     </div>
   )
