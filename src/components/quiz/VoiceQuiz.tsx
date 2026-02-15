@@ -161,7 +161,34 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
     synthRef.current.speak(utterance)
   }, [])
 
-  // Main speak function - tries MP3 first, then browser TTS
+  // Generate audio on-the-fly via ElevenLabs API
+  const speakWithElevenLabs = useCallback(async (text: string, onEnd?: () => void): Promise<boolean> => {
+    try {
+      setIsSpeaking(true)
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      })
+      const data = await response.json()
+      
+      if (data.success && data.audioUrl && audioRef.current) {
+        audioRef.current.src = data.audioUrl
+        audioRef.current.onended = () => {
+          setIsSpeaking(false)
+          onEnd?.()
+        }
+        await audioRef.current.play()
+        return true
+      }
+    } catch (err) {
+      console.error('ElevenLabs TTS error:', err)
+    }
+    setIsSpeaking(false)
+    return false
+  }, [])
+
+  // Main speak function - tries MP3 first, then ElevenLabs, then browser TTS
   const speakQuestion = useCallback(async (questionIndex: number) => {
     // Stop any current audio
     if (audioRef.current) {
@@ -171,17 +198,23 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
       synthRef.current.cancel()
     }
 
-    // Play generated MP3 only (no browser TTS fallback for questions).
+    // 1. Try pre-generated MP3
     const played = await playQuestionAudio(questionIndex)
+    if (played) return
     
-    if (!played) {
-      setIsSpeaking(false)
-      setError('Question audio is unavailable or blocked. Please regenerate question audio in Admin Questions.')
-    }
-  }, [playQuestionAudio])
+    if (!questions[questionIndex]) return
+    const questionText = `Question ${questionIndex + 1}. ${questions[questionIndex].question}`
 
-  // Speak feedback/evaluation
-  const speakFeedback = useCallback((text: string) => {
+    // 2. Try ElevenLabs on-the-fly
+    const elevenPlayed = await speakWithElevenLabs(questionText)
+    if (elevenPlayed) return
+
+    // 3. Last resort: browser TTS
+    speakWithBrowserTTS(questions[questionIndex].question)
+  }, [playQuestionAudio, questions, speakWithElevenLabs, speakWithBrowserTTS])
+
+  // Speak feedback/evaluation - ElevenLabs first, browser TTS fallback
+  const speakFeedback = useCallback(async (text: string) => {
     // Stop any current audio
     if (audioRef.current) {
       audioRef.current.pause()
@@ -190,9 +223,13 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
       synthRef.current.cancel()
     }
     
-    // Use browser TTS for dynamic feedback
-    speakWithBrowserTTS(text)
-  }, [speakWithBrowserTTS])
+    // Try ElevenLabs first
+    const played = await speakWithElevenLabs(text)
+    if (!played) {
+      // Fallback to browser TTS
+      speakWithBrowserTTS(text)
+    }
+  }, [speakWithElevenLabs, speakWithBrowserTTS])
 
   // Stop all audio
   const stopSpeaking = useCallback(() => {

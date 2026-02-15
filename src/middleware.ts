@@ -15,13 +15,16 @@ export default withAuth(
       pathname === "/admin/login" ||
       pathname === "/api/admin/login" ||
       pathname === "/api/admin/swap-lesson-slides" ||
-      pathname === "/api/health"
+      pathname === "/api/health" ||
+      pathname === "/api/tts"
 
     const isPublicPrefix =
       pathname.startsWith("/checkout") ||
       pathname.startsWith("/api/auth") ||
       pathname.startsWith("/api/checkout") ||
-      pathname.startsWith("/api/webhooks")
+      pathname.startsWith("/api/webhooks") ||
+      pathname.startsWith("/api/quiz") ||
+      pathname.startsWith("/api/questions")
 
     if (isPublicExact || isPublicPrefix) return NextResponse.next()
 
