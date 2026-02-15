@@ -54,6 +54,7 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
   const recognitionRef = useRef<SpeechRecognitionType | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const synthRef = useRef<SpeechSynthesis | null>(null)
+  const QUESTION_AUDIO_RAW_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/questions'
 
   // Initialize audio element
   useEffect(() => {
@@ -73,33 +74,47 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
     }
   }, [])
 
+  const getQuestionAudioCandidates = useCallback((questionIndex: number): string[] => {
+    const questionNumber = questionIndex + 1
+    const cacheBust = Date.now()
+    return [
+      `${QUESTION_AUDIO_RAW_BASE}/lesson${lessonId}/question${questionNumber}.mp3?v=${cacheBust}`,
+      `/audio/questions/lesson${lessonId}/question${questionNumber}.mp3`,
+    ]
+  }, [lessonId])
+
   // Check if question audio exists
   const checkQuestionAudio = useCallback(async (questionIndex: number): Promise<boolean> => {
-    try {
-      const audioUrl = `/audio/questions/lesson${lessonId}/question${questionIndex + 1}.mp3`
-      const response = await fetch(audioUrl, { method: 'HEAD' })
-      return response.ok
-    } catch {
-      return false
+    const candidates = getQuestionAudioCandidates(questionIndex)
+    for (const audioUrl of candidates) {
+      try {
+        const response = await fetch(audioUrl, { method: 'HEAD' })
+        if (response.ok) return true
+      } catch {
+        // try next candidate
+      }
     }
-  }, [lessonId])
+    return false
+  }, [getQuestionAudioCandidates])
 
   // Play audio from MP3 file
   const playQuestionAudio = useCallback(async (questionIndex: number): Promise<boolean> => {
     if (!audioRef.current) return false
-    
-    const audioUrl = `/audio/questions/lesson${lessonId}/question${questionIndex + 1}.mp3`
-    
-    try {
-      setIsSpeaking(true)
-      audioRef.current.src = audioUrl
-      await audioRef.current.play()
-      return true
-    } catch {
-      setIsSpeaking(false)
-      return false
+
+    const candidates = getQuestionAudioCandidates(questionIndex)
+    for (const audioUrl of candidates) {
+      try {
+        setIsSpeaking(true)
+        audioRef.current.src = audioUrl
+        await audioRef.current.play()
+        return true
+      } catch {
+        // try next candidate
+      }
     }
-  }, [lessonId])
+    setIsSpeaking(false)
+    return false
+  }, [getQuestionAudioCandidates])
 
   // Browser TTS fallback with male voice
   const speakWithBrowserTTS = useCallback((text: string, onEnd?: () => void) => {
