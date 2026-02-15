@@ -1,40 +1,40 @@
 {
   "lessonId": 20,
   "lessonTitle": " The Boundary as Ontological Act: From Distinction to Civilization",
-  "generatedAt": "2026-02-15T11:18:21.442Z",
+  "generatedAt": "2026-02-15T13:47:56.240Z",
   "questions": [
     {
       "id": 1,
-      "question": "According to the lesson, what three irreducible poles of reality are created by the act of abstraction?",
-      "correct_answer": "The Observed (phenomena on this side of the boundary), The Observer (the position of subjectivity), and The Non-observed or Nothing (the background from which the boundary is drawn).",
+      "question": "What are the three irreducible poles of reality created by the act of abstraction?",
+      "correct_answer": "The Observed (phenomena on this side of the boundary), The Observer (the position of subjectivity), and The Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What are the two possible modes of relating to another Observer's boundary?",
-      "correct_answer": "Ignoring his boundary (which leads to violence and appropriation) or recognizing his boundary (which leads to cooperation and exchange).",
+      "question": "According to the lesson, what is the deontological imperative and why does it arise?",
+      "correct_answer": "The deontological imperative is the prohibition on initiating violence or violating another's boundary of subjectivity. It arises as an immanent condition for survival of complex systems, since systematic violence leads to dead ends while cooperation enables sustainable development.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What is Level 6 in the quantum levels of civilization, and how does it define boundaries?",
-      "correct_answer": "Level 6 is Civil Society, where the boundary becomes universal and individual - recognized around any individual who accepts the rule of mutual non-aggression.",
+      "question": "What is Level 6 of civilization according to the quantum levels described in the lesson?",
+      "correct_answer": "Civil Society, where the boundary becomes universal and virtual, recognized around any individual who accepts the rule of mutual non-aggression. The boundary becomes an individual legal contour that must be respected by all.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "According to the lesson, what do the Four Horsemen of the Apocalypse represent in terms of boundaries?",
-      "correct_answer": "They represent systemic forces that destroy internal boundaries: White Horse erases local boundaries for unification, Red Horse is war within society, Black Horse violates boundaries of just distribution, and Pale Horse destroys ecological equilibrium boundaries.",
+      "question": "What do the Four Horsemen of the Apocalypse represent in the lesson's interpretation?",
+      "correct_answer": "They represent systemic forces unleashed when civilization destroys its own internal boundaries: White Horse erases local boundaries for unification, Red Horse is internal war, Black Horse violates boundaries of just distribution, and Pale Horse destroys ecological and epidemiological boundaries.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "What does the lesson identify as the main philosophical task today regarding boundaries?",
-      "correct_answer": "The critique of boundaries - diagnosing which boundaries extend the circle of recognition and cooperation versus those that represent regression to violence and exclusion.",
+      "question": "How does the lesson define civilization?",
+      "correct_answer": "Civilization is not technological progress, but the history of learning to draw boundaries - from drawing boundaries between self and world, to recognizing others' boundaries, to collective agreements about sacred boundaries, and finally to universal legal protection of individual boundaries.",
       "difficulty": "easy",
       "points": 5
     }
