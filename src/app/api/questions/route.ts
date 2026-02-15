@@ -1,5 +1,7 @@
 // API to get pre-generated questions for a lesson
 import { NextRequest, NextResponse } from 'next/server'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -10,19 +12,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Fetch questions from static JSON file
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/data/questions/lesson${lessonId}.json`)
-    
-    if (!response.ok) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'Questions not found for this lesson',
-        questions: [] 
-      }, { status: 404 })
-    }
-
-    const data = await response.json()
+    const filePath = path.join(process.cwd(), 'public', 'data', 'questions', `lesson${lessonId}.json`)
+    const fileRaw = await fs.readFile(filePath, 'utf-8')
+    const data = JSON.parse(fileRaw)
     
     return NextResponse.json({
       success: true,
@@ -36,8 +28,8 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching questions:', error)
     return NextResponse.json({ 
       success: false, 
-      error: 'Questions not available',
+      error: 'Questions not found for this lesson',
       questions: [] 
-    }, { status: 500 })
+    }, { status: 404 })
   }
 }

@@ -75,6 +75,7 @@ interface CursorFocusTarget {
 }
 
 export default function LessonEditorComplete() {
+  const QUESTION_AUDIO_RAW_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/questions'
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
   const [loading, setLoading] = useState(true)
@@ -106,7 +107,8 @@ export default function LessonEditorComplete() {
 
   useEffect(() => {
     if (selectedLesson) {
-      // Reset quiz state when lesson changes
+      void loadSavedQuizData(selectedLesson.order)
+    } else {
       setGeneratedQuestions([])
       setQuizAudioResults([])
       setQuizMessage('')
@@ -144,6 +146,70 @@ export default function LessonEditorComplete() {
       setSaveStatus('❌ Ошибка загрузки')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const questionAudioCandidates = (lessonOrder: number, questionNumber: number): string[] => {
+    const cacheBust = Date.now()
+    return [
+      `${QUESTION_AUDIO_RAW_BASE}/lesson${lessonOrder}/question${questionNumber}.mp3?v=${cacheBust}`,
+      `/audio/questions/lesson${lessonOrder}/question${questionNumber}.mp3`,
+    ]
+  }
+
+  const checkQuestionAudioExists = async (lessonOrder: number, questionNumber: number): Promise<boolean> => {
+    const candidates = questionAudioCandidates(lessonOrder, questionNumber)
+    for (const url of candidates) {
+      try {
+        const res = await fetch(url, { method: 'HEAD' })
+        if (res.ok) return true
+      } catch {
+        // try next url
+      }
+    }
+    return false
+  }
+
+  const loadSavedQuizData = async (lessonOrder: number) => {
+    setGeneratedQuestions([])
+    setQuizAudioResults([])
+    setQuizMessage('')
+
+    try {
+      const response = await fetch(`/api/questions?lessonId=${lessonOrder}`)
+      if (!response.ok) {
+        setQuizMessage('ℹ️ Saved questions not found for this lesson yet.')
+        return
+      }
+
+      const data = await response.json()
+      const loadedQuestions: GeneratedQuestion[] = Array.isArray(data?.questions) ? data.questions : []
+      setGeneratedQuestions(loadedQuestions)
+
+      if (loadedQuestions.length === 0) {
+        setQuizMessage('ℹ️ Saved questions not found for this lesson yet.')
+        return
+      }
+
+      const audioStatuses = await Promise.all(
+        loadedQuestions.map(async (_q, index) => {
+          const questionNumber = index + 1
+          const exists = await checkQuestionAudioExists(lessonOrder, questionNumber)
+          return {
+            question: questionNumber,
+            filename: `question${questionNumber}.mp3`,
+            success: exists,
+            audioUrl: exists ? questionAudioCandidates(lessonOrder, questionNumber)[0] : undefined,
+            error: exists ? undefined : 'Audio file not found',
+          } as QuizAudioResult
+        })
+      )
+
+      setQuizAudioResults(audioStatuses)
+      const audioCount = audioStatuses.filter((item) => item.success).length
+      setQuizMessage(`ℹ️ Loaded ${loadedQuestions.length} saved questions, ${audioCount} audio files.`)
+    } catch (error) {
+      setQuizMessage(`❌ Failed to load saved quiz data: ${(error as Error).message}`)
     }
   }
 
@@ -441,7 +507,12 @@ export default function LessonEditorComplete() {
       
       if (data.success) {
         setGeneratedQuestions(data.questions)
-        setQuizMessage(`✅ Generated ${data.questions.length} questions` + (data.savedToGitHub ? ' (saved to GitHub)' : ''))
+        if (data.savedToGitHub) {
+          setQuizMessage(`✅ ${data.message || `Generated ${data.questions.length} questions and saved to GitHub`}`)
+        } else {
+          const reason = data.githubError || 'questions were generated but not saved to GitHub'
+          setQuizMessage(`⚠️ ${data.message || `Generated ${data.questions.length} questions`}. Save failed: ${reason}`)
+        }
       } else {
         setQuizMessage('❌ ' + (data.error || 'Failed to generate'))
       }
