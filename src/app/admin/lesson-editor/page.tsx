@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import type { KeyboardEvent } from 'react'
 import Link from 'next/link'
 
 interface Slide {
@@ -68,6 +69,11 @@ interface AudioGenerationProgress {
   error?: string
 }
 
+interface CursorFocusTarget {
+  slideIndex: number
+  position: number
+}
+
 export default function LessonEditorComplete() {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
@@ -78,6 +84,7 @@ export default function LessonEditorComplete() {
   const [audioProgress, setAudioProgress] = useState<AudioGenerationProgress[]>([])
   const [isGeneratingAll, setIsGeneratingAll] = useState(false)
   const [isRebuildingAndVoicing, setIsRebuildingAndVoicing] = useState(false)
+  const [focusTarget, setFocusTarget] = useState<CursorFocusTarget | null>(null)
   const [showTranslateModal, setShowTranslateModal] = useState(false)
   const [russianText, setRussianText] = useState('')
   const [isTranslating, setIsTranslating] = useState(false)
@@ -106,6 +113,24 @@ export default function LessonEditorComplete() {
       setQuizMessage('')
     }
   }, [selectedLesson])
+
+  useEffect(() => {
+    if (!focusTarget) return
+
+    const id = requestAnimationFrame(() => {
+      const el = document.querySelector(
+        `textarea[data-slide-index="${focusTarget.slideIndex}"]`
+      ) as HTMLTextAreaElement | null
+
+      if (el) {
+        el.focus()
+        el.setSelectionRange(focusTarget.position, focusTarget.position)
+      }
+      setFocusTarget(null)
+    })
+
+    return () => cancelAnimationFrame(id)
+  }, [focusTarget, selectedLesson])
 
   const fetchLessons = async () => {
     try {
@@ -210,6 +235,71 @@ export default function LessonEditorComplete() {
       slide.id = i + 1
     })
     setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
+  }
+
+  const handleSlideKeyDown = (index: number, e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (!selectedLesson) return
+    const slides = selectedLesson.slides || []
+    const current = slides[index]
+    if (!current) return
+
+    const cursorStart = e.currentTarget.selectionStart
+    const cursorEnd = e.currentTarget.selectionEnd
+    const hasSelection = cursorStart !== cursorEnd
+
+    // Merge current slide into previous when Backspace is pressed at the first position.
+    if (e.key === 'Backspace' && !hasSelection && cursorStart === 0 && index > 0) {
+      e.preventDefault()
+      const previous = slides[index - 1]
+      const separator = previous.content && current.content ? '\n\n' : ''
+      const previousEndPosition = previous.content.length
+
+      const mergedSlide: Slide = {
+        ...previous,
+        content: `${previous.content}${separator}${current.content}`,
+      }
+
+      const updatedSlides = [...slides]
+      updatedSlides[index - 1] = mergedSlide
+      updatedSlides.splice(index, 1)
+      updatedSlides.forEach((slide, i) => {
+        slide.id = i + 1
+      })
+
+      setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
+      setFocusTarget({ slideIndex: index - 1, position: previousEndPosition })
+      return
+    }
+
+    // Split current slide into two when Enter is pressed at cursor position.
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+
+      const before = current.content.slice(0, cursorStart)
+      const after = current.content.slice(cursorEnd)
+
+      const updatedSlides = [...slides]
+      updatedSlides[index] = {
+        ...current,
+        content: before,
+      }
+
+      const newSlide: Slide = {
+        id: index + 2,
+        title: `Part ${index + 2}`,
+        content: after,
+        emoji: current.emoji || '📖',
+        duration: current.duration || 30000,
+      }
+
+      updatedSlides.splice(index + 1, 0, newSlide)
+      updatedSlides.forEach((slide, i) => {
+        slide.id = i + 1
+      })
+
+      setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
+      setFocusTarget({ slideIndex: index + 1, position: 0 })
+    }
   }
 
   const createSlidesFromContent = (content: string): Slide[] => {
@@ -840,6 +930,8 @@ export default function LessonEditorComplete() {
                             <textarea
                               value={slide.content}
                               onChange={(e) => updateSlide(index, 'content', e.target.value)}
+                              onKeyDown={(e) => handleSlideKeyDown(index, e)}
+                              data-slide-index={index}
                               className="w-full h-32 border rounded p-2 text-sm"
                             />
                           </div>
