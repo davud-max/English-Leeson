@@ -1,40 +1,40 @@
 {
   "lessonId": 20,
   "lessonTitle": " The Boundary as Ontological Act: From Distinction to Civilization",
-  "generatedAt": "2026-02-15T10:41:40.288Z",
+  "generatedAt": "2026-02-15T10:55:19.159Z",
   "questions": [
     {
       "id": 1,
-      "question": "According to the lesson, what are the three irreducible poles of reality created by the act of abstraction?",
-      "correct_answer": "The Observed (that which finds itself on this side of the boundary), The Observer (the one for whom this distinction is drawn), and The Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
+      "question": "What are the three irreducible poles of reality created by the first act of abstraction?",
+      "correct_answer": "The Observed (phenomena on this side of the boundary), the Observer (the position of subjectivity), and the Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What is the starting point before the act of abstraction occurs?",
-      "correct_answer": "A pre-reflective state of undifferentiated Being - not chaos, but wholeness where there is neither subject nor object, nor 'something.'",
+      "question": "According to the lesson, what is the starting point before the act of abstraction occurs?",
+      "correct_answer": "A pre-reflective state of undifferentiated Being - not chaos, but wholeness where there is neither subject nor object.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
       "question": "What are the two possible modes of relating to another Observer's boundary?",
-      "correct_answer": "Ignoring his boundary (which leads to violence and appropriation) or recognizing his boundary (which is the beginning of cooperation and exchange).",
+      "correct_answer": "Ignoring his boundary (which leads to violence and appropriation) or recognizing his boundary (which begins cooperation and exchange).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "Name three of the six quantum levels of civilization mentioned in the lesson.",
-      "correct_answer": "Any three of: Family, Kinship/Clan, Tribe, Nation, Religion, Civil Society.",
+      "question": "List the six quantum levels of civilization mentioned in the lesson, in order.",
+      "correct_answer": "Level 1: Family, Level 2: Kinship/Clan, Level 3: Tribe, Level 4: Nation, Level 5: Religion, Level 6: Civil Society.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "According to the lesson, what is the main threat to civilization?",
-      "correct_answer": "Ontological regression, when complex, universal, legal boundaries are replaced by primitive, particular, violent ones based on blood, faith, or passport, or when systemic violence is masked as technical necessity.",
+      "question": "What do the Four Horsemen of the Apocalypse represent according to the lesson's interpretation?",
+      "correct_answer": "They represent systemic forces unleashed when civilization destroys its own internal boundaries: White Horse (erases local boundaries), Red Horse (war within society), Black Horse (violation of just distribution), Pale Horse (destruction of ecological equilibrium).",
       "difficulty": "easy",
       "points": 5
     }
