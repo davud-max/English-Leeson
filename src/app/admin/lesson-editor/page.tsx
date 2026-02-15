@@ -367,8 +367,10 @@ export default function LessonEditorComplete() {
         slide.id = i + 1
       })
 
-      setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
+      const mergedLesson = { ...selectedLesson, slides: updatedSlides }
+      setSelectedLesson(mergedLesson)
       setFocusTarget({ slideIndex: index - 1, position: previousEndPosition })
+      void regenerateSlideAudio(index - 1, mergedLesson)
       return
     }
 
@@ -659,6 +661,22 @@ export default function LessonEditorComplete() {
       setTimeout(() => setSaveStatus(''), 5000)
       return { audioUrl: null, error: message }
     }
+  }
+
+  const regenerateSlideAudio = async (slideIndex: number, lessonOverride?: Lesson) => {
+    const lesson = lessonOverride || selectedLesson
+    if (!lesson) return
+
+    const { audioUrl } = await generateAudio(slideIndex, lesson)
+    if (!audioUrl) return
+
+    setSelectedLesson((prev) => {
+      if (!prev || prev.id !== lesson.id) return prev
+      if (!prev.slides || !prev.slides[slideIndex]) return prev
+      const updatedSlides = [...prev.slides]
+      updatedSlides[slideIndex] = { ...updatedSlides[slideIndex], audioUrl }
+      return { ...prev, slides: updatedSlides }
+    })
   }
 
   const generateAllAudio = async (lessonOverride?: Lesson) => {
@@ -1110,7 +1128,7 @@ export default function LessonEditorComplete() {
                                   )}
                                 </div>
                                 <button
-                                  onClick={() => generateAudio(index)}
+                                  onClick={() => regenerateSlideAudio(index)}
                                   disabled={progress?.status === 'generating' || progress?.status === 'uploading'}
                                   className="bg-blue-600 text-white px-3 py-1 rounded text-sm disabled:opacity-50"
                                 >
