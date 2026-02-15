@@ -1,40 +1,40 @@
 {
   "lessonId": 20,
   "lessonTitle": " The Boundary as Ontological Act: From Distinction to Civilization",
-  "generatedAt": "2026-02-15T09:48:25.019Z",
+  "generatedAt": "2026-02-15T10:05:16.905Z",
   "questions": [
     {
       "id": 1,
-      "question": "What are the three irreducible poles of reality that emerge from the primary act of abstraction?",
-      "correct_answer": "The Observed (phenomena on this side of the boundary), The Observer (the position of subjectivity), and The Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
+      "question": "What are the three irreducible poles of reality that emerge from the first act of abstraction?",
+      "correct_answer": "The Observed (phenomena on this side of the boundary), the Observer (the position of subjectivity), and the Non-observed/Nothing (the fundamental background from which the boundary is drawn).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "According to the lesson, what is the deontological imperative and why does it emerge evolutionarily?",
-      "correct_answer": "The deontological imperative is the prohibition on initiating violence or violating another's boundary of subjectivity. It emerges because systematic violence leads to evolutionary dead ends, while cooperation enables sustainable development and survival of complex systems.",
+      "question": "According to the lesson, what is the deontological imperative and why does it emerge from evolutionary logic?",
+      "correct_answer": "The deontological imperative is the prohibition on initiating violence or violating another's boundary of subjectivity. It emerges because systematic violence leads to dead ends, while sustainable group development requires cooperation over suppression.",
       "difficulty": "hard",
       "points": 15
     },
     {
       "id": 3,
-      "question": "What is Level 6 of civilization according to the quantum levels described in the lesson?",
-      "correct_answer": "Civil Society, where the boundary becomes universal and virtual, recognized around any individual who accepts the rule of mutual non-aggression, creating individual legal contours respected by all.",
+      "question": "What is the highest quantum level of civilization described in the lesson, and how does it define boundaries?",
+      "correct_answer": "Civil Society (Level 6), which creates universal and virtual boundaries recognized around any individual who accepts the rule of mutual non-aggression, making boundaries individual legal contours rather than collective barriers.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "How do the Four Horsemen of the Apocalypse represent systemic boundary violations in modern civilization, and what distinguishes pseudo-institutions from legitimate ones?",
-      "correct_answer": "The Four Horsemen represent: erasure of local boundaries (White), internal societal war (Red), violation of just distribution boundaries (Black), and destruction of ecological equilibrium boundaries (Pale). Pseudo-institutions like fiat money formally exist within law but systematically violate boundaries of property and responsibility through hidden means.",
+      "question": "How do the Four Horsemen of the Apocalypse represent systemic boundary violations in modern civilization, and what is the philosophical significance of this interpretation?",
+      "correct_answer": "Each horseman represents destruction of different systemic boundaries: White (local boundaries), Red (internal social boundaries), Black (just distribution boundaries), and Pale (ecological boundaries). This shows how civilization's complexity creates immanent diseases that can destroy the boundary-recognition system that created it.",
       "difficulty": "hard",
       "points": 15
     },
     {
       "id": 5,
-      "question": "What does the lesson identify as the primary task of philosophy today?",
-      "correct_answer": "The critique of boundaries - diagnosing which boundaries extend recognition and cooperation versus those that represent regression to violence and exclusion, ensuring the act of distinction doesn't turn against the universal project.",
+      "question": "What distinguishes legitimate institutions from pseudo-institutions according to the lesson?",
+      "correct_answer": "Legitimate institutions crystallize proper boundaries and operate within legal frameworks, while pseudo-institutions systematically violate boundaries under the guise of technical necessity (like fiat money causing inflation or bailouts erasing risk-responsibility boundaries).",
       "difficulty": "easy",
       "points": 5
     }
