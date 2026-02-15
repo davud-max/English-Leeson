@@ -450,19 +450,24 @@ export default function LessonEditorComplete() {
   }
 
   // Audio generation
-  const generateAudio = async (slideIndex: number, lessonOverride?: Lesson): Promise<string | null> => {
+  const generateAudio = async (
+    slideIndex: number,
+    lessonOverride?: Lesson
+  ): Promise<{ audioUrl: string | null; error: string | null }> => {
     const lesson = lessonOverride || selectedLesson
-    if (!lesson) return null
+    if (!lesson) return { audioUrl: null, error: 'Lesson is not selected' }
     
     const slide = lesson.slides[slideIndex]
     if (!slide.content) {
       setSaveStatus('❌ Нет текста')
-      return null
+      return { audioUrl: null, error: 'Empty slide content' }
     }
 
-    const progressCopy = [...audioProgress]
-    progressCopy[slideIndex] = { slideIndex, status: 'generating' }
-    setAudioProgress(progressCopy)
+    setAudioProgress((prev) => {
+      const next = [...prev]
+      next[slideIndex] = { slideIndex, status: 'generating' }
+      return next
+    })
     setSaveStatus(`🎵 Генерация ${slideIndex + 1}...`)
 
     try {
@@ -494,8 +499,11 @@ export default function LessonEditorComplete() {
       }
 
       // 2. Upload to GitHub
-      progressCopy[slideIndex] = { slideIndex, status: 'uploading' }
-      setAudioProgress([...progressCopy])
+      setAudioProgress((prev) => {
+        const next = [...prev]
+        next[slideIndex] = { slideIndex, status: 'uploading' }
+        return next
+      })
       setSaveStatus(`📤 Загрузка ${slideIndex + 1}...`)
       
       console.log(`Starting audio upload for lesson ${lesson.order}, slide ${slideIndex + 1}`);
@@ -517,32 +525,36 @@ export default function LessonEditorComplete() {
         throw new Error(uploadError.error || 'Upload failed')
       }
 
-      const uploadData = await uploadRes.json()
+      await uploadRes.json()
       
       // 3. Success - update slide with GitHub raw URL
       const githubRawUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${lesson.order}/slide${slideIndex + 1}.mp3?t=${Date.now()}`
       
-      progressCopy[slideIndex] = { 
-        slideIndex, 
-        status: 'success',
-      }
-      setAudioProgress([...progressCopy])
+      setAudioProgress((prev) => {
+        const next = [...prev]
+        next[slideIndex] = { slideIndex, status: 'success' }
+        return next
+      })
 
       setSaveStatus(`✅ Слайд ${slideIndex + 1} готов!`)
       setTimeout(() => setSaveStatus(''), 3000)
-      return githubRawUrl
+      return { audioUrl: githubRawUrl, error: null }
 
     } catch (error) {
-      progressCopy[slideIndex] = { 
-        slideIndex, 
-        status: 'error',
-        error: (error as Error).message 
-      }
-      setAudioProgress([...progressCopy])
+      const message = (error as Error).message
+      setAudioProgress((prev) => {
+        const next = [...prev]
+        next[slideIndex] = { 
+          slideIndex, 
+          status: 'error',
+          error: message
+        }
+        return next
+      })
       
-      setSaveStatus(`❌ ${slideIndex + 1}: ${(error as Error).message}`)
+      setSaveStatus(`❌ ${slideIndex + 1}: ${message}`)
       setTimeout(() => setSaveStatus(''), 5000)
-      return null
+      return { audioUrl: null, error: message }
     }
   }
 
@@ -562,25 +574,19 @@ export default function LessonEditorComplete() {
     // Создаем копию слайдов для обновления после завершения генерации
     const updatedSlides = [...lesson.slides];
 
+    let successCount = 0
+    let failedCount = 0
+
     for (let i = 0; i < lesson.slides.length; i++) {
-      try {
-        const audioUrl = await generateAudio(i, lesson)
-        if (audioUrl) {
-          updatedSlides[i] = { ...updatedSlides[i], audioUrl }
+      const { audioUrl, error } = await generateAudio(i, lesson)
+      if (audioUrl) {
+        updatedSlides[i] = { ...updatedSlides[i], audioUrl }
+        successCount++
+      } else {
+        failedCount++
+        if (error) {
+          console.error(`Slide ${i + 1} audio failed: ${error}`)
         }
-      } catch (error) {
-        console.error(`Error generating audio for slide ${i + 1}:`, error)
-        
-        // Update progress to show error
-        const progressCopy = [...audioProgress]
-        progressCopy[i] = { 
-          slideIndex: i, 
-          status: 'error',
-          error: (error as Error).message 
-        }
-        setAudioProgress([...progressCopy])
-        
-        setSaveStatus(`❌ Ошибка при генерации слайда ${i + 1}: ${(error as Error).message}`)
       }
       
       if (i < lesson.slides.length - 1) {
@@ -593,7 +599,11 @@ export default function LessonEditorComplete() {
     setSelectedLesson(finalLesson)
 
     setIsGeneratingAll(false)
-    setSaveStatus('✅ Все готово!')
+    if (failedCount > 0) {
+      setSaveStatus(`⚠️ Готово: ${successCount} успешно, ${failedCount} с ошибкой`)
+    } else {
+      setSaveStatus(`✅ Озвучено ${successCount} слайдов`)
+    }
     setTimeout(() => {
       setSaveStatus('')
       setAudioProgress([])
