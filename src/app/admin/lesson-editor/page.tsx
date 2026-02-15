@@ -77,6 +77,7 @@ export default function LessonEditorComplete() {
   const [selectedVoice, setSelectedVoice] = useState('erDx71FK2teMZ7g6khzw')
   const [audioProgress, setAudioProgress] = useState<AudioGenerationProgress[]>([])
   const [isGeneratingAll, setIsGeneratingAll] = useState(false)
+  const [isRebuildingAndVoicing, setIsRebuildingAndVoicing] = useState(false)
   const [showTranslateModal, setShowTranslateModal] = useState(false)
   const [russianText, setRussianText] = useState('')
   const [isTranslating, setIsTranslating] = useState(false)
@@ -211,6 +212,20 @@ export default function LessonEditorComplete() {
     setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
   }
 
+  const createSlidesFromContent = (content: string): Slide[] => {
+    const paragraphs = content
+      .split(/\n\n+/)
+      .filter(p => p.trim().length > 0)
+
+    return paragraphs.map((paragraph, index) => ({
+      id: index + 1,
+      title: `Part ${index + 1}`,
+      content: paragraph.trim(),
+      emoji: '📖',
+      duration: 30000,
+    }))
+  }
+
   const recreateSlides = () => {
     if (!selectedLesson || !selectedLesson.content) {
       setSaveStatus('❌ Нет контента')
@@ -218,18 +233,7 @@ export default function LessonEditorComplete() {
     }
     
     setSaveStatus('🔄 Разбиение...')
-    
-    const paragraphs = selectedLesson.content
-      .split(/\n\n+/)
-      .filter(p => p.trim().length > 0)
-    
-    const newSlides = paragraphs.map((content, index) => ({
-      id: index + 1,
-      title: `Part ${index + 1}`,
-      content: content.trim(),
-      emoji: '📖',
-      duration: 30000
-    }))
+    const newSlides = createSlidesFromContent(selectedLesson.content)
     
     setSelectedLesson({
       ...selectedLesson,
@@ -389,13 +393,14 @@ export default function LessonEditorComplete() {
   }
 
   // Audio generation
-  const generateAudio = async (slideIndex: number) => {
-    if (!selectedLesson) return
+  const generateAudio = async (slideIndex: number, lessonOverride?: Lesson): Promise<string | null> => {
+    const lesson = lessonOverride || selectedLesson
+    if (!lesson) return null
     
-    const slide = selectedLesson.slides[slideIndex]
+    const slide = lesson.slides[slideIndex]
     if (!slide.content) {
       setSaveStatus('❌ Нет текста')
-      return
+      return null
     }
 
     const progressCopy = [...audioProgress]
@@ -404,7 +409,7 @@ export default function LessonEditorComplete() {
     setSaveStatus(`🎵 Генерация ${slideIndex + 1}...`)
 
     try {
-      console.log(`Starting audio generation for lesson ${selectedLesson.order}, slide ${slideIndex + 1}`);
+      console.log(`Starting audio generation for lesson ${lesson.order}, slide ${slideIndex + 1}`);
       
       // 1. Generate audio
       const genRes = await fetch('/api/admin/generate-audio', {
@@ -413,12 +418,12 @@ export default function LessonEditorComplete() {
         body: JSON.stringify({
           text: slide.content,
           voiceId: selectedVoice,
-          lessonId: selectedLesson.order.toString(),
+          lessonId: lesson.order.toString(),
           slideNumber: slideIndex + 1,
         }),
       })
 
-      console.log(`Generate audio response status: ${genRes.status} for lesson ${selectedLesson.order}, slide ${slideIndex + 1}`);
+      console.log(`Generate audio response status: ${genRes.status} for lesson ${lesson.order}, slide ${slideIndex + 1}`);
       
       if (!genRes.ok) {
         const errorData = await genRes.json().catch(() => ({ error: `HTTP ${genRes.status}` }));
@@ -436,19 +441,19 @@ export default function LessonEditorComplete() {
       setAudioProgress([...progressCopy])
       setSaveStatus(`📤 Загрузка ${slideIndex + 1}...`)
       
-      console.log(`Starting audio upload for lesson ${selectedLesson.order}, slide ${slideIndex + 1}`);
+      console.log(`Starting audio upload for lesson ${lesson.order}, slide ${slideIndex + 1}`);
 
       const uploadRes = await fetch('/api/admin/upload-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          lessonNumber: selectedLesson.order,  // ✅ FIXED
+          lessonNumber: lesson.order,
           slideNumber: slideIndex + 1,
           audioBase64: genData.audioBase64,
         }),
       })
 
-      console.log(`Upload audio response status: ${uploadRes.status} for lesson ${selectedLesson.order}, slide ${slideIndex + 1}`);
+      console.log(`Upload audio response status: ${uploadRes.status} for lesson ${lesson.order}, slide ${slideIndex + 1}`);
       
       if (!uploadRes.ok) {
         const uploadError = await uploadRes.json().catch(() => ({ error: `Upload failed with status ${uploadRes.status}` }));
@@ -458,12 +463,7 @@ export default function LessonEditorComplete() {
       const uploadData = await uploadRes.json()
       
       // 3. Success - update slide with GitHub raw URL
-      const githubRawUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${selectedLesson.order}/slide${slideIndex + 1}.mp3?t=${Date.now()}`
-      
-      // Update slide audioUrl
-      const updatedSlides = [...selectedLesson.slides]
-      updatedSlides[slideIndex] = { ...updatedSlides[slideIndex], audioUrl: githubRawUrl }
-      // setSelectedLesson({ ...selectedLesson, slides: updatedSlides }) //временно не обновляем состояние при массовой генерации
+      const githubRawUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${lesson.order}/slide${slideIndex + 1}.mp3?t=${Date.now()}`
       
       progressCopy[slideIndex] = { 
         slideIndex, 
@@ -473,6 +473,7 @@ export default function LessonEditorComplete() {
 
       setSaveStatus(`✅ Слайд ${slideIndex + 1} готов!`)
       setTimeout(() => setSaveStatus(''), 3000)
+      return githubRawUrl
 
     } catch (error) {
       progressCopy[slideIndex] = { 
@@ -484,31 +485,32 @@ export default function LessonEditorComplete() {
       
       setSaveStatus(`❌ ${slideIndex + 1}: ${(error as Error).message}`)
       setTimeout(() => setSaveStatus(''), 5000)
+      return null
     }
   }
 
-  const generateAllAudio = async () => {
-    if (!selectedLesson || !selectedLesson.slides?.length) return
+  const generateAllAudio = async (lessonOverride?: Lesson) => {
+    const lesson = lessonOverride || selectedLesson
+    if (!lesson || !lesson.slides?.length) return
 
     setIsGeneratingAll(true)
-    setSaveStatus(`🎵 Генерация ${selectedLesson.slides.length} файлов...`)
+    setSaveStatus(`🎵 Генерация ${lesson.slides.length} файлов...`)
     
-    const initialProgress = selectedLesson.slides.map((_, index) => ({
+    const initialProgress = lesson.slides.map((_, index) => ({
       slideIndex: index,
       status: 'pending' as const
     }))
     setAudioProgress(initialProgress)
 
     // Создаем копию слайдов для обновления после завершения генерации
-    const updatedSlides = [...selectedLesson.slides];
+    const updatedSlides = [...lesson.slides];
 
-    for (let i = 0; i < selectedLesson.slides.length; i++) {
+    for (let i = 0; i < lesson.slides.length; i++) {
       try {
-        // Обновляем аудио URL напрямую в копии слайдов
-        const githubRawUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${selectedLesson.order}/slide${i + 1}.mp3?t=${Date.now()}`;
-        updatedSlides[i] = { ...updatedSlides[i], audioUrl: githubRawUrl };
-        
-        await generateAudio(i);
+        const audioUrl = await generateAudio(i, lesson)
+        if (audioUrl) {
+          updatedSlides[i] = { ...updatedSlides[i], audioUrl }
+        }
       } catch (error) {
         console.error(`Error generating audio for slide ${i + 1}:`, error)
         
@@ -524,13 +526,14 @@ export default function LessonEditorComplete() {
         setSaveStatus(`❌ Ошибка при генерации слайда ${i + 1}: ${(error as Error).message}`)
       }
       
-      if (i < selectedLesson.slides.length - 1) {
+      if (i < lesson.slides.length - 1) {
         await new Promise(resolve => setTimeout(resolve, 2000))
       }
     }
     
     // После завершения всех генераций обновляем состояние урока
-    setSelectedLesson({ ...selectedLesson, slides: updatedSlides });
+    const finalLesson = { ...lesson, slides: updatedSlides }
+    setSelectedLesson(finalLesson)
 
     setIsGeneratingAll(false)
     setSaveStatus('✅ Все готово!')
@@ -538,6 +541,54 @@ export default function LessonEditorComplete() {
       setSaveStatus('')
       setAudioProgress([])
     }, 3000)
+  }
+
+  const recreateSlidesAndRegenerateAudio = async () => {
+    if (!selectedLesson || !selectedLesson.content) {
+      setSaveStatus('❌ Нет контента')
+      return
+    }
+
+    setIsRebuildingAndVoicing(true)
+    setSaveStatus('🔄 Пересобираем слайды...')
+
+    const rebuiltSlides = createSlidesFromContent(selectedLesson.content)
+    const rebuiltLesson: Lesson = {
+      ...selectedLesson,
+      slides: rebuiltSlides,
+    }
+
+    setSelectedLesson(rebuiltLesson)
+    setSaveStatus(`💾 Сохраняем ${rebuiltSlides.length} слайдов...`)
+
+    try {
+      const res = await fetch(`/api/admin/lessons/${rebuiltLesson.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: rebuiltLesson.title,
+          description: rebuiltLesson.description,
+          content: rebuiltLesson.content,
+          slides: rebuiltLesson.slides,
+          duration: rebuiltLesson.duration,
+          published: rebuiltLesson.published,
+          emoji: rebuiltLesson.emoji,
+        }),
+      })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Failed to save rebuilt slides' }))
+        throw new Error(err.error || 'Failed to save rebuilt slides')
+      }
+
+      await generateAllAudio(rebuiltLesson)
+      fetchLessons()
+    } catch (error) {
+      setSaveStatus(`❌ ${(error as Error).message}`)
+      setTimeout(() => setSaveStatus(''), 5000)
+    } finally {
+      setIsRebuildingAndVoicing(false)
+    }
   }
 
   // Translate modal
@@ -759,6 +810,13 @@ export default function LessonEditorComplete() {
                           <button onClick={recreateSlides} className="bg-amber-600 text-white px-4 py-2 rounded text-sm">
                             🔄 Разбить
                           </button>
+                          <button
+                            onClick={recreateSlidesAndRegenerateAudio}
+                            disabled={isRebuildingAndVoicing || isGeneratingAll}
+                            className="bg-green-700 text-white px-4 py-2 rounded text-sm disabled:opacity-50"
+                          >
+                            {isRebuildingAndVoicing ? '⏳ Пересборка...' : '🎙️ Разбить + Озвучить'}
+                          </button>
                           <button onClick={addSlide} className="bg-blue-600 text-white px-4 py-2 rounded text-sm">
                             + Слайд
                           </button>
@@ -813,7 +871,7 @@ export default function LessonEditorComplete() {
                             </optgroup>
                           </select>
                           <button
-                            onClick={generateAllAudio}
+                            onClick={() => generateAllAudio()}
                             disabled={isGeneratingAll}
                             className="bg-green-600 text-white px-4 py-2 rounded disabled:opacity-50"
                           >
