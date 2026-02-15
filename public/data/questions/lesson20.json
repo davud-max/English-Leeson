@@ -1,40 +1,40 @@
 {
   "lessonId": 20,
   "lessonTitle": " The Boundary as Ontological Act: From Distinction to Civilization",
-  "generatedAt": "2026-02-15T09:03:32.311Z",
+  "generatedAt": "2026-02-15T09:20:55.597Z",
   "questions": [
     {
       "id": 1,
-      "question": "What three irreducible poles of reality are created by the act of abstraction?",
-      "correct_answer": "The Observed (that which finds itself on this side of the boundary), the Observer (the one for whom this distinction is drawn), and the Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
+      "question": "What are the three irreducible poles of reality created by the first act of abstraction?",
+      "correct_answer": "The Observed (that which finds itself on this side of the boundary), The Observer (the one for whom this distinction is drawn), and The Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "According to the lesson, what is the deontological imperative?",
-      "correct_answer": "The prohibition on initiating violence, that is, on violating the boundary of subjectivity drawn by another. It is not a moral postulate but an immanent condition for the survival of a complex system.",
+      "question": "According to the lesson, what is the starting point before the act of abstraction occurs?",
+      "correct_answer": "A pre-reflective state of undifferentiated Being - not chaos, but wholeness where there is neither subject nor object.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What are the six quantum levels of civilization mentioned in the lesson?",
-      "correct_answer": "Family, Kinship/Clan, Tribe, Nation, Religion, and Civil Society.",
+      "question": "What are the two possible modes of relating to another Observer-Actor's boundary?",
+      "correct_answer": "Ignoring his boundary (which leads to violence and appropriation) or recognizing his boundary (which leads to cooperation and exchange).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What do the Four Horsemen of the Apocalypse represent in this philosophical reading?",
-      "correct_answer": "They represent systemic forces unleashed when internal boundaries are destroyed: White Horse (erases local boundaries), Red Horse (war within society), Black Horse (violation of just distribution), and Pale Horse (destruction of ecological equilibrium).",
+      "question": "What does Level 6 of civilization (Civil Society) represent in terms of boundary recognition?",
+      "correct_answer": "The boundary becomes universal and individual, recognized around any individual who accepts the rule of mutual non-aggression, creating a legal contour obligatory for respect by all.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "What is the starting point before the act of abstraction occurs?",
-      "correct_answer": "A pre-reflective state of undifferentiated Being - not chaos, but wholeness where there is neither subject nor object, nor 'something.'",
+      "question": "According to the lesson, what is the main philosophical conclusion about what civilization actually represents?",
+      "correct_answer": "Civilization is not technological progress, but rather the history of learning to draw boundaries - from drawing boundaries between self and world, to recognizing others' boundaries, to building universal legal orders.",
       "difficulty": "easy",
       "points": 5
     }
