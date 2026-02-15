@@ -351,8 +351,9 @@ export default function DynamicLessonPage() {
               </button>
             </div>
             
-            <div className="text-stone-500 text-sm whitespace-nowrap">
-              {currentSlide + 1}/{totalSlides}
+            <div className="text-right text-stone-500 text-sm whitespace-nowrap">
+              <div className="font-medium text-stone-700">Lesson {lesson.order}</div>
+              <div>{currentSlide + 1}/{totalSlides}</div>
             </div>
           </div>
         </div>
