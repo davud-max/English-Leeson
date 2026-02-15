@@ -14,6 +14,7 @@ export default withAuth(
       pathname === "/register" ||
       pathname === "/admin/login" ||
       pathname === "/api/admin/login" ||
+      pathname === "/api/admin/swap-lesson-slides" ||
       pathname === "/api/health"
 
     const isPublicPrefix =
