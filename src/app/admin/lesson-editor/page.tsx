@@ -872,7 +872,7 @@ export default function LessonEditorComplete() {
                   </div>
                 </div>
 
-                <div className="flex gap-3 items-center">
+                <div className="flex flex-wrap gap-3 items-center">
                   <div className="flex items-center gap-2 rounded border border-stone-300 px-2 py-1">
                     <span className="text-xs text-stone-600">Order</span>
                     <input
@@ -924,7 +924,7 @@ export default function LessonEditorComplete() {
                     💾 Сохранить
                   </button>
                   <button onClick={() => setShowTranslateModal(true)} className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">
-                    🌐 Перевод
+                    🌐 Translate RU→EN
                   </button>
                   {saveStatus && (
                     <div className="flex items-center px-4 py-2 bg-gray-100 rounded text-sm">
@@ -968,6 +968,14 @@ export default function LessonEditorComplete() {
                   {/* Content */}
                   {activeTab === 'content' && (
                     <div>
+                      <div className="mb-3 flex justify-end">
+                        <button
+                          onClick={() => setShowTranslateModal(true)}
+                          className="rounded bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
+                        >
+                          🌐 Translate RU→EN
+                        </button>
+                      </div>
                       <textarea
                         value={selectedLesson.content}
                         onChange={(e) => setSelectedLesson({ ...selectedLesson, content: e.target.value })}
