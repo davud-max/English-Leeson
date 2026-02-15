@@ -6,16 +6,23 @@ import { prisma } from '@/lib/prisma'
 type SwapBody = {
   fromOrder?: number
   toOrder?: number
+  adminKey?: string
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session || session.user.role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
-
   try {
     const body = (await request.json().catch(() => ({}))) as SwapBody
+    const session = await getServerSession(authOptions)
+    const isAdminSession = !!session && session.user.role === 'ADMIN'
+    const isAdminKeyValid =
+      typeof body.adminKey === 'string' &&
+      body.adminKey.length > 0 &&
+      body.adminKey === process.env.ADMIN_SECRET_KEY
+
+    if (!isAdminSession && !isAdminKeyValid) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const fromOrder = Number(body.fromOrder ?? 9)
     const toOrder = Number(body.toOrder ?? 10)
 
@@ -79,4 +86,3 @@ export async function POST(request: Request) {
     )
   }
 }
-
