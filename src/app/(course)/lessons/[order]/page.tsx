@@ -49,6 +49,7 @@ export default function DynamicLessonPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [showQuiz, setShowQuiz] = useState(false)
+  const [playbackNotice, setPlaybackNotice] = useState<string | null>(null)
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -138,6 +139,7 @@ export default function DynamicLessonPage() {
 
     const audio = new Audio(currentAudioPath)
     audioRef.current = audio
+    setPlaybackNotice(null)
     
     audio.ontimeupdate = () => {
       if (audio.duration) {
@@ -186,7 +188,7 @@ export default function DynamicLessonPage() {
       console.error('Audio play error:', err)
       if (err.name === 'NotSupportedError' || err.name === 'NotAllowedError') {
         setIsPlaying(false)
-        alert('Please click Play button to start audio')
+        setPlaybackNotice('Audio is blocked by browser settings. Tap Play again or allow media autoplay for this site.')
       }
     })
   }, [getAudioCandidates, slides.length])
@@ -204,7 +206,7 @@ export default function DynamicLessonPage() {
         audioRef.current.play().catch((err) => {
           console.error('Play failed:', err)
           setIsPlaying(false)
-          alert('Audio playback failed. Please try again.')
+          setPlaybackNotice('Audio playback failed. Please try again.')
         })
       } else {
         setProgress(0)
@@ -329,6 +331,9 @@ export default function DynamicLessonPage() {
               <div>{currentSlide + 1}/{totalSlides}</div>
             </div>
           </div>
+          {playbackNotice && (
+            <p className="mt-2 text-center text-xs text-amber-800">{playbackNotice}</p>
+          )}
         </div>
       </div>
             
