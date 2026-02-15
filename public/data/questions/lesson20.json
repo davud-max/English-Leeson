@@ -1,40 +1,40 @@
 {
   "lessonId": 20,
   "lessonTitle": " The Boundary as Ontological Act: From Distinction to Civilization",
-  "generatedAt": "2026-02-15T10:55:19.159Z",
+  "generatedAt": "2026-02-15T11:18:21.442Z",
   "questions": [
     {
       "id": 1,
-      "question": "What are the three irreducible poles of reality created by the first act of abstraction?",
-      "correct_answer": "The Observed (phenomena on this side of the boundary), the Observer (the position of subjectivity), and the Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
+      "question": "According to the lesson, what three irreducible poles of reality are created by the act of abstraction?",
+      "correct_answer": "The Observed (phenomena on this side of the boundary), The Observer (the position of subjectivity), and The Non-observed or Nothing (the background from which the boundary is drawn).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "According to the lesson, what is the starting point before the act of abstraction occurs?",
-      "correct_answer": "A pre-reflective state of undifferentiated Being - not chaos, but wholeness where there is neither subject nor object.",
+      "question": "What are the two possible modes of relating to another Observer's boundary?",
+      "correct_answer": "Ignoring his boundary (which leads to violence and appropriation) or recognizing his boundary (which leads to cooperation and exchange).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What are the two possible modes of relating to another Observer's boundary?",
-      "correct_answer": "Ignoring his boundary (which leads to violence and appropriation) or recognizing his boundary (which begins cooperation and exchange).",
+      "question": "What is Level 6 in the quantum levels of civilization, and how does it define boundaries?",
+      "correct_answer": "Level 6 is Civil Society, where the boundary becomes universal and individual - recognized around any individual who accepts the rule of mutual non-aggression.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "List the six quantum levels of civilization mentioned in the lesson, in order.",
-      "correct_answer": "Level 1: Family, Level 2: Kinship/Clan, Level 3: Tribe, Level 4: Nation, Level 5: Religion, Level 6: Civil Society.",
+      "question": "According to the lesson, what do the Four Horsemen of the Apocalypse represent in terms of boundaries?",
+      "correct_answer": "They represent systemic forces that destroy internal boundaries: White Horse erases local boundaries for unification, Red Horse is war within society, Black Horse violates boundaries of just distribution, and Pale Horse destroys ecological equilibrium boundaries.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "What do the Four Horsemen of the Apocalypse represent according to the lesson's interpretation?",
-      "correct_answer": "They represent systemic forces unleashed when civilization destroys its own internal boundaries: White Horse (erases local boundaries), Red Horse (war within society), Black Horse (violation of just distribution), Pale Horse (destruction of ecological equilibrium).",
+      "question": "What does the lesson identify as the main philosophical task today regarding boundaries?",
+      "correct_answer": "The critique of boundaries - diagnosing which boundaries extend the circle of recognition and cooperation versus those that represent regression to violence and exclusion.",
       "difficulty": "easy",
       "points": 5
     }
