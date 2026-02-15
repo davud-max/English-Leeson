@@ -12,12 +12,19 @@ type SwapBody = {
 export async function POST(request: Request) {
   try {
     const body = (await request.json().catch(() => ({}))) as SwapBody
+    const url = new URL(request.url)
+    const headerAdminKey = request.headers.get('x-admin-key') || ''
+    const queryAdminKey = url.searchParams.get('adminKey') || ''
+    const bodyAdminKey = typeof body.adminKey === 'string' ? body.adminKey : ''
+
+    const providedAdminKey = (bodyAdminKey || headerAdminKey || queryAdminKey).trim()
+    const expectedAdminKey = (process.env.ADMIN_SECRET_KEY || '').trim()
     const session = await getServerSession(authOptions)
     const isAdminSession = !!session && session.user.role === 'ADMIN'
     const isAdminKeyValid =
-      typeof body.adminKey === 'string' &&
-      body.adminKey.length > 0 &&
-      body.adminKey === process.env.ADMIN_SECRET_KEY
+      providedAdminKey.length > 0 &&
+      expectedAdminKey.length > 0 &&
+      providedAdminKey === expectedAdminKey
 
     if (!isAdminSession && !isAdminKeyValid) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
