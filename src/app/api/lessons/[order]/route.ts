@@ -148,6 +148,26 @@ export async function GET(
       }
     }
 
+    // Normalize legacy order-based slide audio urls to stable lesson-id urls at read time.
+    if (lessonWithSlides?.id && Array.isArray(lessonWithSlides.slides)) {
+      lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => {
+        if (!slide || typeof slide !== 'object') return slide;
+        const audioUrl = typeof slide.audioUrl === 'string' ? slide.audioUrl : '';
+        const isLegacyOrderUrl =
+          /\/audio\/lesson\d+\//.test(audioUrl) ||
+          /\/public\/audio\/lesson\d+\//.test(audioUrl) ||
+          /raw\.githubusercontent\.com\/.*\/public\/audio\/lesson\d+\//.test(audioUrl);
+
+        if (!audioUrl || isLegacyOrderUrl) {
+          return {
+            ...slide,
+            audioUrl: `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson-${lessonWithSlides?.id}/slide${index + 1}.mp3`,
+          };
+        }
+        return slide;
+      });
+    }
+
     // Получаем соседние уроки для навигации
     const [prevLesson, nextLesson] = await Promise.all([
       prisma.lesson.findFirst({

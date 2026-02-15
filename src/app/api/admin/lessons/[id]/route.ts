@@ -66,14 +66,37 @@ export async function PUT(
     const hasOrderChange = Number.isFinite(requestedOrder) && requestedOrder !== currentLesson.order;
 
     if (hasOrderChange) {
-      // Preserve audio relation on reorder: if slides don't have explicit audioUrl yet,
-      // lock them to the current folder before changing order.
+      // Preserve audio relation on reorder using stable lesson-id folder.
+      // This keeps slide/audio mapping intact regardless of order changes.
       if (body.slides === undefined && Array.isArray(currentLesson.slides)) {
         const slidesWithAudioUrl = currentLesson.slides.map((slide: any, index: number) => {
-          if (slide?.audioUrl) return slide;
+          const stableAudioUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson-${currentLesson.id}/slide${index + 1}.mp3`;
+
+          if (!slide || typeof slide !== 'object') {
+            return {
+              id: index + 1,
+              title: `Part ${index + 1}`,
+              content: '',
+              emoji: '📖',
+              duration: 30000,
+              audioUrl: stableAudioUrl,
+            };
+          }
+
+          // Keep non-legacy custom urls; rewrite legacy order-based urls to stable lesson-id urls.
+          const existingAudioUrl = typeof slide.audioUrl === 'string' ? slide.audioUrl : '';
+          const isLegacyOrderUrl =
+            /\/audio\/lesson\d+\//.test(existingAudioUrl) ||
+            /\/public\/audio\/lesson\d+\//.test(existingAudioUrl) ||
+            /raw\.githubusercontent\.com\/.*\/public\/audio\/lesson\d+\//.test(existingAudioUrl);
+
+          if (existingAudioUrl && !isLegacyOrderUrl) {
+            return slide;
+          }
+
           return {
             ...slide,
-            audioUrl: `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${currentLesson.order}/slide${index + 1}.mp3`,
+            audioUrl: stableAudioUrl,
           };
         });
         updateData.slides = slidesWithAudioUrl;
