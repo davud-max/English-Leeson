@@ -1,40 +1,40 @@
 {
   "lessonId": 20,
   "lessonTitle": " The Boundary as Ontological Act: From Distinction to Civilization",
-  "generatedAt": "2026-02-15T09:20:55.597Z",
+  "generatedAt": "2026-02-15T09:48:25.019Z",
   "questions": [
     {
       "id": 1,
-      "question": "What are the three irreducible poles of reality created by the first act of abstraction?",
-      "correct_answer": "The Observed (that which finds itself on this side of the boundary), The Observer (the one for whom this distinction is drawn), and The Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
+      "question": "What are the three irreducible poles of reality that emerge from the primary act of abstraction?",
+      "correct_answer": "The Observed (phenomena on this side of the boundary), The Observer (the position of subjectivity), and The Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "According to the lesson, what is the starting point before the act of abstraction occurs?",
-      "correct_answer": "A pre-reflective state of undifferentiated Being - not chaos, but wholeness where there is neither subject nor object.",
-      "difficulty": "easy",
-      "points": 5
+      "question": "According to the lesson, what is the deontological imperative and why does it emerge evolutionarily?",
+      "correct_answer": "The deontological imperative is the prohibition on initiating violence or violating another's boundary of subjectivity. It emerges because systematic violence leads to evolutionary dead ends, while cooperation enables sustainable development and survival of complex systems.",
+      "difficulty": "hard",
+      "points": 15
     },
     {
       "id": 3,
-      "question": "What are the two possible modes of relating to another Observer-Actor's boundary?",
-      "correct_answer": "Ignoring his boundary (which leads to violence and appropriation) or recognizing his boundary (which leads to cooperation and exchange).",
+      "question": "What is Level 6 of civilization according to the quantum levels described in the lesson?",
+      "correct_answer": "Civil Society, where the boundary becomes universal and virtual, recognized around any individual who accepts the rule of mutual non-aggression, creating individual legal contours respected by all.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What does Level 6 of civilization (Civil Society) represent in terms of boundary recognition?",
-      "correct_answer": "The boundary becomes universal and individual, recognized around any individual who accepts the rule of mutual non-aggression, creating a legal contour obligatory for respect by all.",
-      "difficulty": "easy",
-      "points": 5
+      "question": "How do the Four Horsemen of the Apocalypse represent systemic boundary violations in modern civilization, and what distinguishes pseudo-institutions from legitimate ones?",
+      "correct_answer": "The Four Horsemen represent: erasure of local boundaries (White), internal societal war (Red), violation of just distribution boundaries (Black), and destruction of ecological equilibrium boundaries (Pale). Pseudo-institutions like fiat money formally exist within law but systematically violate boundaries of property and responsibility through hidden means.",
+      "difficulty": "hard",
+      "points": 15
     },
     {
       "id": 5,
-      "question": "According to the lesson, what is the main philosophical conclusion about what civilization actually represents?",
-      "correct_answer": "Civilization is not technological progress, but rather the history of learning to draw boundaries - from drawing boundaries between self and world, to recognizing others' boundaries, to building universal legal orders.",
+      "question": "What does the lesson identify as the primary task of philosophy today?",
+      "correct_answer": "The critique of boundaries - diagnosing which boundaries extend recognition and cooperation versus those that represent regression to violence and exclusion, ensuring the act of distinction doesn't turn against the universal project.",
       "difficulty": "easy",
       "points": 5
     }
