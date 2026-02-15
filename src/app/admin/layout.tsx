@@ -61,6 +61,12 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const isLessonEditorRoute = pathname.startsWith('/admin/lesson-editor');
+
+  if (isLessonEditorRoute) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-amber-50/40 text-stone-900">
       <header className="sticky top-0 z-40 border-b border-amber-200 bg-amber-50/90 backdrop-blur">
