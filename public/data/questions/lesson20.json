@@ -1,40 +1,40 @@
 {
   "lessonId": 20,
   "lessonTitle": " The Boundary as Ontological Act: From Distinction to Civilization",
-  "generatedAt": "2026-02-15T10:05:16.905Z",
+  "generatedAt": "2026-02-15T10:08:49.428Z",
   "questions": [
     {
       "id": 1,
-      "question": "What are the three irreducible poles of reality that emerge from the first act of abstraction?",
-      "correct_answer": "The Observed (phenomena on this side of the boundary), the Observer (the position of subjectivity), and the Non-observed/Nothing (the fundamental background from which the boundary is drawn).",
+      "question": "What are the three irreducible poles of reality created by the act of abstraction?",
+      "correct_answer": "The Observed (that which is on this side of the boundary), The Observer (the one for whom the distinction is drawn), and The Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "According to the lesson, what is the deontological imperative and why does it emerge from evolutionary logic?",
-      "correct_answer": "The deontological imperative is the prohibition on initiating violence or violating another's boundary of subjectivity. It emerges because systematic violence leads to dead ends, while sustainable group development requires cooperation over suppression.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "According to the lesson, what is the starting point before the act of abstraction occurs?",
+      "correct_answer": "A pre-reflective state of undifferentiated Being - not chaos, but wholeness where there is neither subject nor object.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 3,
-      "question": "What is the highest quantum level of civilization described in the lesson, and how does it define boundaries?",
-      "correct_answer": "Civil Society (Level 6), which creates universal and virtual boundaries recognized around any individual who accepts the rule of mutual non-aggression, making boundaries individual legal contours rather than collective barriers.",
+      "question": "What are the two possible modes of relating to another Observer's boundary?",
+      "correct_answer": "Ignoring his boundary (which leads to violence and appropriation) or recognizing his boundary (which leads to cooperation and exchange).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "How do the Four Horsemen of the Apocalypse represent systemic boundary violations in modern civilization, and what is the philosophical significance of this interpretation?",
-      "correct_answer": "Each horseman represents destruction of different systemic boundaries: White (local boundaries), Red (internal social boundaries), Black (just distribution boundaries), and Pale (ecological boundaries). This shows how civilization's complexity creates immanent diseases that can destroy the boundary-recognition system that created it.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "Name the six quantum levels of civilization mentioned in the lesson, in order.",
+      "correct_answer": "Family, Kinship/Clan, Tribe, Nation, Religion, and Civil Society.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 5,
-      "question": "What distinguishes legitimate institutions from pseudo-institutions according to the lesson?",
-      "correct_answer": "Legitimate institutions crystallize proper boundaries and operate within legal frameworks, while pseudo-institutions systematically violate boundaries under the guise of technical necessity (like fiat money causing inflation or bailouts erasing risk-responsibility boundaries).",
+      "question": "What do the Four Horsemen of the Apocalypse represent in the context of this lesson?",
+      "correct_answer": "They represent systemic forces unleashed when civilization destroys its own internal boundaries: White Horse (erases local boundaries), Red Horse (war within society), Black Horse (violation of just distribution), and Pale Horse (destruction of ecological equilibrium).",
       "difficulty": "easy",
       "points": 5
     }
