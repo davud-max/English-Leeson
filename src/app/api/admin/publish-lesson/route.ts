@@ -7,6 +7,7 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = 'davud-max/English-Leeson';
 const GITHUB_BRANCH = 'main';
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || 'sk_24708aff82ec3e2fe533c19311a9a159326917faabf53274';
+const PROXY_URL = 'https://elevenlabs-proxy-two.vercel.app/api/elevenlabs';
 
 interface Slide {
   id: number;
@@ -185,29 +186,31 @@ async function uploadBinaryToGitHub(filePath: string, base64Content: string, mes
 // Generate audio with ElevenLabs
 async function generateAudio(text: string, voiceId: string): Promise<string | null> {
   try {
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+    const response = await fetch(PROXY_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'xi-api-key': ELEVENLABS_API_KEY,
       },
       body: JSON.stringify({
+        apiKey: ELEVENLABS_API_KEY,
+        voiceId,
         text: text.substring(0, 5000),
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
-        },
+        stability: 0.5,
+        similarity_boost: 0.75,
       }),
     });
 
     if (!response.ok) {
-      console.error('ElevenLabs error:', await response.text());
+      console.error('ElevenLabs proxy error:', await response.text());
       return null;
     }
 
-    const arrayBuffer = await response.arrayBuffer();
-    return Buffer.from(arrayBuffer).toString('base64');
+    const data = await response.json();
+    if (!data.success || !data.audio) {
+      console.error('ElevenLabs proxy invalid response:', data);
+      return null;
+    }
+    return data.audio;
   } catch (error) {
     console.error('Audio generation error:', error);
     return null;

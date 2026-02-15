@@ -7,8 +7,6 @@ import path from 'path';
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || 'sk_24708aff82ec3e2fe533c19311a9a159326917faabf53274';
 const PROXY_URL = 'https://elevenlabs-proxy-two.vercel.app/api/elevenlabs';
 
-// Прямой API ElevenLabs (если прокси не работает)
-const ELEVENLABS_DIRECT_URL = 'https://api.elevenlabs.io/v1/text-to-speech';
 
 interface GenerateAudioRequest {
   text: string;
@@ -48,14 +46,15 @@ export async function POST(request: Request) {
 
     console.log(`Generating audio for slide ${slideNumber}, text length: ${cleanText.length}`);
 
-    // Пробуем сначала через прокси
     let audioBase64: string | null = null;
-    
     try {
       audioBase64 = await generateViaProxy(cleanText, voiceId);
     } catch (proxyError) {
-      console.log('Proxy failed, trying direct API...', proxyError);
-      audioBase64 = await generateViaDirect(cleanText, voiceId);
+      console.error('Proxy generation failed:', proxyError);
+      return NextResponse.json(
+        { error: 'Proxy generation failed: ' + (proxyError as Error).message },
+        { status: 500 }
+      );
     }
 
     if (!audioBase64) {
@@ -129,34 +128,6 @@ async function generateViaProxy(text: string, voiceId: string): Promise<string> 
   }
 
   return data.audio;
-}
-
-// Генерация напрямую через ElevenLabs API
-async function generateViaDirect(text: string, voiceId: string): Promise<string> {
-  const response = await fetch(`${ELEVENLABS_DIRECT_URL}/${voiceId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'xi-api-key': ELEVENLABS_API_KEY,
-    },
-    body: JSON.stringify({
-      text: text,
-      model_id: 'eleven_multilingual_v2',
-      voice_settings: {
-        stability: 0.5,
-        similarity_boost: 0.75,
-      },
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`ElevenLabs API error: ${response.status} - ${errorText}`);
-  }
-
-  const arrayBuffer = await response.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  return buffer.toString('base64');
 }
 
 // Добавление пауз для лучшей интонации
