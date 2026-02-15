@@ -183,6 +183,79 @@ export default function LessonEditorComplete() {
     }
   }
 
+  const applyLessonOrder = async () => {
+    if (!selectedLesson) return
+    setSaveStatus('🔢 Updating order...')
+    try {
+      const res = await fetch(`/api/admin/lessons/${selectedLesson.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: Number(selectedLesson.order) }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+        throw new Error(err.error || 'Failed to update order')
+      }
+      const updated = await res.json()
+      setSelectedLesson((prev) => (prev ? { ...prev, order: updated.order } : prev))
+      await fetchLessons()
+      setSaveStatus('✅ Order updated')
+      setTimeout(() => setSaveStatus(''), 2500)
+    } catch (error) {
+      setSaveStatus(`❌ ${(error as Error).message}`)
+      setTimeout(() => setSaveStatus(''), 5000)
+    }
+  }
+
+  const insertLessonAt = async (order: number) => {
+    if (!selectedLesson) return
+    setSaveStatus('➕ Inserting lesson...')
+    try {
+      const res = await fetch('/api/admin/lessons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order,
+          title: `New Lesson`,
+          description: 'New lesson description',
+          content: '',
+          duration: 25,
+          published: false,
+          slides: [],
+          emoji: '📖',
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+        throw new Error(err.error || 'Failed to insert lesson')
+      }
+      const created = await res.json()
+      await fetchLessons()
+      setSelectedLesson((prev) =>
+        prev
+          ? {
+              ...prev,
+              id: created.id,
+              order: created.order,
+              title: created.title,
+              description: created.description,
+              content: created.content,
+              slides: created.slides || [],
+              duration: created.duration,
+              published: created.published,
+              emoji: created.emoji,
+              color: created.color,
+            }
+          : prev
+      )
+      setSaveStatus(`✅ Inserted lesson at #${created.order}`)
+      setTimeout(() => setSaveStatus(''), 3000)
+    } catch (error) {
+      setSaveStatus(`❌ ${(error as Error).message}`)
+      setTimeout(() => setSaveStatus(''), 5000)
+    }
+  }
+
   const syncFromStaticFiles = async () => {
     setSaveStatus('🔄 Синхронизация...')
     
@@ -541,6 +614,7 @@ export default function LessonEditorComplete() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          lessonId: lesson.id,
           lessonNumber: lesson.order,
           slideNumber: slideIndex + 1,
           audioBase64: genData.audioBase64,
@@ -557,7 +631,7 @@ export default function LessonEditorComplete() {
       await uploadRes.json()
       
       // 3. Success - update slide with GitHub raw URL
-      const githubRawUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${lesson.order}/slide${slideIndex + 1}.mp3?t=${Date.now()}`
+      const githubRawUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson-${lesson.id}/slide${slideIndex + 1}.mp3?t=${Date.now()}`
       
       setAudioProgress((prev) => {
         const next = [...prev]
@@ -779,6 +853,38 @@ export default function LessonEditorComplete() {
                 </div>
 
                 <div className="flex gap-3 items-center">
+                  <div className="flex items-center gap-2 rounded border border-stone-300 px-2 py-1">
+                    <span className="text-xs text-stone-600">Order</span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={selectedLesson.order}
+                      onChange={(e) =>
+                        setSelectedLesson({ ...selectedLesson, order: Number(e.target.value) || 1 })
+                      }
+                      className="w-20 rounded border border-stone-300 px-2 py-1 text-sm"
+                    />
+                    <button
+                      onClick={applyLessonOrder}
+                      className="rounded bg-amber-700 px-3 py-1 text-sm font-medium text-white hover:bg-amber-800"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  
+                  <button
+                    onClick={() => insertLessonAt(Math.max(1, selectedLesson.order))}
+                    className="rounded border border-stone-300 px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100"
+                  >
+                    Insert Before
+                  </button>
+                  <button
+                    onClick={() => insertLessonAt(Math.max(1, selectedLesson.order + 1))}
+                    className="rounded border border-stone-300 px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100"
+                  >
+                    Insert After
+                  </button>
+
                   {/* Published Toggle */}
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input

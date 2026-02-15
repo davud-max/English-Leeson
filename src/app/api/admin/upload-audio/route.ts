@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = 'davud-max/English-Leeson';
 const GITHUB_BRANCH = 'main';
 
 interface UploadRequest {
-  lessonNumber: number;
+  lessonId?: string;
+  audioKey?: string;
+  lessonNumber?: number;
   slideNumber: number;
   audioBase64: string;
 }
@@ -20,17 +23,38 @@ export async function POST(request: Request) {
     }
 
     const body: UploadRequest = await request.json();
-    const { lessonNumber, slideNumber, audioBase64 } = body;
+    const { lessonId, audioKey, lessonNumber, slideNumber, audioBase64 } = body;
 
-    if (!lessonNumber || !slideNumber || !audioBase64) {
+    if (!slideNumber || !audioBase64 || (!lessonId && !audioKey && !lessonNumber)) {
       return NextResponse.json(
-        { error: 'lessonNumber, slideNumber, and audioBase64 are required' },
+        { error: 'slideNumber, audioBase64 and lessonId/audioKey/lessonNumber are required' },
         { status: 400 }
       );
     }
 
-    const filePath = `public/audio/lesson${lessonNumber}/slide${slideNumber}.mp3`;
-    const result = await uploadWithRetry(filePath, audioBase64, lessonNumber, slideNumber);
+    let resolvedAudioFolder = '';
+    let resolvedLessonLabel = '';
+
+    if (audioKey) {
+      resolvedAudioFolder = audioKey;
+      resolvedLessonLabel = audioKey;
+    } else if (lessonId) {
+      const lesson = await prisma.lesson.findUnique({
+        where: { id: lessonId },
+        select: { id: true, order: true },
+      });
+      if (!lesson) {
+        return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
+      }
+      resolvedAudioFolder = `lesson-${lesson.id}`;
+      resolvedLessonLabel = `lesson-${lesson.order}`;
+    } else {
+      resolvedAudioFolder = `lesson${lessonNumber}`;
+      resolvedLessonLabel = `lesson-${lessonNumber}`;
+    }
+
+    const filePath = `public/audio/${resolvedAudioFolder}/slide${slideNumber}.mp3`;
+    const result = await uploadWithRetry(filePath, audioBase64, resolvedLessonLabel, slideNumber);
 
     return NextResponse.json({
       success: true,
@@ -78,7 +102,7 @@ async function getExistingSha(filePath: string): Promise<string | null> {
 async function uploadWithRetry(
   filePath: string,
   audioBase64: string,
-  lessonNumber: number,
+  lessonLabel: string,
   slideNumber: number
 ) {
   const maxAttempts = 5;
@@ -88,7 +112,7 @@ async function uploadWithRetry(
     const existingSha = await getExistingSha(filePath);
 
     const uploadBody: Record<string, string> = {
-      message: `Update audio: lesson ${lessonNumber}, slide ${slideNumber}`,
+      message: `Update audio: ${lessonLabel}, slide ${slideNumber}`,
       content: audioBase64,
       branch: GITHUB_BRANCH,
     };

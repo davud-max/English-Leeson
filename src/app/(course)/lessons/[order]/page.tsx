@@ -97,7 +97,18 @@ export default function DynamicLessonPage() {
 
   const totalSlides = slides.length
 
-  const playSlide = useCallback((slideIndex: number) => {
+  const getAudioCandidates = useCallback((slideIndex: number): string[] => {
+    const candidates = [
+      lesson?.id ? `/audio/lesson-${lesson.id}/slide${slideIndex + 1}.mp3` : null,
+      `/audio/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`,
+      lesson?.id ? `/audio/lesson-${lesson.id}/slide1.mp3` : null,
+      `/audio/lesson${lessonOrder}/slide1.mp3`,
+    ].filter((item): item is string => Boolean(item))
+
+    return Array.from(new Set(candidates))
+  }, [lesson?.id, lessonOrder])
+
+  const playSlide = useCallback((slideIndex: number, candidateIndex = 0) => {
     const totalSlides = slides.length
     console.log(`Playing slide ${slideIndex + 1} of ${totalSlides}`)
     
@@ -105,8 +116,27 @@ export default function DynamicLessonPage() {
       audioRef.current.pause()
       audioRef.current = null
     }
-    
-    const audio = new Audio(`/audio/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`)
+
+    const candidates = getAudioCandidates(slideIndex)
+    const currentAudioPath = candidates[candidateIndex]
+
+    if (!currentAudioPath) {
+      console.log('No audio available, using timer')
+      setTimeout(() => {
+        if (slideIndex < totalSlides - 1) {
+          const nextSlide = slideIndex + 1
+          setCurrentSlide(nextSlide)
+          setProgress(0)
+          playSlide(nextSlide)
+        } else {
+          setIsPlaying(false)
+          setProgress(100)
+        }
+      }, 20000)
+      return
+    }
+
+    const audio = new Audio(currentAudioPath)
     audioRef.current = audio
     
     audio.ontimeupdate = () => {
@@ -129,17 +159,17 @@ export default function DynamicLessonPage() {
     }
     
     audio.onerror = () => {
-      console.log(`Error loading slide ${slideIndex + 1}, trying slide1.mp3`)
-      const fallbackAudio = new Audio(`/audio/lesson${lessonOrder}/slide1.mp3`)
-      audioRef.current = fallbackAudio
-      
-      fallbackAudio.ontimeupdate = () => {
-        if (fallbackAudio.duration) {
-          setProgress((fallbackAudio.currentTime / fallbackAudio.duration) * 100)
-        }
+      const nextCandidate = candidateIndex + 1
+      if (nextCandidate < candidates.length) {
+        console.log(
+          `Error loading slide ${slideIndex + 1}, trying fallback ${nextCandidate + 1}/${candidates.length}`
+        )
+        playSlide(slideIndex, nextCandidate)
+        return
       }
-      
-      fallbackAudio.onended = () => {
+
+      console.log('No audio available, using timer')
+      setTimeout(() => {
         if (slideIndex < totalSlides - 1) {
           const nextSlide = slideIndex + 1
           setCurrentSlide(nextSlide)
@@ -149,24 +179,7 @@ export default function DynamicLessonPage() {
           setIsPlaying(false)
           setProgress(100)
         }
-      }
-      
-      fallbackAudio.onerror = () => {
-        console.log('No audio available, using timer')
-        setTimeout(() => {
-          if (slideIndex < totalSlides - 1) {
-            const nextSlide = slideIndex + 1
-            setCurrentSlide(nextSlide)
-            setProgress(0)
-            playSlide(nextSlide)
-          } else {
-            setIsPlaying(false)
-            setProgress(100)
-          }
-        }, 20000)
-      }
-      
-      fallbackAudio.play().catch(console.error)
+      }, 20000)
     }
     
     audio.play().catch((err) => {
@@ -176,7 +189,7 @@ export default function DynamicLessonPage() {
         alert('Please click Play button to start audio')
       }
     })
-  }, [lessonOrder, slides.length])
+  }, [getAudioCandidates, slides.length])
 
   const togglePlay = () => {
     if (isPlaying) {
@@ -195,47 +208,7 @@ export default function DynamicLessonPage() {
         })
       } else {
         setProgress(0)
-        
-        const audioPath = `/audio/lesson${lessonOrder}/slide${currentSlide + 1}.mp3`
-        console.log('Loading audio:', audioPath)
-        const audio = new Audio(audioPath)
-        audioRef.current = audio
-        
-        audio.ontimeupdate = () => {
-          if (audio.duration) {
-            setProgress((audio.currentTime / audio.duration) * 100)
-          }
-        }
-        
-        audio.onended = () => {
-          if (currentSlide < totalSlides - 1) {
-            const nextSlide = currentSlide + 1
-            setCurrentSlide(nextSlide)
-            setProgress(0)
-            playSlide(nextSlide)
-          } else {
-            setIsPlaying(false)
-            setProgress(100)
-          }
-        }
-        
-        audio.onerror = () => {
-          console.error(`Error loading slide ${currentSlide + 1}`)
-          if (currentSlide < totalSlides - 1) {
-            const nextSlide = currentSlide + 1
-            setCurrentSlide(nextSlide)
-            setProgress(0)
-            playSlide(nextSlide)
-          } else {
-            setIsPlaying(false)
-          }
-        }
-        
-        audio.play().catch((err) => {
-          console.error('Play failed:', err)
-          setIsPlaying(false)
-          alert('Audio playback failed. Please try again.')
-        })
+        playSlide(currentSlide)
       }
     }
   }
