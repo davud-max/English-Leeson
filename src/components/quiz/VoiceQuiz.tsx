@@ -55,6 +55,7 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const synthRef = useRef<SpeechSynthesis | null>(null)
   const QUESTION_AUDIO_RAW_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/questions'
+  const QUESTION_DATA_RAW_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/data/questions'
 
   // Initialize audio element
   useEffect(() => {
@@ -252,15 +253,31 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
     setError(null)
 
     try {
-      const response = await fetch(`/data/questions/lesson${lessonId}.json`)
+      const cacheBust = Date.now()
+      const candidates = [
+        `${QUESTION_DATA_RAW_BASE}/lesson${lessonId}.json?v=${cacheBust}`,
+        `/data/questions/lesson${lessonId}.json`,
+        `/api/questions?lessonId=${lessonId}`,
+      ]
 
-      if (!response.ok) {
-        setError('No questions available for this lesson yet. Please ask the administrator to generate them.')
+      let data: any = null
+      for (const url of candidates) {
+        try {
+          const response = await fetch(url)
+          if (response.ok) {
+            data = await response.json()
+            break
+          }
+        } catch {
+          // try next candidate
+        }
+      }
+
+      if (!data) {
+        setError('No questions available for this lesson yet. Please regenerate in Admin Questions.')
         setIsLoading(false)
         return
       }
-
-      const data = await response.json()
 
       if (data.questions?.length > 0) {
         setQuestions(data.questions)
