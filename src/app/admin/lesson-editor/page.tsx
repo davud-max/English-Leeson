@@ -982,6 +982,22 @@ export default function LessonEditorComplete() {
                       <div className="flex justify-between mb-4">
                         <h3 className="text-lg font-medium">Слайды</h3>
                         <div className="flex gap-2">
+                          <select
+                            value={selectedVoice}
+                            onChange={(e) => setSelectedVoice(e.target.value)}
+                            className="border rounded px-3 py-2 text-sm"
+                          >
+                            <optgroup label="Custom">
+                              {VOICES.filter(v => v.type === 'custom').map(v => (
+                                <option key={v.id} value={v.id}>{v.name}</option>
+                              ))}
+                            </optgroup>
+                            <optgroup label="Built-in">
+                              {VOICES.filter(v => v.type === 'builtin').map(v => (
+                                <option key={v.id} value={v.id}>{v.name}</option>
+                              ))}
+                            </optgroup>
+                          </select>
                           <button
                             onClick={recreateSlides}
                             className="bg-amber-600 text-white px-4 py-2 rounded text-sm"

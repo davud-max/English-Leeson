@@ -62,7 +62,7 @@ export async function POST(request: Request) {
 
     let audioBase64: string | null = null;
     try {
-      audioBase64 = await generateViaProxy(cleanText, voiceId);
+      audioBase64 = await generateViaProxy(cleanText, voiceId, slideNumber);
     } catch (proxyError) {
       console.error('Proxy generation failed:', proxyError);
       return NextResponse.json(
@@ -99,7 +99,8 @@ export async function POST(request: Request) {
 }
 
 // Генерация через прокси
-async function generateViaProxy(text: string, voiceId: string): Promise<string> {
+async function generateViaProxy(text: string, voiceId: string, slideNumber?: number): Promise<string> {
+  const requestId = `${Date.now()}-${slideNumber || 'n'}-${voiceId}`;
   const response = await fetch(PROXY_URL, {
     method: 'POST',
     headers: {
@@ -107,10 +108,14 @@ async function generateViaProxy(text: string, voiceId: string): Promise<string> 
     },
     body: JSON.stringify({
       apiKey: ELEVENLABS_API_KEY,
-      voiceId: voiceId,
-      text: text,
+      voiceId,
+      voice_id: voiceId,
+      voice: voiceId,
+      text,
       stability: 0.5,
       similarity_boost: 0.75,
+      requestId,
+      cacheBust: requestId,
     }),
   });
 

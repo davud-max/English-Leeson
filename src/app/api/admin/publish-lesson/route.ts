@@ -186,6 +186,7 @@ async function uploadBinaryToGitHub(filePath: string, base64Content: string, mes
 // Generate audio with ElevenLabs
 async function generateAudio(text: string, voiceId: string): Promise<string | null> {
   try {
+    const requestId = `${Date.now()}-${voiceId}-${Math.random().toString(36).slice(2, 8)}`;
     const response = await fetch(PROXY_URL, {
       method: 'POST',
       headers: {
@@ -194,9 +195,13 @@ async function generateAudio(text: string, voiceId: string): Promise<string | nu
       body: JSON.stringify({
         apiKey: ELEVENLABS_API_KEY,
         voiceId,
+        voice_id: voiceId,
+        voice: voiceId,
         text: text.substring(0, 5000),
         stability: 0.5,
         similarity_boost: 0.75,
+        requestId,
+        cacheBust: requestId,
       }),
     });
 
