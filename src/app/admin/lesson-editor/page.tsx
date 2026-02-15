@@ -83,7 +83,6 @@ export default function LessonEditorComplete() {
   const [selectedVoice, setSelectedVoice] = useState('erDx71FK2teMZ7g6khzw')
   const [audioProgress, setAudioProgress] = useState<AudioGenerationProgress[]>([])
   const [isGeneratingAll, setIsGeneratingAll] = useState(false)
-  const [isRebuildingAndVoicing, setIsRebuildingAndVoicing] = useState(false)
   const [focusTarget, setFocusTarget] = useState<CursorFocusTarget | null>(null)
   const [showTranslateModal, setShowTranslateModal] = useState(false)
   const [russianText, setRussianText] = useState('')
@@ -300,38 +299,6 @@ export default function LessonEditorComplete() {
       setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
       setFocusTarget({ slideIndex: index + 1, position: 0 })
     }
-  }
-
-  const createSlidesFromContent = (content: string): Slide[] => {
-    const paragraphs = content
-      .split(/\n\n+/)
-      .filter(p => p.trim().length > 0)
-
-    return paragraphs.map((paragraph, index) => ({
-      id: index + 1,
-      title: `Part ${index + 1}`,
-      content: paragraph.trim(),
-      emoji: '📖',
-      duration: 30000,
-    }))
-  }
-
-  const recreateSlides = () => {
-    if (!selectedLesson || !selectedLesson.content) {
-      setSaveStatus('❌ Нет контента')
-      return
-    }
-    
-    setSaveStatus('🔄 Разбиение...')
-    const newSlides = createSlidesFromContent(selectedLesson.content)
-    
-    setSelectedLesson({
-      ...selectedLesson,
-      slides: newSlides
-    })
-    
-    setSaveStatus(`✅ ${newSlides.length} слайдов`)
-    setTimeout(() => setSaveStatus(''), 3000)
   }
 
   // Quiz Generator functions
@@ -633,53 +600,6 @@ export default function LessonEditorComplete() {
     }, 3000)
   }
 
-  const recreateSlidesAndRegenerateAudio = async () => {
-    if (!selectedLesson || !selectedLesson.content) {
-      setSaveStatus('❌ Нет контента')
-      return
-    }
-
-    setIsRebuildingAndVoicing(true)
-    setSaveStatus('🔄 Пересобираем слайды...')
-
-    const rebuiltSlides = createSlidesFromContent(selectedLesson.content)
-    const rebuiltLesson: Lesson = {
-      ...selectedLesson,
-      slides: rebuiltSlides,
-    }
-
-    setSelectedLesson(rebuiltLesson)
-    setSaveStatus(`💾 Сохраняем ${rebuiltSlides.length} слайдов...`)
-
-    try {
-      const res = await fetch(`/api/admin/lessons/${rebuiltLesson.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: rebuiltLesson.title,
-          description: rebuiltLesson.description,
-          content: rebuiltLesson.content,
-          slides: rebuiltLesson.slides,
-          duration: rebuiltLesson.duration,
-          published: rebuiltLesson.published,
-          emoji: rebuiltLesson.emoji,
-        }),
-      })
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Failed to save rebuilt slides' }))
-        throw new Error(err.error || 'Failed to save rebuilt slides')
-      }
-
-      await generateAllAudio(rebuiltLesson)
-      fetchLessons()
-    } catch (error) {
-      setSaveStatus(`❌ ${(error as Error).message}`)
-      setTimeout(() => setSaveStatus(''), 5000)
-    } finally {
-      setIsRebuildingAndVoicing(false)
-    }
-  }
 
   // Translate modal
   const translateAndImport = async () => {
@@ -897,15 +817,12 @@ export default function LessonEditorComplete() {
                       <div className="flex justify-between mb-4">
                         <h3 className="text-lg font-medium">Слайды</h3>
                         <div className="flex gap-2">
-                          <button onClick={recreateSlides} className="bg-amber-600 text-white px-4 py-2 rounded text-sm">
-                            🔄 Разбить
-                          </button>
                           <button
-                            onClick={recreateSlidesAndRegenerateAudio}
-                            disabled={isRebuildingAndVoicing || isGeneratingAll}
+                            onClick={() => generateAllAudio()}
+                            disabled={isGeneratingAll}
                             className="bg-green-700 text-white px-4 py-2 rounded text-sm disabled:opacity-50"
                           >
-                            {isRebuildingAndVoicing ? '⏳ Пересборка...' : '🎙️ Разбить + Озвучить'}
+                            {isGeneratingAll ? '⏳ Озвучивание...' : '🎙️ Озвучить'}
                           </button>
                           <button onClick={addSlide} className="bg-blue-600 text-white px-4 py-2 rounded text-sm">
                             + Слайд
