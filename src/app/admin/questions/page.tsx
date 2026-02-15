@@ -46,7 +46,7 @@ export default function AdminQuestionsPage() {
   const [count, setCount] = useState(5)
   const [difficulty, setDifficulty] = useState('mixed')
   const [adminKey, setAdminKey] = useState('')
-  const [voiceId, setVoiceId] = useState('erDx71FK2teMZ7g6khzw') // New Voice by default
+  const [voiceId] = useState('erDx71FK2teMZ7g6khzw') // New Voice (fixed)
   const [isGenerating, setIsGenerating] = useState(false)
   const [result, setResult] = useState<{ success: boolean; message: string; questions?: Question[] } | null>(null)
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
@@ -373,20 +373,10 @@ export default function AdminQuestionsPage() {
                   </label>
                   <select
                     value={voiceId}
-                    onChange={(e) => setVoiceId(e.target.value)}
+                    disabled
                     className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                   >
                     <option value="erDx71FK2teMZ7g6khzw">New Voice (default)</option>
-                    <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
-                    <option value="21m00Tcm4TlvDq8ikWAM">Antoni</option>
-                    <option value="l69JV1jh1h6FUJhOsxHe">Josh</option>
-                    <option value="XB0fD6dbPRx3HKNjwvxu">Arnold</option>
-                    <option value="VR6AewLTigWG4xSOO92w">Sam</option>
-                    <option value="onwK4e9ZLuT6aEGHFuLU">Matthew</option>
-                    <option value="Yko7PKHZNXotIU88wEQ5">Michael</option>
-                    <option value="AZnzlk1XVDkiWZQ1jQtc">Rachel</option>
-                    <option value="2EiwWnXFnvU5JabPBFxf">Zoe</option>
-                    <option value="EXAVITQu4vr4xnSDxMaL">Chloe</option>
                   </select>
                 </div>
 

@@ -2,9 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || 'sk_24708aff82ec3e2fe533c19311a9a159326917faabf53274'
-const VOICE_ID = 'erDx71FK2teMZ7g6khzw' // New Voice
+const VOICE_ID = 'erDx71FK2teMZ7g6khzw' // New Voice (forced)
 const PROXY_URL = 'https://elevenlabs-proxy-two.vercel.app/api/elevenlabs'
-const ELEVENLABS_DIRECT_URL = 'https://api.elevenlabs.io/v1/text-to-speech'
 
 interface Question {
   id: number
@@ -12,16 +11,21 @@ interface Question {
 }
 
 // Generate via proxy
-async function generateViaProxy(text: string, voiceId: string): Promise<string> {
+async function generateViaProxy(text: string, voiceId: string, questionNumber?: number): Promise<string> {
+  const requestId = `${Date.now()}-${questionNumber || 'q'}-${voiceId}`
   const response = await fetch(PROXY_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       apiKey: ELEVENLABS_API_KEY,
-      voiceId: voiceId,
-      text: text,
+      voiceId,
+      voice_id: voiceId,
+      voice: voiceId,
+      text,
       stability: 0.5,
       similarity_boost: 0.75,
+      requestId,
+      cacheBust: requestId,
     }),
   })
 
@@ -39,38 +43,11 @@ async function generateViaProxy(text: string, voiceId: string): Promise<string> 
   return data.audio
 }
 
-// Generate via direct ElevenLabs API
-async function generateViaDirect(text: string, voiceId: string): Promise<string> {
-  const response = await fetch(`${ELEVENLABS_DIRECT_URL}/${voiceId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'xi-api-key': ELEVENLABS_API_KEY,
-    },
-    body: JSON.stringify({
-      text: text,
-      model_id: 'eleven_multilingual_v2',
-      voice_settings: {
-        stability: 0.5,
-        similarity_boost: 0.75,
-      },
-    }),
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`ElevenLabs API error: ${response.status} - ${errorText}`)
-  }
-
-  const arrayBuffer = await response.arrayBuffer()
-  const buffer = Buffer.from(arrayBuffer)
-  return buffer.toString('base64')
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { lessonId, questions, adminKey, voiceId = VOICE_ID } = body
+    const { lessonId, questions, adminKey } = body
+    const voiceId = VOICE_ID
 
     // Verify admin key
     if (adminKey !== process.env.ADMIN_SECRET_KEY) {
@@ -88,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`🎤 Starting audio generation for Lesson ${lessonId} questions...`)
-    console.log(`🔊 Using voice ID: ${voiceId}`)
+    console.log(`🔊 Using voice ID (forced): ${voiceId}`)
 
     const results = []
     let successCount = 0
@@ -103,14 +80,8 @@ export async function POST(request: NextRequest) {
       console.log(`🔊 Generating ${i + 1}/${questions.length}: ${filename}`)
 
       try {
-        // Try proxy first, then direct API
         let audioBase64: string
-        try {
-          audioBase64 = await generateViaProxy(questionText, voiceId)
-        } catch (proxyError) {
-          console.log('Proxy failed, trying direct API...', proxyError)
-          audioBase64 = await generateViaDirect(questionText, voiceId)
-        }
+        audioBase64 = await generateViaProxy(questionText, voiceId, i + 1)
         
         const sizeKB = Math.round((audioBase64.length * 3 / 4) / 1024)
         console.log(`✅ Generated: ${filename} (${sizeKB}KB)`)
