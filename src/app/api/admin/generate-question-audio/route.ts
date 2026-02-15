@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || 'sk_24708aff82ec3e2fe533c19311a9a159326917faabf53274'
-const VOICE_ID = 'pNInz6obpgDQGcFmaJgB' // Adam voice
+const VOICE_ID = 'erDx71FK2teMZ7g6khzw' // New Voice
 const PROXY_URL = 'https://elevenlabs-proxy-two.vercel.app/api/elevenlabs'
 const ELEVENLABS_DIRECT_URL = 'https://api.elevenlabs.io/v1/text-to-speech'
 
@@ -70,7 +70,7 @@ async function generateViaDirect(text: string, voiceId: string): Promise<string>
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { lessonId, questions, adminKey, voiceId = 'pNInz6obpgDQGcFmaJgB' } = body // Используем Adam как голос по умолчанию
+    const { lessonId, questions, adminKey, voiceId = VOICE_ID } = body
 
     // Verify admin key
     if (adminKey !== process.env.ADMIN_SECRET_KEY) {
