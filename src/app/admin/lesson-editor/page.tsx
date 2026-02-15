@@ -707,6 +707,26 @@ export default function LessonEditorComplete() {
     } else {
       setSaveStatus(`✅ Озвучено ${successCount} слайдов`)
     }
+
+    if (successCount > 0) {
+      try {
+        const deployRes = await fetch('/api/admin/trigger-deploy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        })
+
+        if (deployRes.ok) {
+          setSaveStatus((prev) => `${prev}. 🚀 Deploy started`)
+        } else {
+          const data = await deployRes.json().catch(() => ({ error: 'Deploy API failed' }))
+          setSaveStatus((prev) => `${prev}. ⚠️ Deploy not started: ${data.error || 'Unknown error'}`)
+        }
+      } catch {
+        setSaveStatus((prev) => `${prev}. ⚠️ Deploy request failed`)
+      }
+    }
+
     setTimeout(() => {
       setSaveStatus('')
       setAudioProgress([])
