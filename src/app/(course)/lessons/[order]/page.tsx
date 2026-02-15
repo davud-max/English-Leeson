@@ -14,6 +14,7 @@ interface Slide {
   content: string
   emoji: string
   duration?: number
+  audioUrl?: string
 }
 
 interface Lesson {
@@ -102,9 +103,18 @@ export default function DynamicLessonPage() {
 
   const getAudioCandidates = useCallback((slideIndex: number): string[] => {
     const cacheBust = Date.now()
+    const slideAudioUrl = slides[slideIndex]?.audioUrl
+      ? `${slides[slideIndex].audioUrl}${slides[slideIndex].audioUrl.includes('?') ? '&' : '?'}v=${cacheBust}`
+      : null
+    const firstSlideAudioUrl = slides[0]?.audioUrl
+      ? `${slides[0].audioUrl}${slides[0].audioUrl.includes('?') ? '&' : '?'}v=${cacheBust}`
+      : null
+
     const candidates = [
+      slideAudioUrl,
       lesson?.id ? `${RAW_AUDIO_BASE}/lesson-${lesson.id}/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null,
       `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide${slideIndex + 1}.mp3?v=${cacheBust}`,
+      firstSlideAudioUrl,
       lesson?.id ? `${RAW_AUDIO_BASE}/lesson-${lesson.id}/slide1.mp3?v=${cacheBust}` : null,
       `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide1.mp3?v=${cacheBust}`,
       lesson?.id ? `/audio/lesson-${lesson.id}/slide${slideIndex + 1}.mp3` : null,
@@ -114,7 +124,7 @@ export default function DynamicLessonPage() {
     ].filter((item): item is string => Boolean(item))
 
     return Array.from(new Set(candidates))
-  }, [lesson?.id, lessonOrder])
+  }, [lesson?.id, lessonOrder, slides])
 
   const playSlide = useCallback((slideIndex: number, candidateIndex = 0) => {
     const totalSlides = slides.length

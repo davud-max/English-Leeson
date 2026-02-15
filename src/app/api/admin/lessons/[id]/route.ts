@@ -42,7 +42,7 @@ export async function PUT(
 
     const currentLesson = await prisma.lesson.findUnique({
       where: { id: params.id },
-      select: { id: true, courseId: true, order: true },
+      select: { id: true, courseId: true, order: true, slides: true },
     });
 
     if (!currentLesson) {
@@ -66,6 +66,19 @@ export async function PUT(
     const hasOrderChange = Number.isFinite(requestedOrder) && requestedOrder !== currentLesson.order;
 
     if (hasOrderChange) {
+      // Preserve audio relation on reorder: if slides don't have explicit audioUrl yet,
+      // lock them to the current folder before changing order.
+      if (body.slides === undefined && Array.isArray(currentLesson.slides)) {
+        const slidesWithAudioUrl = currentLesson.slides.map((slide: any, index: number) => {
+          if (slide?.audioUrl) return slide;
+          return {
+            ...slide,
+            audioUrl: `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${currentLesson.order}/slide${index + 1}.mp3`,
+          };
+        });
+        updateData.slides = slidesWithAudioUrl;
+      }
+
       const maxOrder = await prisma.lesson.aggregate({
         where: { courseId: currentLesson.courseId },
         _max: { order: true },
