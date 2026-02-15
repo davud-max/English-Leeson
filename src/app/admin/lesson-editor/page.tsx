@@ -236,6 +236,35 @@ export default function LessonEditorComplete() {
     setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
   }
 
+  const createSlidesFromContent = (content: string): Slide[] => {
+    const paragraphs = content
+      .split(/\n\n+/)
+      .filter(p => p.trim().length > 0)
+
+    return paragraphs.map((paragraph, index) => ({
+      id: index + 1,
+      title: `Part ${index + 1}`,
+      content: paragraph.trim(),
+      emoji: '📖',
+      duration: 30000,
+    }))
+  }
+
+  const recreateSlides = () => {
+    if (!selectedLesson || !selectedLesson.content) {
+      setSaveStatus('❌ Нет контента')
+      return
+    }
+
+    const newSlides = createSlidesFromContent(selectedLesson.content)
+    setSelectedLesson({
+      ...selectedLesson,
+      slides: newSlides,
+    })
+    setSaveStatus(`✅ ${newSlides.length} слайдов`)
+    setTimeout(() => setSaveStatus(''), 3000)
+  }
+
   const handleSlideKeyDown = (index: number, e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (!selectedLesson) return
     const slides = selectedLesson.slides || []
@@ -827,6 +856,12 @@ export default function LessonEditorComplete() {
                       <div className="flex justify-between mb-4">
                         <h3 className="text-lg font-medium">Слайды</h3>
                         <div className="flex gap-2">
+                          <button
+                            onClick={recreateSlides}
+                            className="bg-amber-600 text-white px-4 py-2 rounded text-sm"
+                          >
+                            🔄 Разбить
+                          </button>
                           <button
                             onClick={() => generateAllAudio()}
                             disabled={isGeneratingAll}
