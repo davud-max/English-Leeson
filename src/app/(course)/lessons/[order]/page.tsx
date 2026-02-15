@@ -35,6 +35,8 @@ interface Navigation {
   total: number
 }
 
+const RAW_AUDIO_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio'
+
 export default function DynamicLessonPage() {
   const params = useParams()
   const lessonOrder = parseInt(params.order as string)
@@ -99,7 +101,12 @@ export default function DynamicLessonPage() {
   const totalSlides = slides.length
 
   const getAudioCandidates = useCallback((slideIndex: number): string[] => {
+    const cacheBust = Date.now()
     const candidates = [
+      lesson?.id ? `${RAW_AUDIO_BASE}/lesson-${lesson.id}/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null,
+      `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide${slideIndex + 1}.mp3?v=${cacheBust}`,
+      lesson?.id ? `${RAW_AUDIO_BASE}/lesson-${lesson.id}/slide1.mp3?v=${cacheBust}` : null,
+      `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide1.mp3?v=${cacheBust}`,
       lesson?.id ? `/audio/lesson-${lesson.id}/slide${slideIndex + 1}.mp3` : null,
       `/audio/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`,
       lesson?.id ? `/audio/lesson-${lesson.id}/slide1.mp3` : null,
