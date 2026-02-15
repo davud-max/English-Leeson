@@ -1,40 +1,40 @@
 {
   "lessonId": 20,
   "lessonTitle": " The Boundary as Ontological Act: From Distinction to Civilization",
-  "generatedAt": "2026-02-15T13:47:56.240Z",
+  "generatedAt": "2026-02-15T14:02:18.932Z",
   "questions": [
     {
       "id": 1,
-      "question": "What are the three irreducible poles of reality created by the act of abstraction?",
+      "question": "According to the lesson, what are the three irreducible poles of reality created by the act of abstraction?",
       "correct_answer": "The Observed (phenomena on this side of the boundary), The Observer (the position of subjectivity), and The Non-observed or Nothing (the fundamental background from which the boundary is drawn).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "According to the lesson, what is the deontological imperative and why does it arise?",
-      "correct_answer": "The deontological imperative is the prohibition on initiating violence or violating another's boundary of subjectivity. It arises as an immanent condition for survival of complex systems, since systematic violence leads to dead ends while cooperation enables sustainable development.",
+      "question": "What is the deontological imperative described in the lesson?",
+      "correct_answer": "The prohibition on initiating violence, that is, on violating the boundary of subjectivity drawn by another. It is an immanent condition for the survival of a complex system.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What is Level 6 of civilization according to the quantum levels described in the lesson?",
-      "correct_answer": "Civil Society, where the boundary becomes universal and virtual, recognized around any individual who accepts the rule of mutual non-aggression. The boundary becomes an individual legal contour that must be respected by all.",
+      "question": "What are the six quantum levels of civilization mentioned in the lesson, in order?",
+      "correct_answer": "Family, Kinship/Clan, Tribe, Nation, Religion, and Civil Society.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What do the Four Horsemen of the Apocalypse represent in the lesson's interpretation?",
-      "correct_answer": "They represent systemic forces unleashed when civilization destroys its own internal boundaries: White Horse erases local boundaries for unification, Red Horse is internal war, Black Horse violates boundaries of just distribution, and Pale Horse destroys ecological and epidemiological boundaries.",
+      "question": "What do the Four Horsemen of the Apocalypse represent according to the lesson's interpretation?",
+      "correct_answer": "They represent systemic forces unleashed when internal boundaries are destroyed: White Horse erases local boundaries, Red Horse is war within society, Black Horse violates boundaries of just distribution, and Pale Horse destroys ecological boundaries.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "How does the lesson define civilization?",
-      "correct_answer": "Civilization is not technological progress, but the history of learning to draw boundaries - from drawing boundaries between self and world, to recognizing others' boundaries, to collective agreements about sacred boundaries, and finally to universal legal protection of individual boundaries.",
+      "question": "According to the lesson, what is the main philosophical conclusion about what civilization actually represents?",
+      "correct_answer": "Civilization is not technological progress, but rather the history of learning to draw boundaries - from distinguishing self and world, to recognizing others' boundaries, to building universal legal protection for individual boundaries.",
       "difficulty": "easy",
       "points": 5
     }
