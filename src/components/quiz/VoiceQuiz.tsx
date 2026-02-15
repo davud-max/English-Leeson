@@ -170,15 +170,14 @@ export default function VoiceQuiz({ lessonId, lessonTitle, onClose }: VoiceQuizP
       synthRef.current.cancel()
     }
 
-    // Try to play MP3 first
+    // Play generated MP3 only (no browser TTS fallback for questions).
     const played = await playQuestionAudio(questionIndex)
     
-    if (!played && questions[questionIndex]) {
-      // Fallback to browser TTS
-      const questionText = `Question ${questionIndex + 1}. ${questions[questionIndex].question}`
-      speakWithBrowserTTS(questionText)
+    if (!played) {
+      setIsSpeaking(false)
+      setError('Question audio is unavailable or blocked. Please regenerate question audio in Admin Questions.')
     }
-  }, [playQuestionAudio, speakWithBrowserTTS, questions])
+  }, [playQuestionAudio])
 
   // Speak feedback/evaluation
   const speakFeedback = useCallback((text: string) => {
