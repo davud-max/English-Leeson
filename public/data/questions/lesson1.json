@@ -1,7 +1,7 @@
 {
   "lessonId": 1,
   "lessonTitle": "Terms and Definitions",
-  "generatedAt": "2026-02-16T20:48:26.331Z",
+  "generatedAt": "2026-02-16T20:51:17.585Z",
   "questions": [
     {
       "id": 1,
@@ -12,29 +12,29 @@
     },
     {
       "id": 2,
-      "question": "What are the four ultimate terms mentioned in the lesson?",
-      "correct_answer": "Point, Line, Plane, and Space.",
+      "question": "Which of the four ultimate terms has zero dimensions?",
+      "correct_answer": "Point has zero dimensions.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What is the difference between a real object and an abstract object?",
-      "correct_answer": "A real object cannot be described completely but can be directly demonstrated, while an abstract object cannot be demonstrated and doesn't exist but can be described using ultimate terms.",
+      "question": "What is the key difference between real objects and abstract objects?",
+      "correct_answer": "Real objects can be directly demonstrated but cannot be described completely, while abstract objects cannot be demonstrated and don't exist but can be described using ultimate terms.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
       "question": "What are the two opposite movements described in the lesson?",
-      "correct_answer": "From reality to abstraction (observe, describe, define, assign term) and from abstraction to reality (take term, seek suitable objects in world).",
+      "correct_answer": "From reality to abstraction (observe, describe, give definition, assign term) and from abstraction to reality (take term, seek suitable objects in world).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "According to the lesson, what is the essence of education?",
-      "correct_answer": "The ability to move freely in both directions between reality and abstraction.",
+      "question": "According to the lesson, what is the fundament of thinking?",
+      "correct_answer": "The ability to see invisible behind visible and find visible embodiment of invisible ideas.",
       "difficulty": "easy",
       "points": 5
     }
