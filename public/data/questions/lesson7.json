@@ -1,77 +1,42 @@
 {
   "lessonId": 7,
-  "lessonTitle": "The Fair and the Coin",
-  "generatedAt": "2026-02-02T17:58:57.886Z",
+  "lessonTitle": "The Fair and the Coin: The Birth of Money",
+  "generatedAt": "2026-02-17T19:35:30.525Z",
   "questions": [
     {
       "id": 1,
-      "question": "What type of trade existed in closed societies?",
-      "correct_answer": "No trade existed in closed societies - resources belonged to chiefs.",
+      "question": "What did people do for resources in closed patriarchal-communal societies before trade existed?",
+      "correct_answer": "People worked together and ate from a common pot collectively. Private property did not yet exist, and resources were controlled by heads of families, clans, or tribal chiefs.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "How did interaction occur between neighboring communities before formal trade?",
-      "correct_answer": "Through mutual gifts between communities.",
+      "question": "How did seasonal fairs emerge according to the lesson?",
+      "correct_answer": "Seasonal fairs emerged when merchants met at intersections of caravan routes for joint rest stops, where they exchanged goods and information and arranged to meet in the next season.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What were the first tokens that merchants received, and what did they certify?",
-      "correct_answer": "Merchants received tokens that certified payment for rented land at markets.",
+      "question": "What were the first coins made from and why were they created?",
+      "correct_answer": "The first coins were made from durable materials like copper, bronze, silver, or gold. They were created because the fragility and vulnerability to counterfeiting of leather tags prompted landlords to place their family signs on more durable materials.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What institution evolved from simple storage treasuries?",
-      "correct_answer": "The first bank evolved from treasuries that became profit-generating institutions.",
+      "question": "How did the treasury system work to ensure coins circulated back to their owners?",
+      "correct_answer": "A special house (treasury) accepted natural payments for daily market stall rental and issued coins in exchange. Special controllers walked through the market daily to collect the coins back, and shops without coins were closed.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "Why were cast coins replaced by minted coins?",
-      "correct_answer": "To prevent forgery and ensure coin authenticity.",
+      "question": "What is the difference between 'good money' and 'bad money' as described in the lesson?",
+      "correct_answer": "Good money refers to coins whose owners more strictly prevented damage or counterfeiting and were trusted more. Bad money refers to coins that were damaged, debased, or counterfeited and were valued less.",
       "difficulty": "easy",
       "points": 5
-    },
-    {
-      "id": 6,
-      "question": "Analyze the evolutionary progression from gift exchange to banking systems, identifying the key transformation points.",
-      "correct_answer": "The progression moved from tribal gift exchange to merchant specialization, then to seasonal fairs with formal rules, followed by land rental tokens evolving into coins, and finally treasuries becoming profit-generating banks.",
-      "difficulty": "hard",
-      "points": 15
-    },
-    {
-      "id": 7,
-      "question": "How did the intersection of caravan routes contribute to the development of standardized exchange rules?",
-      "correct_answer": "Intersections created seasonal fairs that attracted international merchants, forcing the development of unified exchange rules independent of individual tribal customs.",
-      "difficulty": "hard",
-      "points": 15
-    },
-    {
-      "id": 8,
-      "question": "Explain the relationship between the principle 'good money drives out bad money' and the evolution from cast to minted coins.",
-      "correct_answer": "Minted coins represented 'good money' with verified authenticity that replaced 'bad money' (cast coins prone to forgery), as merchants preferred reliable currency.",
-      "difficulty": "hard",
-      "points": 15
-    },
-    {
-      "id": 9,
-      "question": "What systemic changes enabled the transformation from simple coin storage to banking networks?",
-      "correct_answer": "Coin owners expanded operations across multiple markets, creating interconnected systems that moved beyond storage to profit generation and network-based services.",
-      "difficulty": "hard",
-      "points": 15
-    },
-    {
-      "id": 10,
-      "question": "Analyze how the concepts of bank and coin revolutionized exchange systems beyond simple payment methods.",
-      "correct_answer": "Banks and coins enabled complex economic structures including organized markets, retail trade, currency exchange, and credit systems, fundamentally transforming from barter to sophisticated financial networks.",
-      "difficulty": "hard",
-      "points": 15
     }
   ]
 }
