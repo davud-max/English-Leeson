@@ -58,6 +58,11 @@ export default function DynamicLessonPage() {
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const bgAudioRef = useRef<HTMLAudioElement | null>(null)
+  const isBgMusicEnabledRef = useRef(true)
+
+  useEffect(() => {
+    isBgMusicEnabledRef.current = isBgMusicEnabled
+  }, [isBgMusicEnabled])
 
   useEffect(() => {
     if (isNaN(lessonOrder)) {
@@ -114,13 +119,13 @@ export default function DynamicLessonPage() {
   const totalSlides = slides.length
 
   const startBackgroundMusic = useCallback((force = false) => {
-    if (!force && !isBgMusicEnabled) return
+    if (!force && !isBgMusicEnabledRef.current) return
 
     if (!bgAudioRef.current) {
       const bg = new Audio(BACKGROUND_MUSIC_URL)
       bg.loop = true
       bg.preload = 'auto'
-      bg.volume = 0.315
+      bg.volume = 0.1575
       bgAudioRef.current = bg
     }
 
@@ -134,7 +139,7 @@ export default function DynamicLessonPage() {
       console.error('Background music play error:', err)
       setBgMusicBlocked(true)
     })
-  }, [isBgMusicEnabled])
+  }, [])
 
   const stopBackgroundMusic = useCallback(() => {
     if (bgAudioRef.current) {
@@ -237,7 +242,7 @@ export default function DynamicLessonPage() {
     }
     
     audio.play().then(() => {
-      if (isBgMusicEnabled) {
+      if (isBgMusicEnabledRef.current) {
         startBackgroundMusic()
       }
     }).catch((err) => {
@@ -247,7 +252,7 @@ export default function DynamicLessonPage() {
         stopBackgroundMusic()
       }
     })
-  }, [getAudioCandidates, isBgMusicEnabled, slides.length, startBackgroundMusic, stopBackgroundMusic])
+  }, [getAudioCandidates, slides.length, startBackgroundMusic, stopBackgroundMusic])
 
   const togglePlay = () => {
     if (isPlaying) {
@@ -261,7 +266,7 @@ export default function DynamicLessonPage() {
       
       if (audioRef.current) {
         audioRef.current.play().then(() => {
-          if (isBgMusicEnabled) {
+          if (isBgMusicEnabledRef.current) {
             startBackgroundMusic()
           }
         }).catch((err) => {
@@ -279,6 +284,7 @@ export default function DynamicLessonPage() {
   const toggleBackgroundMusic = () => {
     const nextEnabled = !isBgMusicEnabled
     setIsBgMusicEnabled(nextEnabled)
+    isBgMusicEnabledRef.current = nextEnabled
 
     if (!nextEnabled) {
       stopBackgroundMusic()
