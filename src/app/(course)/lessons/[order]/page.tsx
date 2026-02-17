@@ -37,7 +37,7 @@ interface Navigation {
 }
 
 const RAW_AUDIO_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio'
-const BACKGROUND_MUSIC_URL = '/audio/background/lesson-bg-v2.mp3'
+const BACKGROUND_MUSIC_URL = '/audio/background/lesson-bg-v3.mp3'
 
 export default function DynamicLessonPage() {
   const params = useParams()
@@ -125,7 +125,7 @@ export default function DynamicLessonPage() {
       const bg = new Audio(BACKGROUND_MUSIC_URL)
       bg.loop = true
       bg.preload = 'auto'
-      bg.volume = 0.04725
+      bg.volume = 1
       bgAudioRef.current = bg
     }
 
