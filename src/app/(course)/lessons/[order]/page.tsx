@@ -38,6 +38,7 @@ interface Navigation {
 
 const RAW_AUDIO_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio'
 const LESSON1_BG_RAW_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson1_with_bg'
+const BACKGROUND_MUSIC_URL = '/audio/background/lesson-bg.mp3'
 
 export default function DynamicLessonPage() {
   const params = useParams()
@@ -52,9 +53,12 @@ export default function DynamicLessonPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [isBgMusicEnabled, setIsBgMusicEnabled] = useState(true)
+  const [bgMusicBlocked, setBgMusicBlocked] = useState(false)
   const [showQuiz, setShowQuiz] = useState(false)
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const bgAudioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
     if (isNaN(lessonOrder)) {
@@ -65,6 +69,15 @@ export default function DynamicLessonPage() {
     
     setCurrentSlide(0)
     setIsPlaying(false)
+    setBgMusicBlocked(false)
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current = null
+    }
+    if (bgAudioRef.current) {
+      bgAudioRef.current.pause()
+      bgAudioRef.current.currentTime = 0
+    }
     fetchLesson()
   }, [lessonOrder])
 
@@ -100,6 +113,31 @@ export default function DynamicLessonPage() {
   }] : [])
 
   const totalSlides = slides.length
+
+  const startBackgroundMusic = useCallback((force = false) => {
+    if (!force && !isBgMusicEnabled) return
+
+    if (!bgAudioRef.current) {
+      const bg = new Audio(BACKGROUND_MUSIC_URL)
+      bg.loop = true
+      bg.preload = 'auto'
+      bg.volume = 0.22
+      bgAudioRef.current = bg
+    }
+
+    bgAudioRef.current.play().then(() => {
+      setBgMusicBlocked(false)
+    }).catch((err) => {
+      console.error('Background music play error:', err)
+      setBgMusicBlocked(true)
+    })
+  }, [isBgMusicEnabled])
+
+  const stopBackgroundMusic = useCallback(() => {
+    if (bgAudioRef.current) {
+      bgAudioRef.current.pause()
+    }
+  }, [])
 
   const getAudioCandidates = useCallback((slideIndex: number): string[] => {
     const cacheBust = Date.now()
@@ -145,6 +183,7 @@ export default function DynamicLessonPage() {
           playSlide(nextSlide)
         } else {
           setIsPlaying(false)
+          stopBackgroundMusic()
           setProgress(100)
         }
       }, 20000)
@@ -169,6 +208,7 @@ export default function DynamicLessonPage() {
         playSlide(nextSlide)
       } else {
         setIsPlaying(false)
+        stopBackgroundMusic()
         setProgress(100)
       }
     }
@@ -192,6 +232,7 @@ export default function DynamicLessonPage() {
           playSlide(nextSlide)
         } else {
           setIsPlaying(false)
+          stopBackgroundMusic()
           setProgress(100)
         }
       }, 20000)
@@ -201,28 +242,47 @@ export default function DynamicLessonPage() {
       console.error('Audio play error:', err)
       if (err.name === 'NotSupportedError' || err.name === 'NotAllowedError') {
         setIsPlaying(false)
+        stopBackgroundMusic()
       }
     })
-  }, [getAudioCandidates, slides.length])
+  }, [getAudioCandidates, slides.length, stopBackgroundMusic])
 
   const togglePlay = () => {
     if (isPlaying) {
       if (audioRef.current) {
         audioRef.current.pause()
       }
+      stopBackgroundMusic()
       setIsPlaying(false)
     } else {
       setIsPlaying(true)
+      startBackgroundMusic()
       
       if (audioRef.current) {
         audioRef.current.play().catch((err) => {
           console.error('Play failed:', err)
+          stopBackgroundMusic()
           setIsPlaying(false)
         })
       } else {
         setProgress(0)
         playSlide(currentSlide)
       }
+    }
+  }
+
+  const toggleBackgroundMusic = () => {
+    const nextEnabled = !isBgMusicEnabled
+    setIsBgMusicEnabled(nextEnabled)
+
+    if (!nextEnabled) {
+      stopBackgroundMusic()
+      setBgMusicBlocked(false)
+      return
+    }
+
+    if (isPlaying) {
+      startBackgroundMusic(true)
     }
   }
 
@@ -245,6 +305,10 @@ export default function DynamicLessonPage() {
       if (audioRef.current) {
         audioRef.current.pause()
         audioRef.current = null
+      }
+      if (bgAudioRef.current) {
+        bgAudioRef.current.pause()
+        bgAudioRef.current = null
       }
     }
   }, [])
@@ -327,6 +391,17 @@ export default function DynamicLessonPage() {
               >
                 {isPlaying ? '⏸ Pause' : '▶ Play'}
               </button>
+
+              <button
+                onClick={toggleBackgroundMusic}
+                className={`px-4 py-2 rounded border text-sm transition ${
+                  isBgMusicEnabled
+                    ? 'border-amber-500 bg-amber-50 text-amber-800 hover:bg-amber-100'
+                    : 'border-stone-300 text-stone-600 hover:bg-stone-100'
+                }`}
+              >
+                {isBgMusicEnabled ? '♪ Music On' : '♪ Music Off'}
+              </button>
               
               <button
                 onClick={() => goToSlide(Math.min(totalSlides - 1, currentSlide + 1))}
@@ -342,6 +417,11 @@ export default function DynamicLessonPage() {
               <div>{currentSlide + 1}/{totalSlides}</div>
             </div>
           </div>
+          {bgMusicBlocked && isBgMusicEnabled && (
+            <p className="mt-2 text-center text-xs text-amber-700">
+              Background music is blocked by browser settings. Tap Play again.
+            </p>
+          )}
         </div>
       </div>
             
