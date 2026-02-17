@@ -102,6 +102,9 @@ export default function DynamicLessonPage() {
 
   const getAudioCandidates = useCallback((slideIndex: number): string[] => {
     const cacheBust = Date.now()
+    const useLesson1Bg = lessonOrder === 1
+    const lesson1BgSlideUrl = useLesson1Bg ? `/audio/lesson1_with_bg/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null
+    const lesson1BgFirstSlideUrl = useLesson1Bg ? `/audio/lesson1_with_bg/slide1.mp3?v=${cacheBust}` : null
     const slideAudioUrl = slides[slideIndex]?.audioUrl
       ? `${slides[slideIndex].audioUrl}${slides[slideIndex].audioUrl.includes('?') ? '&' : '?'}v=${cacheBust}`
       : null
@@ -110,6 +113,8 @@ export default function DynamicLessonPage() {
       : null
 
     const candidates = [
+      lesson1BgSlideUrl,
+      lesson1BgFirstSlideUrl,
       slideAudioUrl,
       lesson?.id ? `${RAW_AUDIO_BASE}/lesson-${lesson.id}/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null,
       `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide${slideIndex + 1}.mp3?v=${cacheBust}`,
