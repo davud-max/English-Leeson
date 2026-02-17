@@ -11,17 +11,23 @@ set -euo pipefail
 # Optional env vars:
 #   SOURCE_DIR=public/audio/lesson1
 #   OUTPUT_DIR=public/audio/lesson1_with_bg
-#   BG_VOLUME=0.08
-#   FADE_IN_SEC=1.2
-#   FADE_OUT_SEC=1.5
+#   VOICE_VOLUME=1.0
+#   BG_VOLUME=0.35
+#   MIX_GAIN=1.15
+#   MUSIC_OFFSET_SEC=20
+#   FADE_IN_SEC=0.25
+#   FADE_OUT_SEC=0.35
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOURCE_DIR="${SOURCE_DIR:-$ROOT_DIR/public/audio/lesson1}"
 OUTPUT_DIR="${OUTPUT_DIR:-$ROOT_DIR/public/audio/lesson1_with_bg}"
 MUSIC_FILE="${1:-/Users/davudzulumkhanov/Downloads/Архив/фон.MP3}"
-BG_VOLUME="${BG_VOLUME:-0.08}"
-FADE_IN_SEC="${FADE_IN_SEC:-1.2}"
-FADE_OUT_SEC="${FADE_OUT_SEC:-1.5}"
+VOICE_VOLUME="${VOICE_VOLUME:-1.0}"
+BG_VOLUME="${BG_VOLUME:-0.35}"
+MIX_GAIN="${MIX_GAIN:-1.15}"
+MUSIC_OFFSET_SEC="${MUSIC_OFFSET_SEC:-20}"
+FADE_IN_SEC="${FADE_IN_SEC:-0.25}"
+FADE_OUT_SEC="${FADE_OUT_SEC:-0.35}"
 
 if ! command -v ffmpeg >/dev/null 2>&1; then
   echo "Error: ffmpeg not found in PATH"
@@ -72,12 +78,22 @@ for input_file in "${slides[@]}"; do
   fade_out_start="$(
     awk -v d="$duration" -v f="$FADE_OUT_SEC" 'BEGIN { s = d - f; if (s < 0) s = 0; printf "%.3f", s }'
   )"
+  use_fades="$(
+    awk -v d="$duration" -v fi="$FADE_IN_SEC" -v fo="$FADE_OUT_SEC" 'BEGIN { print (d > (fi + fo + 0.4)) ? 1 : 0 }'
+  )"
+
+  if [[ "$use_fades" == "1" ]]; then
+    bg_filter="volume=${BG_VOLUME},afade=t=in:st=0:d=${FADE_IN_SEC},afade=t=out:st=${fade_out_start}:d=${FADE_OUT_SEC}"
+  else
+    bg_filter="volume=${BG_VOLUME}"
+  fi
 
   echo "Processing $filename (duration: ${duration}s)"
   ffmpeg -y \
     -i "$input_file" \
+    -ss "$MUSIC_OFFSET_SEC" \
     -stream_loop -1 -i "$MUSIC_FILE" \
-    -filter_complex "[1:a]volume=${BG_VOLUME},afade=t=in:st=0:d=${FADE_IN_SEC},afade=t=out:st=${fade_out_start}:d=${FADE_OUT_SEC}[bg];[0:a][bg]amix=inputs=2:duration=first:dropout_transition=2,alimiter=limit=0.95[out]" \
+    -filter_complex "[0:a]volume=${VOICE_VOLUME}[voice];[1:a]${bg_filter}[bg];[voice][bg]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,volume=${MIX_GAIN},alimiter=limit=0.97[out]" \
     -map "[out]" \
     -c:a libmp3lame -q:a 2 \
     "$output_file" \
