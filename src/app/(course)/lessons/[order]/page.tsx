@@ -37,6 +37,7 @@ interface Navigation {
 }
 
 const RAW_AUDIO_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio'
+const LESSON1_BG_RAW_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson1_with_bg'
 
 export default function DynamicLessonPage() {
   const params = useParams()
@@ -103,28 +104,20 @@ export default function DynamicLessonPage() {
   const getAudioCandidates = useCallback((slideIndex: number): string[] => {
     const cacheBust = Date.now()
     const useLesson1Bg = lessonOrder === 1
-    const lesson1BgSlideUrl = useLesson1Bg ? `/audio/lesson1_with_bg/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null
-    const lesson1BgFirstSlideUrl = useLesson1Bg ? `/audio/lesson1_with_bg/slide1.mp3?v=${cacheBust}` : null
+    const lesson1BgSlideRawUrl = useLesson1Bg ? `${LESSON1_BG_RAW_BASE}/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null
+    const lesson1BgSlideLocalUrl = useLesson1Bg ? `/audio/lesson1_with_bg/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null
     const slideAudioUrl = slides[slideIndex]?.audioUrl
       ? `${slides[slideIndex].audioUrl}${slides[slideIndex].audioUrl.includes('?') ? '&' : '?'}v=${cacheBust}`
       : null
-    const firstSlideAudioUrl = slides[0]?.audioUrl
-      ? `${slides[0].audioUrl}${slides[0].audioUrl.includes('?') ? '&' : '?'}v=${cacheBust}`
-      : null
 
     const candidates = [
-      lesson1BgSlideUrl,
-      lesson1BgFirstSlideUrl,
+      lesson1BgSlideRawUrl,
+      lesson1BgSlideLocalUrl,
       slideAudioUrl,
       lesson?.id ? `${RAW_AUDIO_BASE}/lesson-${lesson.id}/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null,
       `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide${slideIndex + 1}.mp3?v=${cacheBust}`,
-      firstSlideAudioUrl,
-      lesson?.id ? `${RAW_AUDIO_BASE}/lesson-${lesson.id}/slide1.mp3?v=${cacheBust}` : null,
-      `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide1.mp3?v=${cacheBust}`,
       lesson?.id ? `/audio/lesson-${lesson.id}/slide${slideIndex + 1}.mp3` : null,
       `/audio/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`,
-      lesson?.id ? `/audio/lesson-${lesson.id}/slide1.mp3` : null,
-      `/audio/lesson${lessonOrder}/slide1.mp3`,
     ].filter((item): item is string => Boolean(item))
 
     return Array.from(new Set(candidates))
