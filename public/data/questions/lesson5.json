@@ -1,40 +1,40 @@
 {
   "lessonId": 5,
-  "lessonTitle": "Numbers and Counting",
-  "generatedAt": "2026-02-02T17:53:44.926Z",
+  "lessonTitle": "Human Activity. Part 1",
+  "generatedAt": "2026-02-17T13:46:36.901Z",
   "questions": [
     {
       "id": 1,
-      "question": "What is the difference between a number and a numeral?",
-      "correct_answer": "A number is a pure abstraction that exists only as a concept, while a numeral is the term for a counting result.",
+      "question": "According to the lesson, what is the first operation that takes place before a clear world appears in human experience?",
+      "correct_answer": "Distinction is the first operation. We draw a boundary, select what matters, and separate it from the background.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "Can you see or touch the number five itself?",
-      "correct_answer": "No, you cannot see, touch, or show the number five itself. You can only show five objects, but not 'fiveness'.",
+      "question": "What are the three positions that emerge at once when distinction takes place?",
+      "correct_answer": "The observed (what is marked out as 'this'), the observer (the point from which marking is made), and the unobserved (what remains outside current focus).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What is a digit?",
-      "correct_answer": "A digit is the symbol representing a numeral.",
+      "question": "What is the purpose of generalization in human experience, and what is its cost?",
+      "correct_answer": "Generalization helps us identify stable features across many cases, making stable knowledge possible. Its cost is that it simplifies reality while helping orientation.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "Why did counting emerge?",
-      "correct_answer": "Counting emerged from the need to describe quantity without listing every element.",
+      "question": "Complete this statement from the lesson: 'A goal without a rule becomes a ___. A rule without a goal becomes a ___.'",
+      "correct_answer": "A goal without a rule becomes a dream. A rule without a goal becomes a ritual.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "Why is understanding numbers as pure abstractions essential for mathematics?",
-      "correct_answer": "This abstraction enables mathematics because operations on numbers follow logical rules independent of what is being counted, which is essential for grasping higher mathematics and formal systems.",
+      "question": "What simple question should be used to test whether a strong formula or sign is operationally meaningful?",
+      "correct_answer": "What concrete consequences should appear in the observable world if this formula is true?",
       "difficulty": "easy",
       "points": 5
     }
