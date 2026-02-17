@@ -37,7 +37,6 @@ interface Navigation {
 }
 
 const RAW_AUDIO_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio'
-const LESSON1_BG_RAW_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson1_with_bg'
 const BACKGROUND_MUSIC_URL = '/audio/background/lesson-bg.mp3'
 
 export default function DynamicLessonPage() {
@@ -121,8 +120,12 @@ export default function DynamicLessonPage() {
       const bg = new Audio(BACKGROUND_MUSIC_URL)
       bg.loop = true
       bg.preload = 'auto'
-      bg.volume = 0.22
+      bg.volume = 0.45
       bgAudioRef.current = bg
+    }
+
+    if (!bgAudioRef.current.paused) {
+      return
     }
 
     bgAudioRef.current.play().then(() => {
@@ -141,16 +144,11 @@ export default function DynamicLessonPage() {
 
   const getAudioCandidates = useCallback((slideIndex: number): string[] => {
     const cacheBust = Date.now()
-    const useLesson1Bg = lessonOrder === 1
-    const lesson1BgSlideRawUrl = useLesson1Bg ? `${LESSON1_BG_RAW_BASE}/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null
-    const lesson1BgSlideLocalUrl = useLesson1Bg ? `/audio/lesson1_with_bg/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null
     const slideAudioUrl = slides[slideIndex]?.audioUrl
       ? `${slides[slideIndex].audioUrl}${slides[slideIndex].audioUrl.includes('?') ? '&' : '?'}v=${cacheBust}`
       : null
 
     const candidates = [
-      lesson1BgSlideRawUrl,
-      lesson1BgSlideLocalUrl,
       slideAudioUrl,
       lesson?.id ? `${RAW_AUDIO_BASE}/lesson-${lesson.id}/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null,
       `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide${slideIndex + 1}.mp3?v=${cacheBust}`,
@@ -238,14 +236,18 @@ export default function DynamicLessonPage() {
       }, 20000)
     }
     
-    audio.play().catch((err) => {
+    audio.play().then(() => {
+      if (isBgMusicEnabled) {
+        startBackgroundMusic()
+      }
+    }).catch((err) => {
       console.error('Audio play error:', err)
       if (err.name === 'NotSupportedError' || err.name === 'NotAllowedError') {
         setIsPlaying(false)
         stopBackgroundMusic()
       }
     })
-  }, [getAudioCandidates, slides.length, stopBackgroundMusic])
+  }, [getAudioCandidates, isBgMusicEnabled, slides.length, startBackgroundMusic, stopBackgroundMusic])
 
   const togglePlay = () => {
     if (isPlaying) {
@@ -256,10 +258,13 @@ export default function DynamicLessonPage() {
       setIsPlaying(false)
     } else {
       setIsPlaying(true)
-      startBackgroundMusic()
       
       if (audioRef.current) {
-        audioRef.current.play().catch((err) => {
+        audioRef.current.play().then(() => {
+          if (isBgMusicEnabled) {
+            startBackgroundMusic()
+          }
+        }).catch((err) => {
           console.error('Play failed:', err)
           stopBackgroundMusic()
           setIsPlaying(false)
