@@ -1,40 +1,40 @@
 {
   "lessonId": 4,
-  "lessonTitle": "Terms and Definitions",
-  "generatedAt": "2026-02-02T17:52:39.150Z",
+  "lessonTitle": "Abstraction and Rules",
+  "generatedAt": "2026-02-17T04:19:16.241Z",
   "questions": [
     {
       "id": 1,
-      "question": "What is a definition according to the lesson?",
-      "correct_answer": "A definition is the shortest possible description of something.",
+      "question": "What is the main difference between humans and beasts according to the lesson?",
+      "correct_answer": "Humans possess the ability to abstract and form new goals, while beasts act based on instincts and reflexes.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What paradox occurs when trying to define something?",
-      "correct_answer": "To define something, we need words, but words themselves need definitions, creating an infinite regress.",
+      "question": "How is abstraction defined in the lesson?",
+      "correct_answer": "The process of distinguishing and differentiating a part of being is called abstraction.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What are fundamental terms?",
-      "correct_answer": "Fundamental terms are terms that cannot be defined but only understood directly.",
+      "question": "What is knowledge according to the lesson?",
+      "correct_answer": "Knowledge is an abstraction translated into sign form.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What is the difference between names and terms?",
-      "correct_answer": "Names are for real objects that can be shown, while terms are for abstract objects that can only be described.",
+      "question": "What does literacy mean in the context of this lesson?",
+      "correct_answer": "Literacy equals action by rules. A literate person speaks briefly and precisely, uses terms.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "Give two examples of fundamental geometric concepts mentioned in the lesson.",
-      "correct_answer": "Point, line, plane, and space are examples of fundamental geometric concepts (any two are correct).",
+      "question": "How is a goal defined in the lesson?",
+      "correct_answer": "Goal equals abstract model of desired state.",
       "difficulty": "easy",
       "points": 5
     }
