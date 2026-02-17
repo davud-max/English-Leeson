@@ -120,7 +120,7 @@ export default function DynamicLessonPage() {
       const bg = new Audio(BACKGROUND_MUSIC_URL)
       bg.loop = true
       bg.preload = 'auto'
-      bg.volume = 0.45
+      bg.volume = 0.315
       bgAudioRef.current = bg
     }
 
