@@ -1,40 +1,40 @@
 {
   "lessonId": 6,
-  "lessonTitle": "Conditional Reflexes and Behavior",
-  "generatedAt": "2026-02-02T17:54:50.429Z",
+  "lessonTitle": "Human Activity. Part 2",
+  "generatedAt": "2026-02-17T19:27:07.635Z",
   "questions": [
     {
       "id": 1,
-      "question": "What produces an unconditioned response of salivation automatically in Pavlov's experiments?",
-      "correct_answer": "An unconditioned stimulus, specifically food.",
+      "question": "According to the lesson, what does communication equal?",
+      "correct_answer": "Communication equals exchange of knowledge.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What happens to a neutral stimulus when it is paired repeatedly with an unconditioned stimulus?",
-      "correct_answer": "The neutral stimulus becomes a conditioned stimulus that can trigger the same response even without the unconditioned stimulus.",
+      "question": "What is the definition of law given in the lesson?",
+      "correct_answer": "Law equals formal prohibition on the use of violence against a person.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "According to the lesson, what human behaviors form through conditioning processes similar to Pavlov's experiments?",
-      "correct_answer": "Our emotional reactions, preferences, and habits form through similar conditioning processes.",
+      "question": "What are the four levels of human development mentioned in the lesson?",
+      "correct_answer": "Family level, tribe level, nation level, and civil society level.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What does understanding conditioning mechanisms reveal about free will according to the lesson?",
-      "correct_answer": "Understanding these mechanisms doesn't eliminate free will but reveals its boundaries.",
+      "question": "How does the lesson define human activity?",
+      "correct_answer": "Human activity equals activity aimed at achieving formed goals without using violence.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "What two questions does the lesson suggest are important regarding reconditioning and awareness?",
-      "correct_answer": "Can we recondition ourselves deliberately? Can awareness of conditioning create space for genuine choice?",
+      "question": "What does economics study according to the lesson?",
+      "correct_answer": "Economics equals human activity aimed at obtaining goods and distributing them among goals by rank of importance.",
       "difficulty": "easy",
       "points": 5
     }
