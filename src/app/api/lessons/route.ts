@@ -7,12 +7,13 @@ import { authOptions } from '@/lib/auth';
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
+    const devBypassAuth = process.env.DEV_BYPASS_AUTH === '1';
     
     // Проверяем, является ли пользователь администратором
-    const isAdmin = session?.user?.role === 'ADMIN';
+    const isAdmin = session?.user?.role === 'ADMIN' || devBypassAuth;
     
     // Если пользователь не авторизован, возвращаем пустой список
-    if (!session) {
+    if (!session && !devBypassAuth) {
       return NextResponse.json({ 
         success: true,
         lessons: [],

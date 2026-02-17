@@ -6,6 +6,7 @@ export default withAuth(
     const token = req.nextauth.token
     const isAuth = !!token
     const isAdmin = token?.role === "ADMIN"
+    const devBypassAuth = process.env.DEV_BYPASS_AUTH === "1"
     const pathname = req.nextUrl.pathname
 
     const isPublicExact =
@@ -31,6 +32,11 @@ export default withAuth(
     const isAdminPage = pathname === "/admin" || pathname.startsWith("/admin/")
     const isAdminApi = pathname === "/api/admin" || pathname.startsWith("/api/admin/")
     const isCoursePage = pathname === "/lessons" || pathname.startsWith("/lessons/") || pathname === "/dashboard" || pathname.startsWith("/dashboard/")
+
+    // Local development helper: allow course pages without auth when explicitly enabled.
+    if (devBypassAuth && isCoursePage) {
+      return NextResponse.next()
+    }
 
     if (isAdminPage || isAdminApi) {
       if (!isAuth) {
