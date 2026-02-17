@@ -152,24 +152,12 @@ export async function GET(
  // Always force slide audio to the current lesson-id folder.
 // This prevents stale/misaligned audioUrl values after reorder/insert/delete.
 if (lessonWithSlides?.id && Array.isArray(lessonWithSlides.slides)) {
-  lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => {
-    const baseSlide =
-      slide && typeof slide === 'object'
-        ? slide
-        : {
-            id: index + 1,
-            title: `Part ${index + 1}`,
-            content: '',
-            emoji: '📖',
-            duration: 30000,
-          };
-
-    return {
-      ...baseSlide,
-      audioUrl: `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson-${lessonWithSlides?.id}/slide${index + 1}.mp3`,
-    };
-  });
+  lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => ({
+    ...(slide && typeof slide === 'object' ? slide : {}),
+    audioUrl: `/audio/lesson${orderNum}/slide${index + 1}.mp3`,
+  }));
 }
+
 
 
     // Получаем соседние уроки для навигации
