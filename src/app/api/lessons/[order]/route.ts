@@ -149,14 +149,24 @@ export async function GET(
       }
     }
 
- // Always force slide audio to the current lesson-id folder.
-// This prevents stale/misaligned audioUrl values after reorder/insert/delete.
-if (lessonWithSlides?.id && Array.isArray(lessonWithSlides.slides)) {
-  lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => ({
-    ...(slide && typeof slide === 'object' ? slide : {}),
-    audioUrl: `/audio/lesson${orderNum}/slide${index + 1}.mp3`,
-  }));
-}
+    // Force a stable audio mapping: use lesson-id folders for DB lessons.
+    // Keep order-based fallback only for legacy lessons that don't have DB ids.
+    if (lessonWithSlides?.id && Array.isArray(lessonWithSlides.slides)) {
+      const isLegacyLesson = String(lessonWithSlides.id).startsWith('legacy-');
+      lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => {
+        const safeSlide = slide && typeof slide === 'object' ? slide : {};
+        const fallbackOrderUrl = `/audio/lesson${orderNum}/slide${index + 1}.mp3`;
+
+        return {
+          ...safeSlide,
+          audioUrl: isLegacyLesson
+            ? (typeof safeSlide.audioUrl === 'string' && safeSlide.audioUrl.length > 0
+                ? safeSlide.audioUrl
+                : fallbackOrderUrl)
+            : `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson-${lessonWithSlides!.id}/slide${index + 1}.mp3`,
+        };
+      });
+    }
 
 
 
