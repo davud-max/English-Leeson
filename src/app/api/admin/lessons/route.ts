@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = 'davud-max/English-Leeson';
+const GITHUB_BRANCH = 'main';
+
 // GET /api/admin/lessons - получить список всех уроков
 export async function GET() {
   try {
@@ -79,6 +83,13 @@ export async function POST(request: Request) {
     const requestedOrder = Number(body.order) || maxValue + 1;
     const normalizedOrder = Math.max(1, Math.min(requestedOrder, maxValue + 1));
 
+    // Keep order-based audio folders aligned when inserting inside the sequence.
+    // If inserting at the end there is nothing to shift.
+    const shouldShiftAudio = normalizedOrder <= maxValue;
+    if (shouldShiftAudio) {
+      await shiftOrderBasedFoldersForInsert(normalizedOrder, maxValue);
+    }
+
     const lesson = await prisma.$transaction(async (tx) => {
       // Shift lessons down (descending) to avoid unique(order) collisions.
       const lessonsToShift = await tx.lesson.findMany({
@@ -121,5 +132,153 @@ export async function POST(request: Request) {
       { error: 'Failed to create lesson' },
       { status: 500 }
     );
+  }
+}
+
+type RepoEntry = {
+  name: string;
+  path: string;
+  type: 'file' | 'dir';
+  sha?: string;
+};
+
+async function shiftOrderBasedFoldersForInsert(startOrder: number, maxOrder: number) {
+  if (!GITHUB_TOKEN) {
+    throw new Error('GITHUB_TOKEN is required to shift audio folders on insert');
+  }
+
+  // Move from the end to avoid overwrite collisions (lesson10 -> lesson11, etc).
+  for (let order = maxOrder; order >= startOrder; order--) {
+    await moveFolderFiles(`public/audio/lesson${order}`, `public/audio/lesson${order + 1}`, `Shift audio lesson${order} -> lesson${order + 1}`);
+    await moveFolderFiles(`public/audio/questions/lesson${order}`, `public/audio/questions/lesson${order + 1}`, `Shift question audio lesson${order} -> lesson${order + 1}`);
+  }
+}
+
+async function moveFolderFiles(fromFolder: string, toFolder: string, message: string) {
+  const files = await listFolderFiles(fromFolder);
+  if (!files.length) return;
+
+  for (const file of files) {
+    const targetPath = `${toFolder}/${file.name}`;
+    const sourcePath = `${fromFolder}/${file.name}`;
+    const contentBase64 = await readFileBase64(sourcePath);
+    if (!contentBase64) continue;
+
+    await upsertFileBase64(targetPath, contentBase64, `${message}: ${file.name}`);
+    await deleteFile(sourcePath, file.sha, `${message}: remove ${file.name}`);
+    await new Promise((resolve) => setTimeout(resolve, 120));
+  }
+}
+
+async function listFolderFiles(folderPath: string): Promise<RepoEntry[]> {
+  const res = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${folderPath}?ref=${GITHUB_BRANCH}`,
+    {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github.v3+json',
+      },
+    }
+  );
+  if (!res.ok) return [];
+  const data = await res.json();
+  if (!Array.isArray(data)) return [];
+  return data.filter((entry) => entry.type === 'file').map((entry) => ({
+    name: entry.name,
+    path: entry.path,
+    type: entry.type,
+    sha: entry.sha,
+  }));
+}
+
+async function readFileBase64(filePath: string): Promise<string | null> {
+  const res = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`,
+    {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github.v3+json',
+      },
+    }
+  );
+  if (!res.ok) return null;
+  const data = await res.json();
+  return typeof data.content === 'string' ? data.content.replace(/\n/g, '') : null;
+}
+
+async function upsertFileBase64(filePath: string, contentBase64: string, message: string) {
+  let existingSha: string | undefined;
+  const existing = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`,
+    {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github.v3+json',
+      },
+    }
+  );
+  if (existing.ok) {
+    const data = await existing.json();
+    existingSha = data.sha;
+  }
+
+  const body: Record<string, string> = {
+    message,
+    content: contentBase64,
+    branch: GITHUB_BRANCH,
+  };
+  if (existingSha) body.sha = existingSha;
+
+  const putRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${GITHUB_TOKEN}`,
+      Accept: 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!putRes.ok) {
+    const txt = await putRes.text();
+    throw new Error(`GitHub upsert failed for ${filePath}: ${putRes.status} ${txt}`);
+  }
+}
+
+async function deleteFile(filePath: string, sha: string | undefined, message: string) {
+  let resolvedSha = sha;
+  if (!resolvedSha) {
+    const res = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`,
+      {
+        headers: {
+          Authorization: `Bearer ${GITHUB_TOKEN}`,
+          Accept: 'application/vnd.github.v3+json',
+        },
+      }
+    );
+    if (!res.ok) return;
+    const data = await res.json();
+    resolvedSha = data.sha;
+  }
+  if (!resolvedSha) return;
+
+  const delRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${GITHUB_TOKEN}`,
+      Accept: 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      message,
+      sha: resolvedSha,
+      branch: GITHUB_BRANCH,
+    }),
+  });
+
+  if (!delRes.ok) {
+    const txt = await delRes.text();
+    throw new Error(`GitHub delete failed for ${filePath}: ${delRes.status} ${txt}`);
   }
 }

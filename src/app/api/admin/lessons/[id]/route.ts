@@ -297,11 +297,35 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    await prisma.lesson.delete({
+    const lesson = await prisma.lesson.findUnique({
       where: { id: params.id },
+      select: { id: true, courseId: true, order: true },
     });
 
-    return NextResponse.json({ success: true });
+    if (!lesson) {
+      return NextResponse.json(
+        { error: 'Lesson not found' },
+        { status: 404 }
+      );
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.lesson.delete({
+        where: { id: params.id },
+      });
+
+      await tx.lesson.updateMany({
+        where: {
+          courseId: lesson.courseId,
+          order: { gt: lesson.order },
+        },
+        data: {
+          order: { decrement: 1 },
+        },
+      });
+    });
+
+    return NextResponse.json({ success: true, deletedId: lesson.id, deletedOrder: lesson.order });
   } catch (error) {
     console.error('Error deleting lesson:', error);
     return NextResponse.json(

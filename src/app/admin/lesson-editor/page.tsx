@@ -133,13 +133,14 @@ export default function LessonEditorComplete() {
     return () => cancelAnimationFrame(id)
   }, [focusTarget, selectedLesson])
 
-  const fetchLessons = async () => {
+  const fetchLessons = async (): Promise<Lesson[]> => {
     try {
       const res = await fetch('/api/admin/lessons')
       if (res.ok) {
         const data = await res.json()
         setLessons(data)
         console.log(`Loaded ${data.length} lessons`)
+        return data
       }
     } catch (error) {
       console.error('Failed to fetch lessons:', error)
@@ -147,6 +148,7 @@ export default function LessonEditorComplete() {
     } finally {
       setLoading(false)
     }
+    return []
   }
 
   const questionAudioCandidates = (lessonOrder: number, questionNumber: number): string[] => {
@@ -315,6 +317,43 @@ export default function LessonEditorComplete() {
           : prev
       )
       setSaveStatus(`✅ Inserted lesson at #${created.order}`)
+      setTimeout(() => setSaveStatus(''), 3000)
+    } catch (error) {
+      setSaveStatus(`❌ ${(error as Error).message}`)
+      setTimeout(() => setSaveStatus(''), 5000)
+    }
+  }
+
+  const deleteSelectedLesson = async () => {
+    if (!selectedLesson) return
+    const lessonToDelete = selectedLesson
+    const confirmed = window.confirm(
+      `Delete lesson #${lessonToDelete.order} "${lessonToDelete.title}"?\n\nThis action cannot be undone.`
+    )
+    if (!confirmed) return
+
+    setSaveStatus('🗑️ Deleting lesson...')
+    try {
+      const res = await fetch(`/api/admin/lessons/${lessonToDelete.id}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+        throw new Error(err.error || 'Failed to delete lesson')
+      }
+
+      const updatedLessons = await fetchLessons()
+      if (!updatedLessons.length) {
+        setSelectedLesson(null)
+      } else {
+        const preferredOrder = Math.min(lessonToDelete.order, updatedLessons.length)
+        const nextSelected =
+          updatedLessons.find((item) => item.order === preferredOrder) ||
+          updatedLessons[0]
+        setSelectedLesson(nextSelected)
+      }
+
+      setSaveStatus(`✅ Deleted lesson #${lessonToDelete.order}`)
       setTimeout(() => setSaveStatus(''), 3000)
     } catch (error) {
       setSaveStatus(`❌ ${(error as Error).message}`)
@@ -992,6 +1031,12 @@ export default function LessonEditorComplete() {
                     className="rounded border border-stone-300 px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100"
                   >
                     Insert After
+                  </button>
+                  <button
+                    onClick={deleteSelectedLesson}
+                    className="rounded border border-red-300 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
+                  >
+                    Delete Lesson
                   </button>
 
                   {/* Published Toggle */}
