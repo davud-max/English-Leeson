@@ -47,8 +47,11 @@ export async function GET(
     // Проверяем, является ли пользователь администратором
     const isAdmin = session?.user?.role === 'ADMIN' || devBypassAuth;
     
-    // Если пользователь не авторизован, возвращаем ошибку
-    if (!session && !devBypassAuth) {
+    // Lesson 1 is free and accessible without login
+    const isFreeLesson = orderNum === 1;
+    
+    // Если пользователь не авторизован и урок не бесплатный, возвращаем ошибку
+    if (!session && !devBypassAuth && !isFreeLesson) {
       return NextResponse.json(
         { error: 'Access denied. Please log in to access lessons.' },
         { status: 401 }
@@ -64,8 +67,8 @@ export async function GET(
       );
     }
     
-    // Если пользователь админ, пропускаем проверку покупки
-    if (!isAdmin) {
+    // Если пользователь админ или урок бесплатный, пропускаем проверку покупки
+    if (!isAdmin && !isFreeLesson) {
       // Для обычных пользователей проверяем наличие покупки
       const userHasPurchased = await prisma.purchase.findFirst({
         where: {

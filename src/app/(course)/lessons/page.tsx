@@ -12,6 +12,7 @@ interface Lesson {
   emoji: string
   color: string
   available: boolean
+  locked?: boolean
 }
 
 export default function LessonsPage() {
@@ -113,15 +114,17 @@ export default function LessonsPage() {
             {lessons.map((lesson) => (
               <Link 
                 key={lesson.id}
-                href={lesson.available ? `/lessons/${lesson.order}` : '#'}
+                href={!lesson.locked && lesson.available ? `/lessons/${lesson.order}` : lesson.locked ? '/checkout' : '#'}
                 className={`block bg-white border-2 border-stone-200 p-6 transition-all ${
-                  lesson.available 
-                    ? 'hover:border-amber-700 hover:shadow-md' 
-                    : 'opacity-50 cursor-not-allowed'
+                  lesson.locked 
+                    ? 'opacity-60 hover:border-stone-400 hover:shadow-sm' 
+                    : lesson.available 
+                      ? 'hover:border-amber-700 hover:shadow-md' 
+                      : 'opacity-50 cursor-not-allowed'
                 }`}
               >
                 <div className="flex items-baseline gap-3">
-                  <span className="text-2xl font-bold text-amber-700">
+                  <span className={`text-2xl font-bold ${lesson.locked ? 'text-stone-400' : 'text-amber-700'}`}>
                     {lesson.order}
                   </span>
                   <h3 className="text-lg font-semibold text-stone-800 leading-tight">
@@ -129,11 +132,19 @@ export default function LessonsPage() {
                   </h3>
                 </div>
                 
-                {!lesson.available && (
-                  <div className="mt-3 text-sm text-stone-500">
-                    Locked
+                {lesson.locked ? (
+                  <div className="mt-3 text-sm text-stone-500 flex items-center gap-1">
+                    🔒 Enroll to unlock
                   </div>
-                )}
+                ) : !lesson.available ? (
+                  <div className="mt-3 text-sm text-stone-500">
+                    Coming soon
+                  </div>
+                ) : lesson.order === 1 ? (
+                  <div className="mt-3 text-sm text-green-600 font-medium">
+                    ✨ Free lesson
+                  </div>
+                ) : null}
               </Link>
             ))}
           </div>

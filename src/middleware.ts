@@ -17,7 +17,8 @@ export default withAuth(
       pathname === "/api/admin/login" ||
       pathname === "/api/admin/swap-lesson-slides" ||
       pathname === "/api/health" ||
-      pathname === "/api/tts"
+      pathname === "/api/tts" ||
+      pathname === "/lessons"
 
     const isPublicPrefix =
       pathname.startsWith("/checkout") ||
@@ -25,7 +26,9 @@ export default withAuth(
       pathname.startsWith("/api/checkout") ||
       pathname.startsWith("/api/webhooks") ||
       pathname.startsWith("/api/quiz") ||
-      pathname.startsWith("/api/questions")
+      pathname.startsWith("/api/questions") ||
+      pathname.startsWith("/api/lessons") ||
+      pathname.startsWith("/lessons/")
 
     if (isPublicExact || isPublicPrefix) return NextResponse.next()
 
