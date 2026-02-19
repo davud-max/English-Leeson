@@ -47,6 +47,15 @@ export async function GET(
     // Проверяем, является ли пользователь администратором
     const isAdmin = session?.user?.role === 'ADMIN' || devBypassAuth;
     
+    const orderNum = parseInt(params.order);
+    
+    if (isNaN(orderNum)) {
+      return NextResponse.json(
+        { error: 'Invalid lesson number' },
+        { status: 400 }
+      );
+    }
+    
     // Lesson 1 is free and accessible without login
     const isFreeLesson = orderNum === 1;
     
@@ -55,15 +64,6 @@ export async function GET(
       return NextResponse.json(
         { error: 'Access denied. Please log in to access lessons.' },
         { status: 401 }
-      );
-    }
-    
-    const orderNum = parseInt(params.order);
-    
-    if (isNaN(orderNum)) {
-      return NextResponse.json(
-        { error: 'Invalid lesson number' },
-        { status: 400 }
       );
     }
     

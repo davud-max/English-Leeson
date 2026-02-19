@@ -91,8 +91,6 @@ export async function GET() {
       },
     });
 
-    const FREE_LESSONS = [1]; // Lesson 1 is free
-    
     const lessonsWithAccess = lessons.map(lesson => ({
       ...lesson,
       locked: !userHasPurchased && !FREE_LESSONS.includes(lesson.order),
