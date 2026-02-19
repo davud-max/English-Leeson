@@ -153,16 +153,15 @@ export default function DynamicLessonPage() {
       ? `${slides[slideIndex].audioUrl}${slides[slideIndex].audioUrl.includes('?') ? '&' : '?'}v=${cacheBust}`
       : null
 
+    // Order-based folders are canonical; ID-based are deprecated
     const candidates = [
       slideAudioUrl,
-      lesson?.id ? `${RAW_AUDIO_BASE}/lesson-${lesson.id}/slide${slideIndex + 1}.mp3?v=${cacheBust}` : null,
       `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide${slideIndex + 1}.mp3?v=${cacheBust}`,
-      lesson?.id ? `/audio/lesson-${lesson.id}/slide${slideIndex + 1}.mp3` : null,
       `/audio/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`,
     ].filter((item): item is string => Boolean(item))
 
     return Array.from(new Set(candidates))
-  }, [lesson?.id, lessonOrder, slides])
+  }, [lessonOrder, slides])
 
   const playSlide = useCallback((slideIndex: number, candidateIndex = 0) => {
     const totalSlides = slides.length

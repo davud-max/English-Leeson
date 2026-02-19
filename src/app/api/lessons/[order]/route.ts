@@ -6,21 +6,26 @@ import { getLegacyLessonContent } from '@/lib/legacy-lesson-content';
 
 // Статический конфиг количества слайдов (из /public/data/slides-config.json)
 const SLIDES_CONFIG: Record<number, number> = {
-  1: 1,
+  1: 20,
   2: 11,
-  3: 14,
-  4: 14,
-  5: 13,
+  3: 11,
+  4: 11,
+  5: 21,
   6: 12,
-  7: 9,
-  8: 12,
+  7: 26,
+  8: 23,
   9: 6,
   10: 7,
   11: 6,
   12: 6,
   13: 8,
-  14: 10,
-  15: 43,
+  14: 6,
+  15: 6,
+  16: 19,
+  17: 32,
+  18: 27,
+  19: 31,
+  20: 18,
   21: 19,
   22: 26,
   23: 19,
@@ -149,21 +154,14 @@ export async function GET(
       }
     }
 
-    // Force a stable audio mapping: use lesson-id folders for DB lessons.
-    // Keep order-based fallback only for legacy lessons that don't have DB ids.
-    if (lessonWithSlides?.id && Array.isArray(lessonWithSlides.slides)) {
-      const isLegacyLesson = String(lessonWithSlides.id).startsWith('legacy-');
+    // Use order-based audio paths — lesson{order}/ folders are the canonical source.
+    // ID-based folders (lesson-{id}/) have mismatched audio from old DB seeds.
+    if (lessonWithSlides && Array.isArray(lessonWithSlides.slides)) {
       lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => {
         const safeSlide = slide && typeof slide === 'object' ? slide : {};
-        const fallbackOrderUrl = `/audio/lesson${orderNum}/slide${index + 1}.mp3`;
-
         return {
           ...safeSlide,
-          audioUrl: isLegacyLesson
-            ? (typeof safeSlide.audioUrl === 'string' && safeSlide.audioUrl.length > 0
-                ? safeSlide.audioUrl
-                : fallbackOrderUrl)
-            : `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson-${lessonWithSlides!.id}/slide${index + 1}.mp3`,
+          audioUrl: `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${orderNum}/slide${index + 1}.mp3`,
         };
       });
     }
