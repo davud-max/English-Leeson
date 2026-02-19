@@ -1,40 +1,40 @@
 {
   "lessonId": 1,
   "lessonTitle": "Terms and Definitions",
-  "generatedAt": "2026-02-16T20:51:17.585Z",
+  "generatedAt": "2026-02-19T16:17:22.793Z",
   "questions": [
     {
       "id": 1,
-      "question": "What is a definition according to the lesson?",
-      "correct_answer": "The shortest description of observable phenomenon, sufficient for understanding by another person.",
+      "question": "What is the correct order when working with new words: should you first create a definition or first assign a term?",
+      "correct_answer": "First create the definition, then assign a term to it. The order matters because doing the opposite risks never reaching agreement.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "Which of the four ultimate terms has zero dimensions?",
-      "correct_answer": "Point has zero dimensions.",
+      "question": "What is the difference between a term and a name?",
+      "correct_answer": "A term belongs only to an abstract object defined by a definition and always refers to a strict definition. A name belongs to physical objects or phenomena and can be vague without strict boundaries.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What is the key difference between real objects and abstract objects?",
-      "correct_answer": "Real objects can be directly demonstrated but cannot be described completely, while abstract objects cannot be demonstrated and don't exist but can be described using ultimate terms.",
+      "question": "What are the five steps for moving from observation to definition?",
+      "correct_answer": "1) Observation, 2) Description, 3) Identifying the essential, 4) Formulating a definition, 5) Assigning a term to the definition.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What are the two opposite movements described in the lesson?",
-      "correct_answer": "From reality to abstraction (observe, describe, give definition, assign term) and from abstraction to reality (take term, seek suitable objects in world).",
+      "question": "According to the lesson, what is a point and why is it important in geometry?",
+      "correct_answer": "A point has no length, width, or parts - it has no positive properties. It's not a thing but a place of distinction that indicates where we draw a boundary. It's the foundation of all geometry.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "According to the lesson, what is the fundament of thinking?",
-      "correct_answer": "The ability to see invisible behind visible and find visible embodiment of invisible ideas.",
+      "question": "What makes abstract objects different from physical objects in terms of their properties?",
+      "correct_answer": "Abstract objects have no hidden properties or infinite depth like physical objects. When we speak about an abstract object, we say exactly what we've put into its definition - it's finite because it was created by us.",
       "difficulty": "easy",
       "points": 5
     }
