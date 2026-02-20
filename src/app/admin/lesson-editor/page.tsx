@@ -864,8 +864,8 @@ export default function LessonEditorComplete() {
 
   // Translate modal
   const translateAndImport = async () => {
-    if (!russianText.trim() || !adminKey) {
-      setSaveStatus('❌ Введите текст и ключ')
+    if (!russianText.trim()) {
+      setSaveStatus('❌ Введите текст')
       return
     }
 
@@ -879,7 +879,7 @@ export default function LessonEditorComplete() {
         body: JSON.stringify({
           text: russianText,
           type: 'content',
-          adminKey
+          ...(adminKey ? { adminKey } : {})
         }),
       })
 
@@ -1429,7 +1429,7 @@ export default function LessonEditorComplete() {
               </button>
               <button
                 onClick={translateAndImport}
-                disabled={isTranslating || !russianText.trim() || !adminKey}
+                disabled={isTranslating || !russianText.trim()}
                 className="bg-purple-600 text-white px-6 py-2 rounded disabled:opacity-50"
               >
                 {isTranslating ? '⏳ Перевод...' : '🌐 Перевести'}

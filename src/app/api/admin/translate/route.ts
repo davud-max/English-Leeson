@@ -1,12 +1,18 @@
 // Admin API: Translate lesson content from Russian to English using Claude AI
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
     const { text, type, adminKey } = await request.json()
 
-    // Simple admin authentication
-    if (adminKey !== process.env.ADMIN_SECRET_KEY) {
+    // Allow either authenticated ADMIN session or legacy admin key.
+    const session = await getServerSession(authOptions)
+    const isAdminSession = session?.user?.role === 'ADMIN'
+    const hasValidAdminKey = typeof adminKey === 'string' && adminKey === process.env.ADMIN_SECRET_KEY
+
+    if (!isAdminSession && !hasValidAdminKey) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
