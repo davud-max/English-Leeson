@@ -157,14 +157,20 @@ export async function GET(
       }
     }
 
-    // Use order-based audio paths — lesson{order}/ folders are the canonical source.
-    // ID-based folders (lesson-{id}/) have mismatched audio from old DB seeds.
+    // Preserve explicit per-slide audioUrl mapping from DB when present.
+    // Use order-based path only as a fallback for slides without audioUrl.
     if (lessonWithSlides && Array.isArray(lessonWithSlides.slides)) {
       lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => {
         const safeSlide = slide && typeof slide === 'object' ? slide : {};
+        const existingAudioUrl =
+          typeof safeSlide.audioUrl === 'string' && safeSlide.audioUrl.trim().length > 0
+            ? safeSlide.audioUrl
+            : null;
         return {
           ...safeSlide,
-          audioUrl: `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${orderNum}/slide${index + 1}.mp3`,
+          audioUrl:
+            existingAudioUrl ||
+            `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${orderNum}/slide${index + 1}.mp3`,
         };
       });
     }
