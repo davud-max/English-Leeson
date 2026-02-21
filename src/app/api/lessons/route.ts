@@ -8,7 +8,12 @@ export const dynamic = 'force-dynamic';
 // GET /api/lessons - получить список всех опубликованных уроков
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    let session = null;
+    try {
+      session = await getServerSession(authOptions);
+    } catch (e) {
+      console.error('getServerSession error (non-fatal):', e);
+    }
     const devBypassAuth = process.env.DEV_BYPASS_AUTH === '1';
     
     // Проверяем, является ли пользователь администратором
@@ -105,10 +110,10 @@ export async function GET() {
       available: lessons.filter(l => l.available).length,
       hasPurchased: !!userHasPurchased,
     });
-  } catch (error) {
-    console.error('Error fetching lessons:', error);
+  } catch (error: any) {
+    console.error('Error fetching lessons:', error?.message, error?.stack);
     return NextResponse.json(
-      { error: 'Failed to fetch lessons' },
+      { error: 'Failed to fetch lessons', detail: error?.message || 'Unknown error' },
       { status: 500 }
     );
   }

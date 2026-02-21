@@ -41,7 +41,12 @@ export async function GET(
   { params }: { params: { order: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    let session = null;
+    try {
+      session = await getServerSession(authOptions);
+    } catch (e) {
+      console.error('getServerSession error (non-fatal):', e);
+    }
     const devBypassAuth = process.env.DEV_BYPASS_AUTH === '1';
     
     // Проверяем, является ли пользователь администратором
