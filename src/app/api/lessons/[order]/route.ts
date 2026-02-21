@@ -4,6 +4,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getLegacyLessonContent } from '@/lib/legacy-lesson-content';
 
+export const dynamic = 'force-dynamic';
+
+// Free lessons accessible without login or purchase
+const FREE_LESSONS = [1];
+
 // Статический конфиг количества слайдов (из /public/data/slides-config.json)
 const SLIDES_CONFIG: Record<number, number> = {
   1: 20,
@@ -61,8 +66,7 @@ export async function GET(
       );
     }
     
-    // Lesson 1 is free and accessible without login
-    const isFreeLesson = orderNum === 1;
+    const isFreeLesson = FREE_LESSONS.includes(orderNum);
     
     // Если пользователь не авторизован и урок не бесплатный, возвращаем ошибку
     if (!session && !devBypassAuth && !isFreeLesson) {

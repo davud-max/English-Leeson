@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
 const VoiceQuiz = dynamic(() => import('@/components/quiz/VoiceQuiz'), { ssr: false })
@@ -41,6 +41,7 @@ const BACKGROUND_MUSIC_URL = '/audio/background/lesson-bg-v3.mp3'
 
 export default function DynamicLessonPage() {
   const params = useParams()
+  const router = useRouter()
   const lessonOrder = parseInt(params.order as string)
   
   const [lesson, setLesson] = useState<Lesson | null>(null)
