@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { getFreeLessons } from '@/lib/free-lessons';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,7 @@ export async function GET() {
     const isAdmin = session?.user?.role === 'ADMIN' || devBypassAuth;
     
     // Если пользователь не авторизован, показываем список с меткой locked (кроме бесплатных)
-    const FREE_LESSONS = [1];
+    const FREE_LESSONS = await getFreeLessons();
     
     if (!session && !devBypassAuth) {
       const lessons = await prisma.lesson.findMany({
@@ -34,7 +35,7 @@ export async function GET() {
       
       return NextResponse.json({ 
         success: true,
-        lessons: lessons.map(l => ({ ...l, locked: !FREE_LESSONS.includes(l.order) })),
+        lessons: lessons.map(l => ({ ...l, free: FREE_LESSONS.includes(l.order), locked: !FREE_LESSONS.includes(l.order) })),
         total: lessons.length,
         available: lessons.filter(l => l.available).length,
         hasPurchased: false,
@@ -64,9 +65,10 @@ export async function GET() {
       
       return NextResponse.json({ 
         success: true,
-        lessons,
+        lessons: lessons.map(l => ({ ...l, free: FREE_LESSONS.includes(l.order) })),
         total: lessons.length,
         available: lessons.filter(l => l.available).length,
+        hasPurchased: true,
       });
     }
     
@@ -100,6 +102,7 @@ export async function GET() {
 
     const lessonsWithAccess = lessons.map(lesson => ({
       ...lesson,
+      free: FREE_LESSONS.includes(lesson.order),
       locked: !userHasPurchased && !FREE_LESSONS.includes(lesson.order),
     }));
 

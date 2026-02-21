@@ -3,11 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getLegacyLessonContent } from '@/lib/legacy-lesson-content';
+import { getFreeLessons } from '@/lib/free-lessons';
 
 export const dynamic = 'force-dynamic';
-
-// Free lessons accessible without login or purchase
-const FREE_LESSONS = [1];
 
 // Статический конфиг количества слайдов (из /public/data/slides-config.json)
 const SLIDES_CONFIG: Record<number, number> = {
@@ -66,6 +64,7 @@ export async function GET(
       );
     }
     
+    const FREE_LESSONS = await getFreeLessons();
     const isFreeLesson = FREE_LESSONS.includes(orderNum);
     
     // Если пользователь не авторизован и урок не бесплатный, возвращаем ошибку

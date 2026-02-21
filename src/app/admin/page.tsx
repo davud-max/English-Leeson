@@ -184,6 +184,12 @@ export default function AdminDashboard() {
             Audio Generator
           </Link>
           <Link
+            href="/admin/access"
+            className="rounded-md border border-green-300 bg-green-50 px-4 py-3 font-semibold text-green-900 hover:bg-green-100"
+          >
+            🔓 Lesson Access
+          </Link>
+          <Link
             href="/admin/settings"
             className="rounded-md border border-stone-300 px-4 py-3 font-semibold text-stone-800 hover:bg-stone-100"
           >

@@ -13,6 +13,7 @@ interface Lesson {
   color: string
   available: boolean
   locked?: boolean
+  free?: boolean
 }
 
 export default function LessonsPage() {
@@ -140,7 +141,7 @@ export default function LessonsPage() {
                   <div className="mt-3 text-sm text-stone-500">
                     Coming soon
                   </div>
-                ) : lesson.order === 1 ? (
+                ) : lesson.free ? (
                   <div className="mt-3 text-sm text-green-600 font-medium">
                     ✨ Free lesson
                   </div>
