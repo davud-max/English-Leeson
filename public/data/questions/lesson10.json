@@ -1,42 +1,42 @@
 {
   "lessonId": 10,
-  "lessonTitle": "How Thought Finds Us",
-  "generatedAt": "2026-01-25T12:00:00.000Z",
+  "lessonTitle": "Theory of Cognitive Resonance 2",
+  "generatedAt": "2026-02-22T09:23:54.351Z",
   "questions": [
     {
       "id": 1,
-      "question": "According to the radio receiver model, what role does our 'I' play in the thinking process?",
-      "correct_answer": "Our 'I' is not the author of thoughts but their radio receiver - we catch thoughts rather than compose them.",
+      "question": "According to the lesson, what is the main problem with the idea that 'I' choose my thoughts?",
+      "correct_answer": "The 'I' that should choose the thought is itself a product of the thought process, creating a closed circle.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What is memory described as in this theory?",
-      "correct_answer": "Memory is not a warehouse of pictures but preserved patterns of frequencies that we tune into through resonance.",
+      "question": "In the radio receiver model of consciousness, what happens when cognitive resonance occurs?",
+      "correct_answer": "The signal of that thought is sharply amplified while all others are filtered out, like when a radio receiver's frequency matches a station's frequency.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What does it mean 'to remember' according to the resonance model?",
-      "correct_answer": "To remember means to tune your heterodyne to the frequency of the preserved pattern and obtain resonance.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "What is knowledge according to this lesson?",
+      "correct_answer": "Knowledge is an abstraction connected with a sign.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 4,
-      "question": "What are the four key abilities that should be developed to teach thinking effectively?",
-      "correct_answer": "The ability to distinguish (find differences), compare (find similarities and differences), abstract (move from specific to general), and create conditions for resonance (ask the right questions).",
-      "difficulty": "hard",
-      "points": 15
+      "question": "According to the author, what does it mean to remember something?",
+      "correct_answer": "To remember means to tune your heterodyne to the frequency of the preserved pattern and obtain resonance.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 5,
-      "question": "What happens when a child arrives at the formulation of the Pythagorean theorem themselves?",
-      "correct_answer": "Cognitive resonance occurs in their brain - they cry 'Wow!' and will think with pleasure because the knowledge becomes truly their own.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "What does the author say is the proper way to teach thinking?",
+      "correct_answer": "To teach thinking means training the process of tuning by developing abilities to distinguish, compare, abstract, and creating conditions for resonance, rather than filling memory with ready-made patterns.",
+      "difficulty": "easy",
+      "points": 5
     }
   ]
 }
