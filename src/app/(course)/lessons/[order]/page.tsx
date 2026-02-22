@@ -411,7 +411,7 @@ export default function DynamicLessonPage() {
                     : 'border-stone-300 text-stone-600 hover:bg-stone-100'
                 }`}
               >
-                {isBgMusicEnabled ? '♪ Music On' : '♪ Music Off'}
+                {isBgMusicEnabled ? '♪ On' : '♪ Off'}
               </button>
               
               <button
