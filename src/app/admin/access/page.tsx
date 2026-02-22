@@ -30,15 +30,22 @@ export default function AccessControlPage() {
 
       if (lessonsRes.ok) {
         const data = await lessonsRes.json()
-        setLessons(Array.isArray(data) ? data : data.lessons || [])
+        const list = Array.isArray(data) ? data : data.lessons || []
+        setLessons(list)
+      } else {
+        console.error('Lessons API error:', lessonsRes.status, await lessonsRes.text())
+        setMessage('❌ Failed to load lessons: ' + lessonsRes.status)
       }
 
       if (freeRes.ok) {
         const data = await freeRes.json()
         setFreeLessons(data.freeLessons || [1])
+      } else {
+        console.error('Free lessons API error:', freeRes.status, await freeRes.text())
       }
     } catch (error) {
       console.error('Failed to fetch data:', error)
+      setMessage('❌ Network error loading data')
     } finally {
       setLoading(false)
     }
@@ -77,13 +84,16 @@ export default function AccessControlPage() {
       if (res.ok) {
         setMessage('✅ Saved! Changes take effect immediately.')
       } else {
-        setMessage('❌ Error saving')
+        const errText = await res.text()
+        console.error('Save error:', res.status, errText)
+        setMessage('❌ Error saving: ' + res.status + ' ' + errText)
       }
-    } catch {
-      setMessage('❌ Error saving')
+    } catch (err) {
+      console.error('Save network error:', err)
+      setMessage('❌ Network error saving')
     } finally {
       setSaving(false)
-      setTimeout(() => setMessage(''), 4000)
+      setTimeout(() => setMessage(''), 6000)
     }
   }
 
