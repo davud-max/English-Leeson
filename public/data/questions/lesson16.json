@@ -1,0 +1,42 @@
+{
+  "lessonId": 16,
+  "lessonTitle": "Minus-Space",
+  "generatedAt": "2026-02-22T15:19:03.787Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "According to the lesson, what is Minus-space?",
+      "correct_answer": "Minus-space is that which possesses neither extension nor position. It is not emptiness, but the absence of the container itself, the cancellation of the act of distinguishing 'here' and 'there.'",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What are the three types of spatial concepts described in the lesson?",
+      "correct_answer": "Space (which possesses extension and metric), Point or zero-space (which possesses position but not extension), and Minus-space (which possesses neither extension nor position).",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "How does movement work in Minus-space according to the hypothesis?",
+      "correct_answer": "In Minus-space there is no distance, so transition is instantaneous. A particle can disappear and appear thousands of light-years away because distance was not overcome - it simply did not exist.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 4,
+      "question": "What does the lesson suggest black holes might actually be?",
+      "correct_answer": "The lesson suggests that black holes might be portals or doors where matter breaks through the barrier of our reality and goes into Minus-space, rather than compressing into a singularity.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "What is the main limitation of the Minus-space hypothesis mentioned in the lesson?",
+      "correct_answer": "The hypothesis remains a philosophical concept with poetic metaphors rather than a scientific theory, because it lacks mathematical rigor and precise equations that can be verified.",
+      "difficulty": "easy",
+      "points": 5
+    }
+  ]
+}
