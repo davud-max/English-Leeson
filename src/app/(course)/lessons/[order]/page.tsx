@@ -444,10 +444,10 @@ export default function DynamicLessonPage() {
       </div>
             
       {/* Scrollable Content */}
-      <main className="max-w-4xl mx-auto px-6 py-10 pb-28">
+      <main className="max-w-4xl mx-auto px-6 pt-5 pb-28">
 
         {/* Content Card */}
-        <article className="bg-white rounded-lg shadow-lg border border-stone-200 p-8 md:p-12 mb-8">
+        <article className="bg-white rounded-lg shadow-lg border border-stone-200 pt-4 md:pt-6 px-8 md:px-12 pb-8 md:pb-12 mb-8">
           <div className="prose prose-stone prose-lg max-w-none">
             <ReactMarkdown
               components={{
