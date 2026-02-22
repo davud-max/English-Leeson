@@ -24,13 +24,19 @@ export default function AccessControlPage() {
   const fetchData = async () => {
     try {
       const [lessonsRes, freeRes] = await Promise.all([
-        fetch('/api/admin/lessons'),
+        fetch('/api/lessons'),
         fetch('/api/admin/free-lessons'),
       ])
 
       if (lessonsRes.ok) {
         const data = await lessonsRes.json()
-        const list = Array.isArray(data) ? data : data.lessons || []
+        const raw = Array.isArray(data) ? data : data.lessons || []
+        const list = raw.map((l: any) => ({
+          id: l.id || l.order?.toString(),
+          order: l.order,
+          title: l.title,
+          available: l.available ?? true,
+        }))
         setLessons(list)
       } else {
         console.error('Lessons API error:', lessonsRes.status, await lessonsRes.text())

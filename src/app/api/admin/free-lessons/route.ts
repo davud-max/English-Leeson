@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 const CONFIG_KEY = 'CONFIG_FREE_LESSONS'
 
 // GET - получить список бесплатных уроков
