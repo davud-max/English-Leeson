@@ -1,42 +1,42 @@
 {
   "lessonId": 13,
   "lessonTitle": "The Sixth Human Level",
-  "generatedAt": "2026-01-25T12:00:00.000Z",
+  "generatedAt": "2026-02-22T11:01:31.945Z",
   "questions": [
     {
       "id": 1,
-      "question": "What does the Word (Logos) represent in the context of creation?",
-      "correct_answer": "The Word (Logos) is the principle of distinction, the ability to draw boundaries.",
+      "question": "What is the algorithm of algorithms?",
+      "correct_answer": "A single principle that generates all other thinking algorithms - a meta-algorithm that creates algorithms and is capable of generating itself and all other algorithms.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What does the first day of creation (light separating from darkness) represent?",
-      "correct_answer": "It represents the first distinction - the primary act of drawing a boundary between observable and unobservable.",
+      "question": "According to the lesson, what is the simplest operation that can generate all of thought?",
+      "correct_answer": "The act of distinction itself - the drawing of a boundary. The minimal operation is: Make a distinction, Observe the distinction, See the observer, Repeat.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "Why is the sixth day of creation significant for humans?",
-      "correct_answer": "The sixth level is the human level - where consciousness can observe itself. Man is created in God's image because man has the ability to distinguish, name, and create through language.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "What does closure mean in the context of the algorithm of algorithms?",
+      "correct_answer": "Closure means the algorithm can be applied to its own output, the system of operations is complete, and nothing external is required to sustain the process.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 4,
-      "question": "What does the Sabbath (seventh day) represent in terms of creation through distinction?",
-      "correct_answer": "The Sabbath represents the completion of creation through distinction - the rest after the full process of differentiation is complete.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "What makes the algorithm of algorithms universal?",
+      "correct_answer": "It can implement any other algorithm and any other system of thought, and can be embodied across different domains like neural networks, digital computers, social systems, and biological evolution.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 5,
-      "question": "How are the six days of creation related to levels of distinction?",
-      "correct_answer": "Each day represents a new level of distinction - from basic (light/darkness) through increasingly complex divisions (waters, land, heavenly bodies, life forms) to the sixth level where self-aware consciousness emerges.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "After exploring all the complexity, what does the lesson say the algorithm of algorithms ultimately is?",
+      "correct_answer": "Make a distinction. Everything else - recursion, self-reference, universality, closure - follows from this single operation applied to itself.",
+      "difficulty": "easy",
+      "points": 5
     }
   ]
 }
