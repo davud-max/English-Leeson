@@ -92,6 +92,7 @@ export default function LessonsManagement() {
         clearTimeout(autoSaveTimerRef.current)
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData, isEditing, selectedLesson])
 
   const fetchLessons = async () => {

@@ -89,6 +89,10 @@ export default function LessonEditorComplete() {
   const [russianText, setRussianText] = useState('')
   const [isTranslating, setIsTranslating] = useState(false)
   const [adminKey, setAdminKey] = useState('')
+
+  // Undo/Redo history
+  const [undoStack, setUndoStack] = useState<Lesson[]>([])
+  const [redoStack, setRedoStack] = useState<Lesson[]>([])
   
   // Quiz Generator states
   const [quizCount, setQuizCount] = useState(5)
@@ -100,6 +104,50 @@ export default function LessonEditorComplete() {
   const [quizAudioResults, setQuizAudioResults] = useState<QuizAudioResult[]>([])
   const [isSavingQuizAudio, setIsSavingQuizAudio] = useState(false)
   const [quizSaveProgress, setQuizSaveProgress] = useState({ current: 0, total: 0 })
+
+  // Push current state to undo stack before destructive changes
+  const pushUndo = (lessonState?: Lesson | null) => {
+    const state = lessonState || selectedLesson
+    if (!state) return
+    setUndoStack(prev => [...prev.slice(-29), JSON.parse(JSON.stringify(state))])
+    setRedoStack([])
+  }
+
+  const undo = () => {
+    if (undoStack.length === 0 || !selectedLesson) return
+    const prev = undoStack[undoStack.length - 1]
+    setUndoStack(s => s.slice(0, -1))
+    setRedoStack(s => [...s, JSON.parse(JSON.stringify(selectedLesson))])
+    setSelectedLesson(prev)
+    setSaveStatus('↩️ Undo')
+    setTimeout(() => setSaveStatus(''), 1500)
+  }
+
+  const redo = () => {
+    if (redoStack.length === 0 || !selectedLesson) return
+    const next = redoStack[redoStack.length - 1]
+    setRedoStack(s => s.slice(0, -1))
+    setUndoStack(s => [...s, JSON.parse(JSON.stringify(selectedLesson))])
+    setSelectedLesson(next)
+    setSaveStatus('↪️ Redo')
+    setTimeout(() => setSaveStatus(''), 1500)
+  }
+
+  // Keyboard shortcuts for Undo/Redo
+  useEffect(() => {
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        e.preventDefault()
+        if (e.shiftKey) {
+          redo()
+        } else {
+          undo()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [undoStack, redoStack, selectedLesson])
 
   useEffect(() => {
     fetchLessons()
@@ -113,7 +161,11 @@ export default function LessonEditorComplete() {
       setQuizAudioResults([])
       setQuizMessage('')
     }
-  }, [selectedLesson])
+    // Clear history when switching lessons
+    setUndoStack([])
+    setRedoStack([])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLesson?.id])
 
   useEffect(() => {
     if (!focusTarget) return
@@ -466,6 +518,7 @@ export default function LessonEditorComplete() {
 
   const deleteSlide = (index: number) => {
     if (!selectedLesson) return
+    pushUndo()
     const updatedSlides = [...(selectedLesson.slides || [])]
     updatedSlides.splice(index, 1)
     updatedSlides.forEach((slide, i) => {
@@ -493,7 +546,7 @@ export default function LessonEditorComplete() {
       setSaveStatus('❌ Нет контента')
       return
     }
-
+    pushUndo()
     const newSlides = createSlidesFromContent(selectedLesson.content)
     setSelectedLesson({
       ...selectedLesson,
@@ -516,6 +569,7 @@ export default function LessonEditorComplete() {
     // Merge current slide into previous when Backspace is pressed at the first position.
     if (e.key === 'Backspace' && !hasSelection && cursorStart === 0 && index > 0) {
       e.preventDefault()
+      pushUndo()
       const previous = slides[index - 1]
       const separator = previous.content && current.content ? '\n\n' : ''
       const previousEndPosition = previous.content.length
@@ -542,6 +596,7 @@ export default function LessonEditorComplete() {
     // Split current slide into two when Enter is pressed at cursor position.
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
+      pushUndo()
 
       const before = current.content.slice(0, cursorStart)
       const after = current.content.slice(cursorEnd)
@@ -953,6 +1008,7 @@ export default function LessonEditorComplete() {
       const paragraphs = translatedText.split('\n\n').filter((p: string) => p.trim().length > 0)
       
       if (selectedLesson) {
+        pushUndo()
         const newSlides = paragraphs.map((content: string, index: number) => ({
           id: index + 1,
           title: `Part ${index + 1}`,
@@ -1114,15 +1170,24 @@ export default function LessonEditorComplete() {
                   
                   <div className="border-l h-8 mx-2"></div>
                   
+                  <button
+                    onClick={undo}
+                    disabled={undoStack.length === 0}
+                    className="border border-stone-300 text-stone-700 px-3 py-2 rounded hover:bg-stone-100 disabled:opacity-30 text-sm"
+                    title="Undo (Ctrl+Z)"
+                  >
+                    ↩ Undo{undoStack.length > 0 ? ` (${undoStack.length})` : ''}
+                  </button>
+                  <button
+                    onClick={redo}
+                    disabled={redoStack.length === 0}
+                    className="border border-stone-300 text-stone-700 px-3 py-2 rounded hover:bg-stone-100 disabled:opacity-30 text-sm"
+                    title="Redo (Ctrl+Shift+Z)"
+                  >
+                    ↪ Redo{redoStack.length > 0 ? ` (${redoStack.length})` : ''}
+                  </button>
                   <button onClick={saveLesson} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
                     💾 Сохранить
-                  </button>
-                  <button 
-                    onClick={rollbackLesson} 
-                    className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
-                    title="Откатить к предыдущей версии"
-                  >
-                    🔄 Откат
                   </button>
                   <button onClick={() => setShowTranslateModal(true)} className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">
                     🌐 Translate RU→EN

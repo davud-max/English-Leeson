@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
-import { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
@@ -84,6 +84,7 @@ export default function DynamicLessonPage() {
       bgAudioRef.current.currentTime = 0
     }
     fetchLesson()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonOrder])
 
   const fetchLesson = async () => {
@@ -109,13 +110,13 @@ export default function DynamicLessonPage() {
     }
   }
 
-  const slides: Slide[] = lesson?.slides || (lesson?.content ? [{
+  const slides: Slide[] = useMemo(() => lesson?.slides || (lesson?.content ? [{
     id: 1,
     title: lesson.title,
     content: lesson.content,
     emoji: lesson.emoji || '📖',
     duration: 30000,
-  }] : [])
+  }] : []), [lesson])
 
   const totalSlides = slides.length
 

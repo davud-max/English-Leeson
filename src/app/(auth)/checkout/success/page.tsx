@@ -22,6 +22,7 @@ function SuccessContent() {
     }
 
     verifyPayment()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId])
 
   const verifyPayment = async () => {
