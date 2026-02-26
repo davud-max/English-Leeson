@@ -147,6 +147,7 @@ export default function LessonEditorComplete() {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undoStack, redoStack, selectedLesson])
 
   useEffect(() => {
