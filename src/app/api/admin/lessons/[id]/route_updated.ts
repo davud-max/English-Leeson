@@ -179,8 +179,6 @@ export async function PUT(
         });
         
         // Save to history if LessonHistory model exists
-        // NOTE: Uncomment after applying database migration
-        /*
         try {
           await tx.lessonHistory.create({
             data: {
@@ -198,10 +196,9 @@ export async function PUT(
             }
           });
         } catch (historyError) {
-          console.warn('Could not save to lesson history:', (historyError as Error).message);
+          console.warn('Could not save to lesson history:', historyError.message);
           // Continue anyway, as the main update was successful
         }
-        */
         
         return updatedLesson;
       });
@@ -213,8 +210,6 @@ export async function PUT(
         });
         
         // Save to history if LessonHistory model exists
-        // NOTE: Uncomment after applying database migration
-        /*
         try {
           await tx.lessonHistory.create({
             data: {
@@ -232,10 +227,9 @@ export async function PUT(
             }
           });
         } catch (historyError) {
-          console.warn('Could not save to lesson history:', (historyError as Error).message);
+          console.warn('Could not save to lesson history:', historyError.message);
           // Continue anyway, as the main update was successful
         }
-        */
         
         return updatedLesson;
       });

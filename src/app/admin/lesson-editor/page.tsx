@@ -361,6 +361,66 @@ export default function LessonEditorComplete() {
     }
   }
 
+  const rollbackLesson = async () => {
+    if (!selectedLesson) return
+    
+    // Получаем историю изменений урока
+    try {
+      setSaveStatus('🔄 Получение истории...')
+      
+      const historyRes = await fetch(`/api/admin/lesson-history/${selectedLesson.id}`)
+      if (!historyRes.ok) {
+        const error = await historyRes.json()
+        throw new Error(error.error || 'Failed to fetch lesson history')
+      }
+      
+      const { history } = await historyRes.json()
+      
+      if (history.length < 2) {
+        setSaveStatus('ℹ️ Нет предыдущих версий для отката')
+        setTimeout(() => setSaveStatus(''), 3000)
+        return
+      }
+      
+      // Показываем список версий для выбора (берем предыдущую версию)
+      const previousVersion = history[1] // Берем предыдущую версию (текущая версия - индекс 0)
+      
+      const confirmed = window.confirm(
+        `Откатить урок к версии от ${new Date(previousVersion.changedAt).toLocaleString()}?\n\n` +
+        `Автор: ${previousVersion.changedBy}\n` +
+        `Заголовок: ${previousVersion.title}`
+      )
+      
+      if (!confirmed) return
+      
+      // Выполняем откат
+      const rollbackRes = await fetch(`/api/admin/lesson-history/${selectedLesson.id}/rollback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ versionId: previousVersion.id })
+      })
+      
+      if (!rollbackRes.ok) {
+        const error = await rollbackRes.json()
+        throw new Error(error.error || 'Failed to rollback lesson')
+      }
+      
+      const result = await rollbackRes.json()
+      
+      if (result.success) {
+        // Обновляем состояние урока
+        setSelectedLesson(result.updatedLesson)
+        setSaveStatus('✅ Успешно откатано к предыдущей версии')
+        setTimeout(() => setSaveStatus(''), 3000)
+      } else {
+        throw new Error(result.message || 'Rollback failed')
+      }
+    } catch (error) {
+      setSaveStatus(`❌ ${(error as Error).message}`)
+      setTimeout(() => setSaveStatus(''), 5000)
+    }
+  }
+
   const syncFromStaticFiles = async () => {
     setSaveStatus('🔄 Синхронизация...')
     
@@ -1056,6 +1116,13 @@ export default function LessonEditorComplete() {
                   
                   <button onClick={saveLesson} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
                     💾 Сохранить
+                  </button>
+                  <button 
+                    onClick={rollbackLesson} 
+                    className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
+                    title="Откатить к предыдущей версии"
+                  >
+                    🔄 Откат
                   </button>
                   <button onClick={() => setShowTranslateModal(true)} className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">
                     🌐 Translate RU→EN
