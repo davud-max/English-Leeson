@@ -188,7 +188,7 @@ export async function PUT(
               title: updatedLesson.title,
               description: updatedLesson.description,
               content: updatedLesson.content,
-              slides: updatedLesson.slides,
+              slides: updatedLesson.slides as any, // Type assertion to handle JSON type
               duration: updatedLesson.duration,
               published: updatedLesson.published,
               emoji: updatedLesson.emoji,
@@ -222,7 +222,7 @@ export async function PUT(
               title: updatedLesson.title,
               description: updatedLesson.description,
               content: updatedLesson.content,
-              slides: updatedLesson.slides,
+              slides: updatedLesson.slides as any, // Type assertion to handle JSON type
               duration: updatedLesson.duration,
               published: updatedLesson.published,
               emoji: updatedLesson.emoji,
