@@ -162,7 +162,7 @@ export default function DynamicLessonPage() {
     ].filter((item): item is string => Boolean(item))
 
     return Array.from(new Set(candidates))
-  }, [lessonOrder])
+  }, [lessonOrder, slides])
 
   const playSlide = useCallback((slideIndex: number, candidateIndex = 0) => {
     const totalSlides = slides.length
