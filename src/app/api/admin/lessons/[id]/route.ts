@@ -366,6 +366,11 @@ export async function DELETE(
     }
 
     await prisma.$transaction(async (tx) => {
+      // Delete dependent records first
+      await tx.progress.deleteMany({
+        where: { lessonId: params.id },
+      });
+
       await tx.lesson.delete({
         where: { id: params.id },
       });
