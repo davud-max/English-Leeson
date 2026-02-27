@@ -165,16 +165,20 @@ export async function GET(
       }
     }
 
-    // Serve lesson audio strictly by current lesson order to avoid stale
-    // cross-lesson mappings after historical reorders.
+    // Normalize DB lesson slides to stable lesson-id audio folder so audio stays
+    // attached to the lesson entity even after reorder/insert operations.
     if (lessonWithSlides && Array.isArray(lessonWithSlides.slides)) {
       lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => {
         const safeSlide = slide && typeof slide === 'object' ? slide : {};
-        const orderAudioUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${orderNum}/slide${index + 1}.mp3`;
+        const stableAudioUrl =
+          lesson?.id
+            ? `/audio/lesson-${lesson.id}/slide${index + 1}.mp3`
+            : null;
+        const orderAudioUrl = `/audio/lesson${orderNum}/slide${index + 1}.mp3`;
 
         return {
           ...safeSlide,
-          audioUrl: orderAudioUrl,
+          audioUrl: stableAudioUrl || orderAudioUrl,
         };
       });
     }
