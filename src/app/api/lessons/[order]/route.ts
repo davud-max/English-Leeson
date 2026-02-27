@@ -165,20 +165,34 @@ export async function GET(
       }
     }
 
-    // Preserve explicit per-slide audioUrl mapping from DB when present.
-    // Use order-based path only as a fallback for slides without audioUrl.
+    // Preserve custom per-slide audioUrl mapping when present.
+    // Normalize legacy order-based audio urls to stable lesson-id folder
+    // to prevent audio drift after lesson reorder/insert.
     if (lessonWithSlides && Array.isArray(lessonWithSlides.slides)) {
       lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => {
         const safeSlide = slide && typeof slide === 'object' ? slide : {};
+        const stableAudioUrl =
+          lesson?.id
+            ? `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson-${lesson.id}/slide${index + 1}.mp3`
+            : null;
+        const orderAudioUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${orderNum}/slide${index + 1}.mp3`;
         const existingAudioUrl =
           typeof safeSlide.audioUrl === 'string' && safeSlide.audioUrl.trim().length > 0
-            ? safeSlide.audioUrl
+            ? safeSlide.audioUrl.trim()
             : null;
+        const isLegacyOrderUrl =
+          !!existingAudioUrl &&
+          (/\/audio\/lesson\d+\//.test(existingAudioUrl) ||
+            /\/public\/audio\/lesson\d+\//.test(existingAudioUrl) ||
+            /raw\.githubusercontent\.com\/.*\/public\/audio\/lesson\d+\//.test(existingAudioUrl));
+        const normalizedAudioUrl =
+          existingAudioUrl && !isLegacyOrderUrl
+            ? existingAudioUrl
+            : stableAudioUrl || orderAudioUrl;
+
         return {
           ...safeSlide,
-          audioUrl:
-            existingAudioUrl ||
-            `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson${orderNum}/slide${index + 1}.mp3`,
+          audioUrl: normalizedAudioUrl,
         };
       });
     }
