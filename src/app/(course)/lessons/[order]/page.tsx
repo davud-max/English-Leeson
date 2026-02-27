@@ -89,7 +89,9 @@ export default function DynamicLessonPage() {
 
   const fetchLesson = async () => {
     try {
-      const res = await fetch(`/api/lessons/${lessonOrder}`)
+      const res = await fetch(`/api/lessons/${lessonOrder}?t=${Date.now()}`, {
+        cache: 'no-store',
+      })
       const data = await res.json()
       
       if (!res.ok) {
@@ -151,19 +153,15 @@ export default function DynamicLessonPage() {
 
   const getAudioCandidates = useCallback((slideIndex: number): string[] => {
     const cacheBust = Date.now()
-    const slideAudioUrl = slides[slideIndex]?.audioUrl
-      ? `${slides[slideIndex].audioUrl}${slides[slideIndex].audioUrl.includes('?') ? '&' : '?'}v=${cacheBust}`
-      : null
 
-    // Order-based folders are canonical; ID-based are deprecated
+    // Always use order-based folders to avoid stale slide-level mappings.
     const candidates = [
-      slideAudioUrl,
       `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide${slideIndex + 1}.mp3?v=${cacheBust}`,
       `/audio/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`,
     ].filter((item): item is string => Boolean(item))
 
     return Array.from(new Set(candidates))
-  }, [lessonOrder, slides])
+  }, [lessonOrder])
 
   const playSlide = useCallback((slideIndex: number, candidateIndex = 0) => {
     const totalSlides = slides.length
