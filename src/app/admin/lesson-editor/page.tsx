@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { KeyboardEvent } from 'react'
 import Link from 'next/link'
 
@@ -104,6 +104,7 @@ export default function LessonEditorComplete() {
   const [quizAudioResults, setQuizAudioResults] = useState<QuizAudioResult[]>([])
   const [isSavingQuizAudio, setIsSavingQuizAudio] = useState(false)
   const [quizSaveProgress, setQuizSaveProgress] = useState({ current: 0, total: 0 })
+  const lastUndoCaptureRef = useRef<{ key: string; at: number } | null>(null)
 
   // Push current state to undo stack before destructive changes
   const pushUndo = (lessonState?: Lesson | null) => {
@@ -113,12 +114,22 @@ export default function LessonEditorComplete() {
     setRedoStack([])
   }
 
+  const captureUndoForKey = (key: string, lessonState?: Lesson | null) => {
+    const now = Date.now()
+    const last = lastUndoCaptureRef.current
+    if (!last || last.key !== key || now - last.at > 1000) {
+      pushUndo(lessonState)
+      lastUndoCaptureRef.current = { key, at: now }
+    }
+  }
+
   const undo = () => {
     if (undoStack.length === 0 || !selectedLesson) return
     const prev = undoStack[undoStack.length - 1]
     setUndoStack(s => s.slice(0, -1))
     setRedoStack(s => [...s, JSON.parse(JSON.stringify(selectedLesson))])
     setSelectedLesson(prev)
+    lastUndoCaptureRef.current = null
     setSaveStatus('↩️ Undo')
     setTimeout(() => setSaveStatus(''), 1500)
   }
@@ -129,6 +140,7 @@ export default function LessonEditorComplete() {
     setRedoStack(s => s.slice(0, -1))
     setUndoStack(s => [...s, JSON.parse(JSON.stringify(selectedLesson))])
     setSelectedLesson(next)
+    lastUndoCaptureRef.current = null
     setSaveStatus('↪️ Redo')
     setTimeout(() => setSaveStatus(''), 1500)
   }
@@ -136,6 +148,14 @@ export default function LessonEditorComplete() {
   // Keyboard shortcuts for Undo/Redo
   useEffect(() => {
     const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      const target = e.target as HTMLElement | null
+      const isEditable =
+        !!target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+      if (isEditable) return
+
       if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
         e.preventDefault()
         if (e.shiftKey) {
@@ -165,6 +185,7 @@ export default function LessonEditorComplete() {
     // Clear history when switching lessons
     setUndoStack([])
     setRedoStack([])
+    lastUndoCaptureRef.current = null
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLesson?.id])
 
@@ -330,7 +351,6 @@ export default function LessonEditorComplete() {
 
   const insertLessonAt = async (order: number) => {
     if (!selectedLesson) return
-    pushUndo()
     setSaveStatus('➕ Inserting lesson...')
     try {
       const res = await fetch('/api/admin/lessons', {
@@ -380,7 +400,6 @@ export default function LessonEditorComplete() {
 
   const deleteSelectedLesson = async () => {
     if (!selectedLesson) return
-    pushUndo()
     const lessonToDelete = selectedLesson
     const confirmed = window.confirm(
       `Delete lesson #${lessonToDelete.order} "${lessonToDelete.title}"?\n\nThis action cannot be undone.`
@@ -499,6 +518,7 @@ export default function LessonEditorComplete() {
 
   const addSlide = () => {
     if (!selectedLesson) return
+    pushUndo()
     const newSlide: Slide = {
       id: (selectedLesson.slides?.length || 0) + 1,
       title: `Part ${(selectedLesson.slides?.length || 0) + 1}`,
@@ -514,6 +534,7 @@ export default function LessonEditorComplete() {
 
   const updateSlide = (index: number, field: keyof Slide, value: any) => {
     if (!selectedLesson) return
+    captureUndoForKey(`slide-${index}-${field}`)
     const updatedSlides = [...(selectedLesson.slides || [])]
     updatedSlides[index] = { ...updatedSlides[index], [field]: value }
     setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
@@ -1107,12 +1128,18 @@ export default function LessonEditorComplete() {
                     <input
                       type="text"
                       value={selectedLesson.title}
-                      onChange={(e) => setSelectedLesson({ ...selectedLesson, title: e.target.value })}
+                      onChange={(e) => {
+                        captureUndoForKey('lesson-title')
+                        setSelectedLesson({ ...selectedLesson, title: e.target.value })
+                      }}
                       className="text-2xl font-bold border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 outline-none w-full"
                     />
                     <textarea
                       value={selectedLesson.description}
-                      onChange={(e) => setSelectedLesson({ ...selectedLesson, description: e.target.value })}
+                      onChange={(e) => {
+                        captureUndoForKey('lesson-description')
+                        setSelectedLesson({ ...selectedLesson, description: e.target.value })
+                      }}
                       className="mt-2 text-gray-600 border rounded p-2 w-full"
                       rows={2}
                     />
@@ -1126,9 +1153,10 @@ export default function LessonEditorComplete() {
                       type="number"
                       min={1}
                       value={selectedLesson.order}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        captureUndoForKey('lesson-order')
                         setSelectedLesson({ ...selectedLesson, order: Number(e.target.value) || 1 })
-                      }
+                      }}
                       className="w-20 rounded border border-stone-300 px-2 py-1 text-sm"
                     />
                     <button
@@ -1163,7 +1191,10 @@ export default function LessonEditorComplete() {
                     <input
                       type="checkbox"
                       checked={selectedLesson.published}
-                      onChange={(e) => setSelectedLesson({ ...selectedLesson, published: e.target.checked })}
+                      onChange={(e) => {
+                        pushUndo()
+                        setSelectedLesson({ ...selectedLesson, published: e.target.checked })
+                      }}
                       className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
                     />
                     <span className={`text-sm font-medium ${selectedLesson.published ? 'text-green-600' : 'text-red-600'}`}>
@@ -1247,7 +1278,10 @@ export default function LessonEditorComplete() {
                       </div>
                       <textarea
                         value={selectedLesson.content}
-                        onChange={(e) => setSelectedLesson({ ...selectedLesson, content: e.target.value })}
+                        onChange={(e) => {
+                          captureUndoForKey('lesson-content')
+                          setSelectedLesson({ ...selectedLesson, content: e.target.value })
+                        }}
                         className="w-full h-96 border rounded p-4 font-mono text-sm"
                       />
                     </div>
