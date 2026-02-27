@@ -383,15 +383,22 @@ export async function DELETE(
         where: { id: params.id },
       });
 
-      await tx.lesson.updateMany({
+      // Shift orders one by one (ascending) to avoid unique constraint collision
+      const lessonsToShift = await tx.lesson.findMany({
         where: {
           courseId: lesson.courseId,
           order: { gt: lesson.order },
         },
-        data: {
-          order: { decrement: 1 },
-        },
+        select: { id: true, order: true },
+        orderBy: { order: 'asc' },
       });
+
+      for (const item of lessonsToShift) {
+        await tx.lesson.update({
+          where: { id: item.id },
+          data: { order: item.order - 1 },
+        });
+      }
     });
 
     return NextResponse.json({ success: true, deletedId: lesson.id, deletedOrder: lesson.order });
