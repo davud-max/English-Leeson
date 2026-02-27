@@ -396,9 +396,10 @@ export async function DELETE(
 
     return NextResponse.json({ success: true, deletedId: lesson.id, deletedOrder: lesson.order });
   } catch (error) {
-    console.error('Error deleting lesson:', error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error('Error deleting lesson:', errMsg);
     return NextResponse.json(
-      { error: 'Failed to delete lesson' },
+      { error: 'Failed to delete lesson', details: errMsg },
       { status: 500 }
     );
   }
