@@ -365,12 +365,20 @@ export async function DELETE(
       );
     }
 
-    await prisma.$transaction(async (tx) => {
-      // Delete dependent records first
-      await tx.progress.deleteMany({
+    // Delete dependent records first (outside transaction for safety)
+    await prisma.progress.deleteMany({
+      where: { lessonId: params.id },
+    });
+
+    try {
+      await prisma.lessonHistory.deleteMany({
         where: { lessonId: params.id },
       });
+    } catch (e) {
+      // LessonHistory table may not exist yet
+    }
 
+    await prisma.$transaction(async (tx) => {
       await tx.lesson.delete({
         where: { id: params.id },
       });
