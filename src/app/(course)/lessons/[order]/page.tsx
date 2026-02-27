@@ -85,7 +85,7 @@ export default function DynamicLessonPage() {
     }
     fetchLesson()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lessonOrder, slides])
+  }, [lessonOrder])
 
   const fetchLesson = async () => {
     try {
