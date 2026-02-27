@@ -330,6 +330,7 @@ export default function LessonEditorComplete() {
 
   const insertLessonAt = async (order: number) => {
     if (!selectedLesson) return
+    pushUndo()
     setSaveStatus('➕ Inserting lesson...')
     try {
       const res = await fetch('/api/admin/lessons', {
@@ -341,7 +342,7 @@ export default function LessonEditorComplete() {
           description: 'New lesson description',
           content: '',
           duration: 25,
-          published: false,
+          published: true,
           slides: [],
           emoji: '📖',
         }),
@@ -379,6 +380,7 @@ export default function LessonEditorComplete() {
 
   const deleteSelectedLesson = async () => {
     if (!selectedLesson) return
+    pushUndo()
     const lessonToDelete = selectedLesson
     const confirmed = window.confirm(
       `Delete lesson #${lessonToDelete.order} "${lessonToDelete.title}"?\n\nThis action cannot be undone.`
