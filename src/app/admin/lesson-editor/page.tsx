@@ -63,6 +63,14 @@ interface Lesson {
   color?: string
 }
 
+interface ServerOperation {
+  type: 'insert' | 'delete' | 'reorder'
+  lessonId: string
+  lessonSnapshot?: Lesson
+  beforeOrder?: number
+  afterOrder?: number
+}
+
 interface AudioGenerationProgress {
   slideIndex: number
   status: 'pending' | 'generating' | 'uploading' | 'success' | 'error'
@@ -93,6 +101,9 @@ export default function LessonEditorComplete() {
   // Undo/Redo history
   const [undoStack, setUndoStack] = useState<Lesson[]>([])
   const [redoStack, setRedoStack] = useState<Lesson[]>([])
+  const [serverUndoStack, setServerUndoStack] = useState<ServerOperation[]>([])
+  const [serverRedoStack, setServerRedoStack] = useState<ServerOperation[]>([])
+  const [isUndoRedoBusy, setIsUndoRedoBusy] = useState(false)
   
   // Quiz Generator states
   const [quizCount, setQuizCount] = useState(5)
@@ -145,6 +156,129 @@ export default function LessonEditorComplete() {
     setTimeout(() => setSaveStatus(''), 1500)
   }
 
+  const pushServerUndo = (op: ServerOperation) => {
+    setServerUndoStack((prev) => [...prev.slice(-29), op])
+    setServerRedoStack([])
+  }
+
+  const refreshLessonsAndSelect = async (preferredLessonId?: string | null) => {
+    const updatedLessons = await fetchLessons()
+    if (!updatedLessons.length) {
+      setSelectedLesson(null)
+      return
+    }
+
+    if (preferredLessonId) {
+      const preferred = updatedLessons.find((l) => l.id === preferredLessonId)
+      if (preferred) {
+        setSelectedLesson(preferred)
+        return
+      }
+    }
+
+    setSelectedLesson(updatedLessons[0])
+  }
+
+  const undoServerOperation = async () => {
+    if (!serverUndoStack.length || isUndoRedoBusy) return
+    const op = serverUndoStack[serverUndoStack.length - 1]
+    setIsUndoRedoBusy(true)
+
+    try {
+      if (op.type === 'insert') {
+        const res = await fetch(`/api/admin/lessons/${op.lessonId}`, { method: 'DELETE' })
+        if (!res.ok) throw new Error('Failed to undo inserted lesson')
+        await refreshLessonsAndSelect(null)
+      } else if (op.type === 'delete') {
+        if (!op.lessonSnapshot) throw new Error('Missing lesson snapshot for restore')
+        const res = await fetch('/api/admin/lessons/restore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lesson: op.lessonSnapshot }),
+        })
+        if (!res.ok) throw new Error('Failed to restore deleted lesson')
+        await refreshLessonsAndSelect(op.lessonSnapshot.id)
+      } else if (op.type === 'reorder') {
+        if (!Number.isFinite(op.beforeOrder)) throw new Error('Missing previous order')
+        const res = await fetch(`/api/admin/lessons/${op.lessonId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order: op.beforeOrder }),
+        })
+        if (!res.ok) throw new Error('Failed to undo reorder')
+        await refreshLessonsAndSelect(op.lessonId)
+      }
+
+      setServerUndoStack((prev) => prev.slice(0, -1))
+      setServerRedoStack((prev) => [...prev.slice(-29), op])
+      setSaveStatus('↩️ Server Undo')
+      setTimeout(() => setSaveStatus(''), 1500)
+    } catch (error) {
+      setSaveStatus(`❌ ${(error as Error).message}`)
+      setTimeout(() => setSaveStatus(''), 3000)
+    } finally {
+      setIsUndoRedoBusy(false)
+    }
+  }
+
+  const redoServerOperation = async () => {
+    if (!serverRedoStack.length || isUndoRedoBusy) return
+    const op = serverRedoStack[serverRedoStack.length - 1]
+    setIsUndoRedoBusy(true)
+
+    try {
+      if (op.type === 'insert') {
+        if (!op.lessonSnapshot) throw new Error('Missing lesson snapshot for re-insert')
+        const res = await fetch('/api/admin/lessons/restore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lesson: op.lessonSnapshot }),
+        })
+        if (!res.ok) throw new Error('Failed to redo inserted lesson')
+        await refreshLessonsAndSelect(op.lessonSnapshot.id)
+      } else if (op.type === 'delete') {
+        const res = await fetch(`/api/admin/lessons/${op.lessonId}`, { method: 'DELETE' })
+        if (!res.ok) throw new Error('Failed to redo deletion')
+        await refreshLessonsAndSelect(null)
+      } else if (op.type === 'reorder') {
+        if (!Number.isFinite(op.afterOrder)) throw new Error('Missing target order')
+        const res = await fetch(`/api/admin/lessons/${op.lessonId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order: op.afterOrder }),
+        })
+        if (!res.ok) throw new Error('Failed to redo reorder')
+        await refreshLessonsAndSelect(op.lessonId)
+      }
+
+      setServerRedoStack((prev) => prev.slice(0, -1))
+      setServerUndoStack((prev) => [...prev.slice(-29), op])
+      setSaveStatus('↪️ Server Redo')
+      setTimeout(() => setSaveStatus(''), 1500)
+    } catch (error) {
+      setSaveStatus(`❌ ${(error as Error).message}`)
+      setTimeout(() => setSaveStatus(''), 3000)
+    } finally {
+      setIsUndoRedoBusy(false)
+    }
+  }
+
+  const undoAction = async () => {
+    if (undoStack.length > 0) {
+      undo()
+      return
+    }
+    await undoServerOperation()
+  }
+
+  const redoAction = async () => {
+    if (redoStack.length > 0) {
+      redo()
+      return
+    }
+    await redoServerOperation()
+  }
+
   // Keyboard shortcuts for Undo/Redo
   useEffect(() => {
     const handleKeyDown = (e: globalThis.KeyboardEvent) => {
@@ -159,16 +293,16 @@ export default function LessonEditorComplete() {
       if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
         e.preventDefault()
         if (e.shiftKey) {
-          redo()
+          void redoAction()
         } else {
-          undo()
+          void undoAction()
         }
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [undoStack, redoStack, selectedLesson])
+  }, [undoStack, redoStack, serverUndoStack, serverRedoStack, selectedLesson, isUndoRedoBusy])
 
   useEffect(() => {
     fetchLessons()
@@ -327,6 +461,7 @@ export default function LessonEditorComplete() {
 
   const applyLessonOrder = async () => {
     if (!selectedLesson) return
+    const previousOrder = selectedLesson.order
     setSaveStatus('🔢 Updating order...')
     try {
       const res = await fetch(`/api/admin/lessons/${selectedLesson.id}`, {
@@ -341,6 +476,14 @@ export default function LessonEditorComplete() {
       const updated = await res.json()
       setSelectedLesson((prev) => (prev ? { ...prev, order: updated.order } : prev))
       await fetchLessons()
+      if (updated.order !== previousOrder) {
+        pushServerUndo({
+          type: 'reorder',
+          lessonId: selectedLesson.id,
+          beforeOrder: previousOrder,
+          afterOrder: updated.order,
+        })
+      }
       setSaveStatus('✅ Order updated')
       setTimeout(() => setSaveStatus(''), 2500)
     } catch (error) {
@@ -373,6 +516,23 @@ export default function LessonEditorComplete() {
       }
       const created = await res.json()
       await fetchLessons()
+      const createdSnapshot: Lesson = {
+        id: created.id,
+        order: created.order,
+        title: created.title,
+        description: created.description,
+        content: created.content,
+        slides: created.slides || [],
+        duration: created.duration,
+        published: created.published,
+        emoji: created.emoji,
+        color: created.color,
+      }
+      pushServerUndo({
+        type: 'insert',
+        lessonId: created.id,
+        lessonSnapshot: createdSnapshot,
+      })
       setSelectedLesson((prev) =>
         prev
           ? {
@@ -400,7 +560,7 @@ export default function LessonEditorComplete() {
 
   const deleteSelectedLesson = async () => {
     if (!selectedLesson) return
-    const lessonToDelete = selectedLesson
+    const lessonToDelete: Lesson = JSON.parse(JSON.stringify(selectedLesson))
     const confirmed = window.confirm(
       `Delete lesson #${lessonToDelete.order} "${lessonToDelete.title}"?\n\nThis action cannot be undone.`
     )
@@ -415,6 +575,11 @@ export default function LessonEditorComplete() {
         const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
         throw new Error(err.error || 'Failed to delete lesson')
       }
+      pushServerUndo({
+        type: 'delete',
+        lessonId: lessonToDelete.id,
+        lessonSnapshot: lessonToDelete,
+      })
 
       const updatedLessons = await fetchLessons()
       if (!updatedLessons.length) {
@@ -1205,20 +1370,26 @@ export default function LessonEditorComplete() {
                   <div className="border-l h-8 mx-2"></div>
                   
                   <button
-                    onClick={undo}
-                    disabled={undoStack.length === 0}
+                    onClick={() => void undoAction()}
+                    disabled={isUndoRedoBusy || (undoStack.length === 0 && serverUndoStack.length === 0)}
                     className="border border-stone-300 text-stone-700 px-3 py-2 rounded hover:bg-stone-100 disabled:opacity-30 text-sm"
                     title="Undo (Ctrl+Z)"
                   >
-                    ↩ Undo{undoStack.length > 0 ? ` (${undoStack.length})` : ''}
+                    ↩ Undo
+                    {undoStack.length + serverUndoStack.length > 0
+                      ? ` (${undoStack.length + serverUndoStack.length})`
+                      : ''}
                   </button>
                   <button
-                    onClick={redo}
-                    disabled={redoStack.length === 0}
+                    onClick={() => void redoAction()}
+                    disabled={isUndoRedoBusy || (redoStack.length === 0 && serverRedoStack.length === 0)}
                     className="border border-stone-300 text-stone-700 px-3 py-2 rounded hover:bg-stone-100 disabled:opacity-30 text-sm"
                     title="Redo (Ctrl+Shift+Z)"
                   >
-                    ↪ Redo{redoStack.length > 0 ? ` (${redoStack.length})` : ''}
+                    ↪ Redo
+                    {redoStack.length + serverRedoStack.length > 0
+                      ? ` (${redoStack.length + serverRedoStack.length})`
+                      : ''}
                   </button>
                   <button onClick={saveLesson} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
                     💾 Сохранить
