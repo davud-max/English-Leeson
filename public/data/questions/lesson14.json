@@ -1,40 +1,40 @@
 {
   "lessonId": 14,
-  "lessonTitle": "How Consciousness Creates the World",
-  "generatedAt": "2026-02-22T15:44:54.515Z",
+  "lessonTitle": " LADDERS OF THE WORLD: COMPARATIVE ANALYSIS",
+  "generatedAt": "2026-02-28T23:08:12.317Z",
   "questions": [
     {
       "id": 1,
-      "question": "What does the circle enclose and exclude according to the lesson?",
-      "correct_answer": "The circle encloses and excludes simultaneously - it defines what is inside by virtue of what is outside, and vice versa.",
+      "question": "What three stages of development were mentioned in previous lessons that appear across different mystical traditions?",
+      "correct_answer": "Beast → human → God. This represents the ascent of consciousness from undifferentiation to unity.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What are the four steps of the Algorithm of Distinction?",
-      "correct_answer": "1. Make a distinction, 2. Observe the distinction, 3. See the observer, 4. Repeat.",
+      "question": "In Sufism, what is the difference between 'maqam' and 'hal'?",
+      "correct_answer": "Maqam is a stage that a person reaches through their own effort and work. Hal is a state that is given as a gift, like sudden illumination or ecstasy.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "According to the lesson, what are inside and outside in relation to each other?",
-      "correct_answer": "Inside and outside are correlatives - neither can exist without the other.",
+      "question": "What are the three key stages in Buddhism that lead to samadhi?",
+      "correct_answer": "Dharana (concentration of mind on one object), Dhyana (contemplation where mind remains in object naturally), and Samadhi (complete absorption where duality disappears).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What does the lesson say transcendence is?",
-      "correct_answer": "Transcendence is collapse - when we reach a meta-level of observation, distinctions made at lower levels dissolve or reorganize.",
+      "question": "According to the lesson, what is Teresa of Ávila's 'Interior Castle' and how does it relate to spiritual development?",
+      "correct_answer": "The Interior Castle represents the human soul as a castle with many rooms. To reach the center where God dwells, one must pass through seven mansions, with each step being purification and approaching unity.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "What is the secret of the circle described as being ultimately?",
-      "correct_answer": "The secret of the circle is the path back to unity - the achieved unity that preserves and transcends all distinctions, and the dynamic process of creative return.",
+      "question": "What is the main difference in emphasis between Christianity, Buddhism, and Islam regarding the highest stage of spiritual development?",
+      "correct_answer": "Christianity emphasizes relationships and meeting of 'I' and 'Thou'. Buddhism focuses on overcoming the illusion of separate 'I'. Islam emphasizes love and dissolution (fana) of ego in God.",
       "difficulty": "easy",
       "points": 5
     }
