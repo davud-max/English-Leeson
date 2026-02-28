@@ -122,6 +122,9 @@ export async function GET(
       );
     }
 
+    const forceLegacyOrders = new Set([14]);
+    const shouldForceLegacy = forceLegacyOrders.has(orderNum);
+
     // If DB lesson is missing or does not contain usable slide/content data, use legacy fallback.
     const hasValidDbSlides = Array.isArray(lesson?.slides) && lesson!.slides.length > 0;
     const hasValidDbContent = Boolean(lesson?.content && lesson.content.trim().length > 0);
@@ -133,9 +136,9 @@ export async function GET(
         }
       : null;
 
-    if (!lessonWithSlides && legacyLesson) {
+    if ((!lessonWithSlides || shouldForceLegacy) && legacyLesson) {
       lessonWithSlides = {
-        id: `legacy-${orderNum}`,
+        id: lesson?.id || `legacy-${orderNum}`,
         order: legacyLesson.order,
         title: legacyLesson.title,
         description: legacyLesson.slides[0]?.content.slice(0, 160) || `Lesson ${orderNum}`,
