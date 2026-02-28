@@ -778,7 +778,6 @@ export default function LessonEditorComplete() {
       const mergedLesson = { ...selectedLesson, slides: updatedSlides }
       setSelectedLesson(mergedLesson)
       setFocusTarget({ slideIndex: index - 1, position: previousEndPosition })
-      void regenerateSlideAudio(index - 1, mergedLesson)
       return
     }
 

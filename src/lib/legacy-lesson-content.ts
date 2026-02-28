@@ -276,48 +276,48 @@ export const LEGACY_LESSON_CONTENT: Record<number, LegacyLessonContent> = {
   },
   "14": {
     "order": 14,
-    "title": "The Secret of the Circle",
+    "title": "How Consciousness Creates the World",
     "slides": [
       {
         "id": 1,
-        "title": "The Secret of the Circle",
-        "content": "In our journey through the thinking course, we have explored the fundamental principles that govern thought itself. We began with the concept of distinction and the circle, moved through the levels of thought, and examined the relationship between consciousness and the thinking process.\n\nNow we arrive at the secret of the circle — a profound revelation that ties together all the threads of our investigation. The circle, as we have seen, is not merely a geometric figure but a representation of the fundamental act of distinction that gives rise to all thought and reality.\n\n> **The circle encloses and excludes simultaneously** — it defines what is inside by virtue of what is outside, and vice versa. This is the essence of all categorical thinking.",
-        "emoji": "⭕",
+        "title": "The Primacy of Consciousness",
+        "content": "What comes first: the world or awareness of the world?\n\nPhilosophically, neither exists meaningfully without the other. The world appears only where distinction appears.\n\n> Consciousness is not a passive mirror. It is an active power of distinction.",
+        "emoji": "🧠",
         "duration": 28000
       },
       {
         "id": 2,
-        "title": "The Closed Loop",
-        "content": "The secret of the circle lies in understanding that it creates a closed loop of reference. When we draw a distinction, we create two sides: an inside and an outside. But these are not independent — they define each other.\n\n**Inside and outside are correlatives** — neither can exist without the other. The boundary is the point where this correlation becomes explicit.\n\nThis closed loop structure appears everywhere:\n- In logic: the law of excluded middle (A or not-A)\n- In consciousness: self-awareness requires distinguishing self from other\n- In language: meaning emerges through oppositions (signifiers and signified)\n- In mathematics: recursive functions and self-referential structures",
-        "emoji": "🔄",
+        "title": "The Act of Primary Distinction",
+        "content": "Before any knowledge, three moments arise together:\n1. There is something to be known (Being)\n2. There is someone who knows (Consciousness)\n3. There is difference between them (Distinction)\n\nWithout this first distinction, no world can be described.",
+        "emoji": "⚡",
         "duration": 32000
       },
       {
         "id": 3,
-        "title": "Self-Reference and Paradox",
-        "content": "The circle naturally leads to self-reference — the ability of a system to refer to itself. This is where paradoxes emerge, but also where creative breakthrough occurs.\n\nConsider Russell's paradox in set theory, or Gödel's incompleteness theorems — they arise from self-reference within formal systems. But far from being mere curiosities, these paradoxes reveal the limitations of formal systems and point to the creative power of transcendence.\n\n**The circle turns back on itself**, creating the possibility for:\n- Self-awareness in consciousness\n- Self-modification in systems\n- Self-transcendence in thinking\n\n> The secret of the circle is that it is not a static boundary but a dynamic process of self-creation.",
-        "emoji": "☯️",
+        "title": "The Fundamental Triad",
+        "content": "**Being** is that which is.\n**Consciousness** is that which knows.\n**Distinction** is that which separates knower and known.\n\nThese are not separate stages. They emerge together as one living act.",
+        "emoji": "🔺",
         "duration": 30000
       },
       {
         "id": 4,
-        "title": "The Algorithm of Distinction",
-        "content": "What if we could distill the secret of the circle into an algorithm? An algorithm for thinking that captures the essential process of distinction?\n\n**The Algorithm of Distinction:**\n1. Make a distinction\n2. Observe the distinction\n3. See the observer\n4. Repeat\n\nThis simple algorithm generates the entire structure of consciousness and thought. Each iteration creates new levels of awareness and new possibilities for distinction.\n\nThe power of this algorithm lies not in its complexity but in its recursive simplicity — it generates infinite complexity from a single operation applied repeatedly.",
-        "emoji": "🧮",
+        "title": "Creating Through Distinguishing",
+        "content": "Consciousness creates by distinguishing:\n- this, not that\n- here, not there\n- now, not then\n\nEach distinction structures reality. The world is not only found; it is formed.",
+        "emoji": "🛠️",
         "duration": 32000
       },
       {
         "id": 5,
-        "title": "Levels and Transcendence",
-        "content": "The circle creates levels — inside, outside, and boundary. But more than that, it enables transcendence of levels.\n\n**Transcendence is collapse** — when we reach a meta-level of observation, we often find that distinctions we made at lower levels dissolve or reorganize.\n\nLevels in thinking:\n- **Level 1**: Making distinctions\n- **Level 2**: Observing distinctions\n- **Level 3**: Seeing the process of distinction itself\n- **Level 4**: Recognizing the circular nature of distinction\n- **Level 5**: Transcending the need for fixed distinctions\n\nAt the highest level, the circle opens into a spiral of continuous creation.",
-        "emoji": "🌀",
+        "title": "The World as a Structure of Distinctions",
+        "content": "What we call \"the world\" is the sum of distinctions made by consciousness.\n\nDifferent consciousness, different distinctions, different worlds.\n\nReality is dynamic because distinction is dynamic.",
+        "emoji": "🌍",
         "duration": 28000
       },
       {
         "id": 6,
-        "title": "The Return to Unity",
-        "content": "The secret of the circle ultimately reveals itself as the path back to unity — not the primitive unity before distinction, but the achieved unity that preserves and transcends all distinctions.\n\n**The circle is a path home** — it takes us from undifferentiated unity through the full differentiation of all possible distinctions and back to a higher unity that embraces and transcends all differences.\n\nThis is the secret: the circle is not about separation but about the dynamic process of creative return. It is the shape of thought itself — always moving, always distinguishing, always returning to itself in ever-deepening circles of awareness.\n\n*The secret of the circle is that there is no final secret — only the eternal circulation of thought returning to itself enriched by its journey.*",
-        "emoji": "🎯",
+        "title": "Implication for Practice",
+        "content": "Change distinctions, and your world changes.\n\nAttention is creative: where consciousness draws boundaries, meaning appears.\n\n> You do not only discover the world. You participate in creating it through acts of distinction.",
+        "emoji": "✨",
         "duration": 34000
       }
     ]
