@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import { getFreeLessons } from '@/lib/free-lessons';
 
 export const dynamic = 'force-dynamic';
+const MAX_PUBLIC_LESSON_ORDER = 20;
 
 // GET /api/lessons - получить список всех опубликованных уроков
 export async function GET() {
@@ -25,7 +26,7 @@ export async function GET() {
     
     if (!session && !devBypassAuth) {
       const lessons = await prisma.lesson.findMany({
-        where: { published: true },
+        where: { published: true, order: { lte: MAX_PUBLIC_LESSON_ORDER } },
         select: {
           id: true, order: true, title: true, description: true,
           duration: true, emoji: true, color: true, available: true,
@@ -47,6 +48,7 @@ export async function GET() {
       const lessons = await prisma.lesson.findMany({
         where: {
           published: true,
+          order: { lte: MAX_PUBLIC_LESSON_ORDER },
         },
         select: {
           id: true,
@@ -84,6 +86,7 @@ export async function GET() {
     const lessons = await prisma.lesson.findMany({
       where: {
         published: true,
+        order: { lte: MAX_PUBLIC_LESSON_ORDER },
       },
       select: {
         id: true,

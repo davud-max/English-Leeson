@@ -684,16 +684,18 @@ export default function LessonEditorComplete() {
   const addSlide = () => {
     if (!selectedLesson) return
     pushUndo()
+    const existingSlides = [...(selectedLesson.slides || [])]
     const newSlide: Slide = {
-      id: (selectedLesson.slides?.length || 0) + 1,
-      title: `Part ${(selectedLesson.slides?.length || 0) + 1}`,
+      id: existingSlides.length + 1,
+      title: `Part ${existingSlides.length + 1}`,
       content: '',
       emoji: '📖',
       duration: 30000,
     }
     setSelectedLesson({
       ...selectedLesson,
-      slides: [...(selectedLesson.slides || []), newSlide]
+      // New structural change invalidates index-based audio after insertion point.
+      slides: [...existingSlides.map((s) => ({ ...s, audioUrl: undefined })), newSlide]
     })
   }
 
@@ -701,7 +703,12 @@ export default function LessonEditorComplete() {
     if (!selectedLesson) return
     captureUndoForKey(`slide-${index}-${field}`)
     const updatedSlides = [...(selectedLesson.slides || [])]
-    updatedSlides[index] = { ...updatedSlides[index], [field]: value }
+    const nextSlide = { ...updatedSlides[index], [field]: value }
+    if (field === 'content') {
+      // Content changed -> old audio is no longer valid for this slide.
+      nextSlide.audioUrl = undefined
+    }
+    updatedSlides[index] = nextSlide
     setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
   }
 
@@ -712,6 +719,8 @@ export default function LessonEditorComplete() {
     updatedSlides.splice(index, 1)
     updatedSlides.forEach((slide, i) => {
       slide.id = i + 1
+      // Any delete shifts slide indices: invalidate audio to prevent cross-slide mismatch.
+      slide.audioUrl = undefined
     })
     setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
   }
@@ -727,6 +736,7 @@ export default function LessonEditorComplete() {
       content: paragraph.trim(),
       emoji: '📖',
       duration: 30000,
+      audioUrl: undefined,
     }))
   }
 
@@ -766,6 +776,8 @@ export default function LessonEditorComplete() {
       const mergedSlide: Slide = {
         ...previous,
         content: `${previous.content}${separator}${current.content}`,
+        // Merged content differs from both source audios.
+        audioUrl: undefined,
       }
 
       const updatedSlides = [...slides]
@@ -773,6 +785,9 @@ export default function LessonEditorComplete() {
       updatedSlides.splice(index, 1)
       updatedSlides.forEach((slide, i) => {
         slide.id = i + 1
+        if (i >= index - 1) {
+          slide.audioUrl = undefined
+        }
       })
 
       const mergedLesson = { ...selectedLesson, slides: updatedSlides }
@@ -793,6 +808,7 @@ export default function LessonEditorComplete() {
       updatedSlides[index] = {
         ...current,
         content: before,
+        audioUrl: undefined,
       }
 
       const newSlide: Slide = {
@@ -806,6 +822,9 @@ export default function LessonEditorComplete() {
       updatedSlides.splice(index + 1, 0, newSlide)
       updatedSlides.forEach((slide, i) => {
         slide.id = i + 1
+        if (i >= index) {
+          slide.audioUrl = undefined
+        }
       })
 
       setSelectedLesson({ ...selectedLesson, slides: updatedSlides })
@@ -1593,7 +1612,7 @@ export default function LessonEditorComplete() {
                               <audio
                                 controls
                                 key={slide.audioUrl || `slide-${index}`}
-                                src={slide.audioUrl || `/audio/lesson${selectedLesson.order}/slide${index + 1}.mp3`}
+                                src={slide.audioUrl || `/audio/lesson-${selectedLesson.id}/slide${index + 1}.mp3`}
                                 className="w-full h-8 mt-3"
                               />
                             </div>

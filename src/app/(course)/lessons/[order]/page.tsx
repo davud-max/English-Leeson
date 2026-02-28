@@ -153,16 +153,31 @@ export default function DynamicLessonPage() {
 
   const getAudioCandidates = useCallback((slideIndex: number): string[] => {
     const slideAudioUrl = slides[slideIndex]?.audioUrl || null
+    const stableAudioUrl = lesson?.id
+      ? `/audio/lesson-${lesson.id}/slide${slideIndex + 1}.mp3`
+      : null
 
-    // Always use order-based folders to avoid stale slide-level mappings.
-    const candidates = [
-      slideAudioUrl,
-      `/audio/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`,
-      `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`,
-    ].filter((item): item is string => Boolean(item))
+    const candidates: string[] = []
+    const push = (value?: string | null) => {
+      if (!value) return
+      const trimmed = value.trim()
+      if (!trimmed) return
+      if (!candidates.includes(trimmed)) candidates.push(trimmed)
+    }
 
-    return Array.from(new Set(candidates))
-  }, [lessonOrder, slides])
+    push(slideAudioUrl)
+    push(stableAudioUrl)
+
+    // Raw fallback for GitHub-hosted audio.
+    const toRaw = (url: string): string | null => {
+      if (!url.startsWith('/audio/')) return null
+      return `${RAW_AUDIO_BASE}${url.replace(/^\/audio/, '')}`
+    }
+    push(slideAudioUrl ? toRaw(slideAudioUrl) : null)
+    push(stableAudioUrl ? toRaw(stableAudioUrl) : null)
+
+    return candidates
+  }, [lesson?.id, slides])
 
   const playSlide = useCallback((slideIndex: number, candidateIndex = 0) => {
     const totalSlides = slides.length

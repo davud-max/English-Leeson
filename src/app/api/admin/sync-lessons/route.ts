@@ -23,11 +23,6 @@ const LESSONS_DATA = [
   { order: 18, title: '🔄 Cycles of Understanding', description: 'How knowledge spirals upward.', duration: 25, emoji: '🔄', color: 'from-rose-500 to-pink-600', available: true },
   { order: 19, title: '🌊 Waves of Consciousness', description: 'The rhythm of thought.', duration: 25, emoji: '🌊', color: 'from-sky-500 to-cyan-600', available: true },
   { order: 20, title: '⚡ The Spark of Insight', description: 'Moments of clarity.', duration: 25, emoji: '⚡', color: 'from-yellow-500 to-orange-600', available: true },
-  { order: 21, title: '👁️ Observation, Terms and Counting', description: 'The foundation of knowledge.', duration: 25, emoji: '👁️', color: 'from-emerald-500 to-green-600', available: true },
-  { order: 22, title: '📖 Formulas, Abstraction and Rules', description: 'Advanced concepts in abstraction.', duration: 25, emoji: '📖', color: 'from-blue-500 to-indigo-600', available: true },
-  { order: 23, title: '📖 Human Activity, Law and Civilization', description: 'The structure of human society.', duration: 25, emoji: '📖', color: 'from-purple-500 to-violet-600', available: true },
-  { order: 24, title: '📖 The Birth of Money and Banks', description: 'Economic foundations of civilization.', duration: 25, emoji: '📖', color: 'from-amber-500 to-yellow-600', available: true },
-  { order: 25, title: '📖 Lesson 25', description: 'Advanced topics.', duration: 25, emoji: '📖', color: 'from-teal-500 to-cyan-600', available: true },
 ];
 
 // POST - Полная синхронизация уроков
@@ -49,6 +44,14 @@ export async function POST() {
 
     let created = 0;
     let updated = 0;
+    const MAX_ORDER = 20;
+
+    // Remove lessons beyond the current program boundary.
+    const removed = await prisma.lesson.deleteMany({
+      where: {
+        order: { gt: MAX_ORDER },
+      },
+    });
 
     for (const lessonData of LESSONS_DATA) {
       // Проверяем существует ли урок
@@ -93,7 +96,8 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: `Synced! Created: ${created}, Updated: ${updated}. Total: ${total}`,
+      message: `Synced! Removed >${MAX_ORDER}: ${removed.count}, Created: ${created}, Updated: ${updated}. Total: ${total}`,
+      removed: removed.count,
       created,
       updated,
       total,
@@ -110,7 +114,9 @@ export async function POST() {
 // GET - Проверка статуса
 export async function GET() {
   try {
+    const MAX_ORDER = 20;
     const lessons = await prisma.lesson.findMany({
+      where: { order: { lte: MAX_ORDER } },
       select: { order: true, title: true, emoji: true, color: true, available: true },
       orderBy: { order: 'asc' },
     });
@@ -122,7 +128,7 @@ export async function GET() {
       total,
       available,
       expected: LESSONS_DATA.length,
-      missing: LESSONS_DATA.length - total,
+      missing: Math.max(0, LESSONS_DATA.length - total),
       lessons: lessons.map(l => ({
         order: l.order,
         title: l.title,

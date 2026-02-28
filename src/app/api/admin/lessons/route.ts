@@ -2,11 +2,15 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
+const MAX_PUBLIC_LESSON_ORDER = 20;
 
 // GET /api/admin/lessons - получить список всех уроков
 export async function GET() {
   try {
     const lessons = await prisma.lesson.findMany({
+      where: {
+        order: { lte: MAX_PUBLIC_LESSON_ORDER },
+      },
       select: {
         id: true,
         order: true,
@@ -78,15 +82,21 @@ export async function POST(request: Request) {
       _max: { order: true },
     });
     const maxValue = maxOrder._max.order || 0;
+    if (maxValue >= MAX_PUBLIC_LESSON_ORDER) {
+      return NextResponse.json(
+        { error: `Maximum lessons reached (${MAX_PUBLIC_LESSON_ORDER})` },
+        { status: 400 }
+      );
+    }
     const requestedOrder = Number(body.order) || maxValue + 1;
-    const normalizedOrder = Math.max(1, Math.min(requestedOrder, maxValue + 1));
+    const normalizedOrder = Math.max(1, Math.min(requestedOrder, maxValue + 1, MAX_PUBLIC_LESSON_ORDER));
 
     const lesson = await prisma.$transaction(async (tx) => {
       // Shift lessons down (descending) to avoid unique(order) collisions.
       const lessonsToShift = await tx.lesson.findMany({
         where: {
           courseId: course.id,
-          order: { gte: normalizedOrder },
+          order: { gte: normalizedOrder, lte: MAX_PUBLIC_LESSON_ORDER },
         },
         select: { id: true, order: true },
         orderBy: { order: 'desc' },

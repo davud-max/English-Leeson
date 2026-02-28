@@ -58,7 +58,13 @@ export async function PUT(
     if (body.emoji !== undefined) updateData.emoji = body.emoji;
     if (body.color !== undefined) updateData.color = body.color;
     if (body.available !== undefined) updateData.available = body.available;
-    if (body.slides !== undefined) updateData.slides = body.slides;
+    const currentSlides = Array.isArray(currentLesson.slides) ? (currentLesson.slides as any[]) : [];
+    let firstAudioInvalidateIndex: number | null = null;
+    if (body.slides !== undefined && Array.isArray(body.slides)) {
+      const normalizedSlides = normalizeSlidesForStorage(body.slides);
+      updateData.slides = normalizedSlides;
+      firstAudioInvalidateIndex = findFirstChangedSlideIndex(currentSlides, normalizedSlides);
+    }
 
     let lesson;
     const requestedOrder =
@@ -107,29 +113,6 @@ export async function PUT(
         _max: { order: true },
       });
       const targetOrder = Math.max(1, Math.min(requestedOrder, maxOrder._max.order || currentLesson.order));
-
-      // Preserve audio mapping by copying legacy order-based audio into stable id-based folders
-      // for all lessons that will be shifted.
-      const rangeFilter =
-        targetOrder > currentLesson.order
-          ? { gt: currentLesson.order, lte: targetOrder }
-          : { gte: targetOrder, lt: currentLesson.order };
-
-      const affectedNeighbors =
-        targetOrder === currentLesson.order
-          ? []
-          : await prisma.lesson.findMany({
-              where: {
-                courseId: currentLesson.courseId,
-                order: rangeFilter,
-              },
-              select: { id: true, order: true },
-            });
-
-      await ensureStableAudioForLessons([
-        { id: currentLesson.id, order: currentLesson.order },
-        ...affectedNeighbors,
-      ]);
 
       lesson = await prisma.$transaction(async (tx) => {
         // Free current slot.
@@ -241,6 +224,14 @@ export async function PUT(
       });
     }
 
+    if (firstAudioInvalidateIndex !== null && firstAudioInvalidateIndex >= 0) {
+      try {
+        await deleteStableAudioFromIndex(currentLesson.id, firstAudioInvalidateIndex + 1);
+      } catch (e) {
+        console.warn('Failed to invalidate stale lesson audio:', (e as Error).message);
+      }
+    }
+
     return NextResponse.json(lesson);
   } catch (error) {
     console.error('Error updating lesson:', error);
@@ -251,32 +242,35 @@ export async function PUT(
   }
 }
 
-type LessonRef = { id: string; order: number };
+function normalizeSlidesForStorage(slides: any[]): any[] {
+  return slides.map((raw, index) => {
+    const base = raw && typeof raw === 'object' ? raw : {};
+    return {
+      ...base,
+      id: index + 1,
+      title: typeof base.title === 'string' ? base.title : `Part ${index + 1}`,
+      content: typeof base.content === 'string' ? base.content : '',
+      emoji: typeof base.emoji === 'string' ? base.emoji : '📖',
+      duration: typeof base.duration === 'number' ? base.duration : 30000,
+      audioUrl: typeof base.audioUrl === 'string' && base.audioUrl.trim().length > 0 ? base.audioUrl.trim() : undefined,
+    };
+  });
+}
 
-async function ensureStableAudioForLessons(lessons: LessonRef[]) {
-  if (!lessons.length) return;
-  if (!GITHUB_TOKEN) return;
+function normalizedContent(slide: any): string {
+  const text = slide && typeof slide.content === 'string' ? slide.content : '';
+  return text.replace(/\s+/g, ' ').trim();
+}
 
-  for (const lesson of lessons) {
-    const stableFolder = `lesson-${lesson.id}`;
-    const legacyFolder = `lesson${lesson.order}`;
-
-    const stableFiles = await listFolderEntries(stableFolder);
-    if (stableFiles.length > 0) continue;
-
-    const legacyFiles = await listFolderEntries(legacyFolder);
-    const slideFiles = legacyFiles.filter((f) => f.type === 'file' && /^slide\d+\.mp3$/.test(f.name));
-    if (!slideFiles.length) continue;
-
-    for (const file of slideFiles) {
-      const sourcePath = `public/audio/${legacyFolder}/${file.name}`;
-      const targetPath = `public/audio/${stableFolder}/${file.name}`;
-      const contentBase64 = await readFileBase64(sourcePath);
-      if (!contentBase64) continue;
-      await uploadBase64(targetPath, contentBase64, `Migrate stable audio for lesson ${lesson.id}`);
-      await new Promise((resolve) => setTimeout(resolve, 120));
-    }
+function findFirstChangedSlideIndex(currentSlides: any[], nextSlides: any[]): number | null {
+  const maxLen = Math.max(currentSlides.length, nextSlides.length);
+  for (let i = 0; i < maxLen; i++) {
+    const cur = currentSlides[i];
+    const nxt = nextSlides[i];
+    if (!cur || !nxt) return i;
+    if (normalizedContent(cur) !== normalizedContent(nxt)) return i;
   }
+  return null;
 }
 
 async function listFolderEntries(folder: string): Promise<Array<{ name: string; type: string }>> {
@@ -294,23 +288,24 @@ async function listFolderEntries(folder: string): Promise<Array<{ name: string; 
   return Array.isArray(data) ? data : [];
 }
 
-async function readFileBase64(path: string): Promise<string | null> {
-  const res = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,
-    {
-      headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
-        Accept: 'application/vnd.github.v3+json',
-      },
-    }
-  );
-  if (!res.ok) return null;
-  const data = await res.json();
-  return typeof data.content === 'string' ? data.content.replace(/\n/g, '') : null;
+async function deleteStableAudioFromIndex(lessonId: string, fromSlideNumber: number) {
+  if (!GITHUB_TOKEN) return;
+  const folder = `lesson-${lessonId}`;
+  const entries = await listFolderEntries(folder);
+  const deletable = entries.filter((entry) => {
+    if (entry.type !== 'file') return false;
+    const match = entry.name.match(/^slide(\d+)\.mp3$/);
+    if (!match) return false;
+    return Number(match[1]) >= fromSlideNumber;
+  });
+
+  for (const file of deletable) {
+    await deleteFileByPath(`public/audio/${folder}/${file.name}`);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
 }
 
-async function uploadBase64(path: string, contentBase64: string, message: string) {
-  let existingSha: string | undefined;
+async function deleteFileByPath(path: string) {
   const existing = await fetch(
     `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,
     {
@@ -320,30 +315,29 @@ async function uploadBase64(path: string, contentBase64: string, message: string
       },
     }
   );
-  if (existing.ok) {
-    const data = await existing.json();
-    existingSha = data.sha;
-  }
+  if (!existing.ok) return;
 
-  const body: Record<string, string> = {
-    message,
-    content: contentBase64,
-    branch: GITHUB_BRANCH,
-  };
-  if (existingSha) body.sha = existingSha;
+  const data = await existing.json();
+  const sha = data?.sha;
+  if (!sha) return;
 
-  const putRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
-    method: 'PUT',
+  const del = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+    method: 'DELETE',
     headers: {
       Authorization: `Bearer ${GITHUB_TOKEN}`,
       Accept: 'application/vnd.github.v3+json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      message: `Invalidate stale audio ${path}`,
+      sha,
+      branch: GITHUB_BRANCH,
+    }),
   });
-  if (!putRes.ok) {
-    const txt = await putRes.text();
-    throw new Error(`Audio migration upload failed: ${putRes.status} ${txt}`);
+
+  if (!del.ok) {
+    const txt = await del.text();
+    throw new Error(`Failed to delete ${path}: ${del.status} ${txt}`);
   }
 }
 

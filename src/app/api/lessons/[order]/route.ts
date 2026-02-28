@@ -6,6 +6,7 @@ import { getLegacyLessonContent } from '@/lib/legacy-lesson-content';
 import { getFreeLessons } from '@/lib/free-lessons';
 
 export const dynamic = 'force-dynamic';
+const MAX_PUBLIC_LESSON_ORDER = 20;
 
 // Статический конфиг количества слайдов (из /public/data/slides-config.json)
 const SLIDES_CONFIG: Record<number, number> = {
@@ -28,14 +29,7 @@ const SLIDES_CONFIG: Record<number, number> = {
   17: 32,
   18: 27,
   19: 31,
-  20: 18,
-  21: 19,
-  22: 26,
-  23: 19,
-  24: 15,
-  25: 26,
-  26: 23,
-  27: 25
+  20: 18
 };
 
 // GET /api/lessons/[order] - получить урок по номеру
@@ -61,6 +55,13 @@ export async function GET(
       return NextResponse.json(
         { error: 'Invalid lesson number' },
         { status: 400 }
+      );
+    }
+
+    if (orderNum < 1 || orderNum > MAX_PUBLIC_LESSON_ORDER) {
+      return NextResponse.json(
+        { error: 'Lesson not found' },
+        { status: 404 }
       );
     }
     
@@ -168,23 +169,25 @@ export async function GET(
       }
     }
 
-    // For lesson 14, force order-based audio to preserve the author-approved voice track.
-    const forceOrderAudioOrders = new Set([14]);
-    const shouldForceOrderAudio = forceOrderAudioOrders.has(orderNum);
-
-    // Default mapping keeps stable lesson-id audio links for reordered lessons.
+    // Use audioUrl from DB slides as-is (set by admin editor or SQL migration).
+    // Only fill in missing audioUrl with stable lesson-id based paths.
     if (lessonWithSlides && Array.isArray(lessonWithSlides.slides)) {
+      const cacheBust = Date.now();
+
       lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => {
         const safeSlide = slide && typeof slide === 'object' ? slide : {};
+        // If slide already has audioUrl from DB, keep it
+        if (safeSlide.audioUrl && typeof safeSlide.audioUrl === 'string' && safeSlide.audioUrl.trim()) {
+          return safeSlide;
+        }
+        // Otherwise use stable lesson-id path
         const stableAudioUrl =
           lesson?.id
-            ? `/audio/lesson-${lesson.id}/slide${index + 1}.mp3`
-            : null;
-        const orderAudioUrl = `/audio/lesson${orderNum}/slide${index + 1}.mp3`;
-
+            ? `/audio/lesson-${lesson.id}/slide${index + 1}.mp3?v=${cacheBust}`
+            : `/audio/lesson${orderNum}/slide${index + 1}.mp3?v=${cacheBust}`;
         return {
           ...safeSlide,
-          audioUrl: shouldForceOrderAudio ? orderAudioUrl : (stableAudioUrl || orderAudioUrl),
+          audioUrl: stableAudioUrl,
         };
       });
     }
@@ -205,7 +208,7 @@ export async function GET(
 
     // Получаем общее количество уроков
     const totalLessons = await prisma.lesson.count({
-      where: { published: true },
+      where: { published: true, order: { lte: MAX_PUBLIC_LESSON_ORDER } },
     });
 
     return NextResponse.json({
