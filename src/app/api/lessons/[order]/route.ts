@@ -6,7 +6,7 @@ import { getLegacyLessonContent } from '@/lib/legacy-lesson-content';
 import { getFreeLessons } from '@/lib/free-lessons';
 
 export const dynamic = 'force-dynamic';
-const MAX_PUBLIC_LESSON_ORDER = 20;
+const MAX_PUBLIC_LESSON_ORDER = 21;
 
 // Статический конфиг количества слайдов (из /public/data/slides-config.json)
 const SLIDES_CONFIG: Record<number, number> = {
@@ -29,7 +29,8 @@ const SLIDES_CONFIG: Record<number, number> = {
   17: 32,
   18: 27,
   19: 31,
-  20: 18
+  20: 10,
+  21: 18
 };
 
 // GET /api/lessons/[order] - получить урок по номеру
