@@ -211,7 +211,7 @@ export default function HomePage() {
             </h2>
             <div className="mt-8 space-y-4 text-base text-stone-400 max-w-2xl">
               <p>A living sense of how terms, numbers, and formulas are born.</p>
-              <p>A map of the mind's levels — from instinct to insight.</p>
+              <p>A map of the mind&apos;s levels — from instinct to insight.</p>
               <p>A way to read sacred texts as mirrors of consciousness.</p>
               <p>A quiet understanding of what &ldquo;enlightenment&rdquo; might actually mean.</p>
               <p className="text-stone-300">And maybe — just maybe — a different relationship with yourself.</p>
