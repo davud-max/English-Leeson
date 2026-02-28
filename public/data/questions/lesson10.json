@@ -1,40 +1,40 @@
 {
   "lessonId": 10,
-  "lessonTitle": "Theory of Cognitive Resonance 2",
-  "generatedAt": "2026-02-22T09:23:54.351Z",
+  "lessonTitle": "WATER IN WORLD TRADITIONS",
+  "generatedAt": "2026-02-28T22:14:03.517Z",
   "questions": [
     {
       "id": 1,
-      "question": "According to the lesson, what is the main problem with the idea that 'I' choose my thoughts?",
-      "correct_answer": "The 'I' that should choose the thought is itself a product of the thought process, creating a closed circle.",
+      "question": "According to the lesson, what does water represent in most creation myths around the world?",
+      "correct_answer": "Water represents the primordial undifferentiated foundation that existed before everything else was created.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "In the radio receiver model of consciousness, what happens when cognitive resonance occurs?",
-      "correct_answer": "The signal of that thought is sharply amplified while all others are filtered out, like when a radio receiver's frequency matches a station's frequency.",
+      "question": "In Hindu cosmology, what is Karana-jala?",
+      "correct_answer": "Karana-jala is the 'causal ocean' - a boundless aquatic space in which Mahavishnu rests, and from his breathing, universes arise.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What is knowledge according to this lesson?",
-      "correct_answer": "Knowledge is an abstraction connected with a sign.",
+      "question": "What are the four common characteristics of water found across different creation traditions?",
+      "correct_answer": "Water appears as: 1) primordial foundation, 2) bearer of life, 3) bearer of wisdom, and 4) boundary between worlds.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "According to the author, what does it mean to remember something?",
-      "correct_answer": "To remember means to tune your heterodyne to the frequency of the preserved pattern and obtain resonance.",
+      "question": "In the ancient Chinese text 'Taiyi sheng shui,' how does water participate in creation?",
+      "correct_answer": "Water is not simply created but co-creates - it returns to the Great Unity and assists it in forming heaven and earth.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "What does the author say is the proper way to teach thinking?",
-      "correct_answer": "To teach thinking means training the process of tuning by developing abilities to distinguish, compare, abstract, and creating conditions for resonance, rather than filling memory with ready-made patterns.",
+      "question": "According to the lesson, what does the universal presence of water in creation myths suggest about human consciousness?",
+      "correct_answer": "It suggests that human consciousness is structured identically everywhere, as independent cultures arrive at the same image of undifferentiated, fluid beginnings.",
       "difficulty": "easy",
       "points": 5
     }
