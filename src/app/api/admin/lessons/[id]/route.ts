@@ -72,41 +72,8 @@ export async function PUT(
     const hasOrderChange = Number.isFinite(requestedOrder) && requestedOrder !== currentLesson.order;
 
     if (hasOrderChange) {
-      // Preserve audio relation on reorder using stable lesson-id folder.
-      // This keeps slide/audio mapping intact regardless of order changes.
-      if (body.slides === undefined && Array.isArray(currentLesson.slides)) {
-        const slidesWithAudioUrl = currentLesson.slides.map((slide: any, index: number) => {
-          const stableAudioUrl = `https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio/lesson-${currentLesson.id}/slide${index + 1}.mp3`;
-
-          if (!slide || typeof slide !== 'object') {
-            return {
-              id: index + 1,
-              title: `Part ${index + 1}`,
-              content: '',
-              emoji: '📖',
-              duration: 30000,
-              audioUrl: stableAudioUrl,
-            };
-          }
-
-          // Keep non-legacy custom urls; rewrite legacy order-based urls to stable lesson-id urls.
-          const existingAudioUrl = typeof slide.audioUrl === 'string' ? slide.audioUrl : '';
-          const isLegacyOrderUrl =
-            /\/audio\/lesson\d+\//.test(existingAudioUrl) ||
-            /\/public\/audio\/lesson\d+\//.test(existingAudioUrl) ||
-            /raw\.githubusercontent\.com\/.*\/public\/audio\/lesson\d+\//.test(existingAudioUrl);
-
-          if (existingAudioUrl && !isLegacyOrderUrl) {
-            return slide;
-          }
-
-          return {
-            ...slide,
-            audioUrl: stableAudioUrl,
-          };
-        });
-        updateData.slides = slidesWithAudioUrl;
-      }
+      // Audio URLs are absolute and stored per-slide. No rewriting needed on reorder.
+      // Each slide keeps its own audioUrl regardless of order changes.
 
       const maxOrder = await prisma.lesson.aggregate({
         where: { courseId: currentLesson.courseId },
