@@ -1,40 +1,40 @@
 {
   "lessonId": 7,
   "lessonTitle": "The Fair and the Coin: The Birth of Money",
-  "generatedAt": "2026-02-17T19:35:30.525Z",
+  "generatedAt": "2026-02-28T21:36:28.579Z",
   "questions": [
     {
       "id": 1,
-      "question": "What did people do for resources in closed patriarchal-communal societies before trade existed?",
-      "correct_answer": "People worked together and ate from a common pot collectively. Private property did not yet exist, and resources were controlled by heads of families, clans, or tribal chiefs.",
+      "question": "In closed patriarchal-communal societies before trade existed, who controlled the main portion of resources?",
+      "correct_answer": "Heads of families, clans, or tribal chiefs controlled the main portion of resources.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "How did seasonal fairs emerge according to the lesson?",
-      "correct_answer": "Seasonal fairs emerged when merchants met at intersections of caravan routes for joint rest stops, where they exchanged goods and information and arranged to meet in the next season.",
+      "question": "What were the first coins created from and why were more durable materials chosen?",
+      "correct_answer": "First coins were created from copper, bronze, silver, or gold because tags made from fragile materials were vulnerable to counterfeiting.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What were the first coins made from and why were they created?",
-      "correct_answer": "The first coins were made from durable materials like copper, bronze, silver, or gold. They were created because the fragility and vulnerability to counterfeiting of leather tags prompted landlords to place their family signs on more durable materials.",
+      "question": "How did seasonal fairs emerge according to the lesson?",
+      "correct_answer": "Seasonal fairs emerged when merchants began meeting at intersections of caravan routes for joint rest stops, where they exchanged goods and information and arranged to meet in the next season.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "How did the treasury system work to ensure coins circulated back to their owners?",
-      "correct_answer": "A special house (treasury) accepted natural payments for daily market stall rental and issued coins in exchange. Special controllers walked through the market daily to collect the coins back, and shops without coins were closed.",
+      "question": "What was the special entrance for buyers called and why did it have this name?",
+      "correct_answer": "The special entrance for buyers was called the 'needle's eye' because of its similarity to the shape of the thread holder on old needles.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "What is the difference between 'good money' and 'bad money' as described in the lesson?",
-      "correct_answer": "Good money refers to coins whose owners more strictly prevented damage or counterfeiting and were trusted more. Bad money refers to coins that were damaged, debased, or counterfeited and were valued less.",
+      "question": "How did the network banking system develop from individual coin owners?",
+      "correct_answer": "Coin owners expanded by renting space in other markets to open branches of their cashier's office (exchange points), which created the network banking system.",
       "difficulty": "easy",
       "points": 5
     }
