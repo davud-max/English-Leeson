@@ -168,8 +168,11 @@ export async function GET(
       }
     }
 
-    // Normalize DB lesson slides to stable lesson-id audio folder so audio stays
-    // attached to the lesson entity even after reorder/insert operations.
+    // For lesson 14, force order-based audio to preserve the author-approved voice track.
+    const forceOrderAudioOrders = new Set([14]);
+    const shouldForceOrderAudio = forceOrderAudioOrders.has(orderNum);
+
+    // Default mapping keeps stable lesson-id audio links for reordered lessons.
     if (lessonWithSlides && Array.isArray(lessonWithSlides.slides)) {
       lessonWithSlides.slides = lessonWithSlides.slides.map((slide: any, index: number) => {
         const safeSlide = slide && typeof slide === 'object' ? slide : {};
@@ -181,7 +184,7 @@ export async function GET(
 
         return {
           ...safeSlide,
-          audioUrl: stableAudioUrl || orderAudioUrl,
+          audioUrl: shouldForceOrderAudio ? orderAudioUrl : (stableAudioUrl || orderAudioUrl),
         };
       });
     }
