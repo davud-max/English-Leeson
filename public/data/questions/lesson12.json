@@ -1,40 +1,40 @@
 {
   "lessonId": 12,
-  "lessonTitle": "Three Steps to Heaven: 666",
-  "generatedAt": "2026-02-22T10:33:46.081Z",
+  "lessonTitle": "LAW AND CIVILIZATION",
+  "generatedAt": "2026-02-28T22:22:43.436Z",
   "questions": [
     {
       "id": 1,
-      "question": "What are the three steps of transcendence mentioned in the lesson?",
-      "correct_answer": "1. Recognition of duality, 2. Unification of opposites, 3. Transcendence of the unified",
+      "question": "What is the definition of society according to the lesson?",
+      "correct_answer": "A group of people united by a common information field.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "According to the lesson, what is the realm of the 'beast' associated with?",
-      "correct_answer": "The realm of the beast is associated with pure, undifferentiated desire and reaction, where each sense operates independently.",
+      "question": "What is law as defined in this lesson?",
+      "correct_answer": "A formal prohibition on the use of violence against a person.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What principle accomplishes the unification of opposites in the second step?",
-      "correct_answer": "Love - not emotion but a structural principle that connects what was separated.",
+      "question": "What three things does violence take away from a person?",
+      "correct_answer": "Freedom (the right to choose), rights (the ability to act), and property (the results of labor).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What is agape and how does it relate to the third step of transcendence?",
-      "correct_answer": "Agape is divine love that bypasses the mediation of the senses entirely and accomplishes the transcendence of the unified.",
+      "question": "What is the difference between defense and violence according to the lesson?",
+      "correct_answer": "Violence is prohibited force against a person, while defense is the application of force against violence, which is allowed.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "How does the lesson describe the circular structure of the three steps?",
-      "correct_answer": "The three steps form a circle that goes from simple unity through duality and unity to complex unity, where the end returns to the beginning but at a higher level.",
+      "question": "What are the four levels of development that humanity passes through, and what defines 'our people' at each level?",
+      "correct_answer": "Level 1 (Family) - only family members; Level 2 (Clan/tribe) - the whole tribe; Level 3 (People/nation) - those who share language and culture; Level 4 (Civil society) - any person who has renounced violence.",
       "difficulty": "easy",
       "points": 5
     }
