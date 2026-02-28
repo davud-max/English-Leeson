@@ -25,26 +25,29 @@ export default function HomePage() {
       .catch(() => setLoading(false))
   }, [])
 
-  const displayLessons = lessons.slice(0, 6)
-  const lessonsCount = lessons.length || 27
+  const lessonsCount = lessons.length || 21
 
   return (
-    <div className="min-h-screen bg-amber-50/40 text-stone-900">
-      <header className="sticky top-0 z-40 border-b border-amber-200 bg-amber-50/90 backdrop-blur">
+    <div className="min-h-screen bg-stone-950 text-stone-200">
+      {/* ── Header ── */}
+      <header className="sticky top-0 z-40 border-b border-stone-800/60 bg-stone-950/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <div className="font-serif text-lg font-semibold tracking-wide text-stone-900">
-            Algorithms of Thinking and Cognition
-          </div>
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="text-2xl" aria-hidden>🪜</span>
+            <span className="font-serif text-lg font-semibold tracking-wide text-amber-100">
+              Mind Ladder
+            </span>
+          </Link>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/login"
-              className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium hover:bg-stone-100"
+              className="rounded-md border border-stone-700 px-3 py-2 text-sm font-medium text-stone-300 hover:border-stone-500 hover:text-white transition-colors"
             >
               Sign In
             </Link>
             <Link
               href="/checkout"
-              className="rounded-md bg-amber-900 px-3 py-2 text-sm font-semibold text-amber-50 hover:bg-amber-800"
+              className="rounded-md bg-amber-700 px-3 py-2 text-sm font-semibold text-amber-50 hover:bg-amber-600 transition-colors"
             >
               Enroll
             </Link>
@@ -53,153 +56,230 @@ export default function HomePage() {
       </header>
 
       <main>
-        <section className="border-b border-amber-200">
-          <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1.2fr,0.8fr]">
-            <div>
-              <p className="mb-4 text-xs uppercase tracking-[0.14em] text-stone-600">
-                Structured online course
-              </p>
-              <h1 className="font-serif text-3xl leading-tight sm:text-4xl lg:text-5xl">
-                Algorithms of Thinking and Cognition
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-relaxed text-stone-700 sm:text-lg">
-                A philosophical course on the structure of thinking,
-                abstraction, and knowledge. A coherent sequence of lessons with
-                audio explanations and question-based reinforcement.
-              </p>
+        {/* ── Hero ── */}
+        <section className="relative overflow-hidden border-b border-stone-800/60">
+          {/* subtle gradient glow */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-amber-900/10 via-transparent to-transparent" />
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/checkout"
-                  className="rounded-md bg-amber-900 px-6 py-3 text-center text-sm font-semibold text-amber-50 hover:bg-amber-800"
-                >
-                  Start Course - $30
-                </Link>
-                <Link
-                  href="/lessons"
-                  className="rounded-md border border-amber-300 bg-white px-6 py-3 text-center text-sm font-semibold text-stone-800 hover:bg-amber-100/40"
-                >
-                  View Curriculum
-                </Link>
-              </div>
+          <div className="relative mx-auto w-full max-w-4xl px-4 py-20 text-center sm:px-6 sm:py-28 lg:py-36">
+            <p className="mb-5 text-xs uppercase tracking-[0.18em] text-amber-500/80">
+              An audio course on the structure of thought
+            </p>
 
-              <div className="mt-8 grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
-                <div className="rounded-md border border-amber-200 bg-white p-3">
-                  <div className="font-semibold">{lessonsCount} lessons</div>
-                  <div className="text-stone-600">Structured sequence</div>
-                </div>
-                <div className="rounded-md border border-amber-200 bg-white p-3">
-                  <div className="font-semibold">One-time payment</div>
-                  <div className="text-stone-600">Lifetime access</div>
-                </div>
-                <div className="rounded-md border border-amber-200 bg-white p-3 col-span-2 sm:col-span-1">
-                  <div className="font-semibold">Audio + quizzes</div>
-                  <div className="text-stone-600">Practice and review</div>
-                </div>
-              </div>
+            <h1 className="font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl text-amber-50">
+              Mind Ladder
+            </h1>
+
+            <p className="mx-auto mt-4 max-w-xl text-lg text-stone-400 sm:text-xl">
+              {lessonsCount} lessons. Audio. For those who want to think clearly.
+            </p>
+
+            <p className="mx-auto mt-8 max-w-2xl text-base leading-relaxed text-stone-400">
+              This is not another course on &ldquo;critical thinking.&rdquo;<br className="hidden sm:inline" />{' '}
+              This is a quiet, deep walk through the structure of your own mind.
+            </p>
+
+            <p className="mt-3 text-sm text-stone-500">
+              No ads. No pop-ups. Just voice, questions, and time to think.
+            </p>
+
+            <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+              <Link
+                href="/lessons"
+                className="rounded-lg bg-amber-700 px-8 py-3.5 text-sm font-semibold text-amber-50 hover:bg-amber-600 transition-colors shadow-lg shadow-amber-900/30"
+              >
+                Enter the Ladder
+              </Link>
+              <Link
+                href="/checkout"
+                className="rounded-lg border border-stone-700 px-8 py-3.5 text-sm font-semibold text-stone-300 hover:border-stone-500 hover:text-white transition-colors"
+              >
+                Full Access — $30
+              </Link>
             </div>
-
-            <aside className="rounded-lg border border-amber-300 bg-white p-6">
-              <h2 className="font-serif text-xl">Program at a glance</h2>
-              <div className="mt-4 space-y-3 text-sm text-stone-700">
-                <p>
-                  1. Conceptual basics: term, definition, abstraction.
-                </p>
-                <p>
-                  2. Applied reasoning: counting, formula, structure of thought.
-                </p>
-                <p>
-                  3. Advanced modules: cognition, interpretation, synthesis.
-                </p>
-              </div>
-              <div className="mt-6 border-t border-stone-200 pt-4">
-                <p className="text-sm text-stone-600">
-                  Access is granted immediately after payment.
-                </p>
-              </div>
-            </aside>
           </div>
         </section>
 
-        <section className="border-b border-amber-200 bg-white">
-          <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-            <div className="mb-8 flex items-end justify-between gap-4">
+        {/* ── What is Mind Ladder ── */}
+        <section className="border-b border-stone-800/60">
+          <div className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6 sm:py-20">
+            <h2 className="font-serif text-2xl text-amber-100 sm:text-3xl">
+              What is Mind Ladder?
+            </h2>
+            <div className="mt-6 space-y-4 text-base leading-relaxed text-stone-400 max-w-2xl">
+              <p>
+                An audio course about how thinking actually works — from the simplest act
+                of noticing something, to the deepest questions about meaning, self, and silence.
+              </p>
+              <p>
+                It is built on 20 years of research and teaching.
+                But here, there are no textbooks, no exams, no grades.
+              </p>
+              <p className="text-stone-300">
+                Just {lessonsCount} lessons. Each one a conversation. Each one a step.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── How it works ── */}
+        <section className="border-b border-stone-800/60 bg-stone-900/40">
+          <div className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6 sm:py-20">
+            <h2 className="font-serif text-2xl text-amber-100 sm:text-3xl">
+              How it works
+            </h2>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                { icon: '🎧', title: `${lessonsCount} audio lessons`, desc: 'Listen anywhere — on a walk, in the car, before sleep' },
+                { icon: '🧠', title: 'Audio questions', desc: 'Not tests — invitations to think deeper after each lesson' },
+                { icon: '✨', title: 'No distractions', desc: 'No video, no text walls. Just you and the voice' },
+              ].map((item) => (
+                <div key={item.title} className="rounded-lg border border-stone-800 bg-stone-900/60 p-5">
+                  <div className="text-2xl mb-3">{item.icon}</div>
+                  <div className="font-semibold text-stone-200">{item.title}</div>
+                  <div className="mt-1.5 text-sm text-stone-500">{item.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── For whom ── */}
+        <section className="border-b border-stone-800/60">
+          <div className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6 sm:py-20">
+            <h2 className="font-serif text-2xl text-amber-100 sm:text-3xl">
+              For whom?
+            </h2>
+            <div className="mt-8 space-y-4 text-base text-stone-400 max-w-2xl">
+              <p>You are a teacher and feel something is missing in how we teach &ldquo;thinking.&rdquo;</p>
+              <p>You are a parent who wants to help your child <em className="text-stone-300">understand</em>, not just memorize.</p>
+              <p>You are simply someone who has wondered: <em className="text-stone-300">How do I know what I know?</em></p>
+              <p>Or maybe you just want to listen to something real for once.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── The Lessons ── */}
+        <section className="border-b border-stone-800/60 bg-stone-900/40">
+          <div className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6 sm:py-20">
+            <div className="flex items-end justify-between gap-4 mb-8">
               <div>
-                <h2 className="font-serif text-2xl sm:text-3xl">Curriculum preview</h2>
-                <p className="mt-2 text-sm text-stone-600">
-                  First modules in the learning sequence
-                </p>
+                <h2 className="font-serif text-2xl text-amber-100 sm:text-3xl">The Lessons</h2>
+                <p className="mt-2 text-sm text-stone-500">Each step builds on the previous one</p>
               </div>
               <Link
                 href="/lessons"
-                className="text-sm font-semibold text-stone-700 underline-offset-4 hover:underline"
+                className="text-sm font-medium text-amber-500 hover:text-amber-400 transition-colors"
               >
-                Full list
+                View all
               </Link>
             </div>
 
             {loading ? (
-              <div className="rounded-lg border border-amber-200 p-6 text-sm text-stone-600">
+              <div className="rounded-lg border border-stone-800 p-6 text-sm text-stone-500">
                 Loading curriculum...
               </div>
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {displayLessons.map((lesson) => (
-                  <article
+              <div className="space-y-1">
+                {lessons.map((lesson) => (
+                  <div
                     key={lesson.order}
-                    className="rounded-md border border-amber-200 p-4"
+                    className="flex items-center gap-4 rounded-md px-4 py-3 hover:bg-stone-800/40 transition-colors group"
                   >
-                    <div className="flex items-center justify-between text-xs uppercase tracking-wide text-stone-500">
-                      <span>Lesson {lesson.order}</span>
-                      <span>{lesson.duration} min</span>
-                    </div>
-                    <h3 className="mt-2 font-semibold text-stone-900">{lesson.title}</h3>
-                    <p className="mt-2 text-sm text-stone-600 line-clamp-2">
-                      {lesson.description}
-                    </p>
-                  </article>
+                    <span className="w-7 text-right text-sm font-mono text-stone-600 group-hover:text-stone-400 transition-colors">
+                      {lesson.order}
+                    </span>
+                    <span className="text-lg" aria-hidden>{lesson.emoji || '📖'}</span>
+                    <span className="flex-1 text-stone-300 group-hover:text-stone-100 transition-colors">
+                      {lesson.title}
+                    </span>
+                    <span className="text-xs text-stone-600">
+                      {lesson.duration} min
+                    </span>
+                  </div>
                 ))}
               </div>
             )}
           </div>
         </section>
 
-        <section className="bg-amber-100/50">
-          <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-            <div className="mx-auto max-w-3xl rounded-lg border border-amber-300 bg-white p-6 sm:p-8">
-              <h2 className="font-serif text-2xl sm:text-3xl">Enrollment</h2>
-              <p className="mt-3 text-sm leading-relaxed text-stone-700 sm:text-base">
-                One payment gives full access to all current modules and future
-                updates of this course.
+        {/* ── What you'll walk away with ── */}
+        <section className="border-b border-stone-800/60">
+          <div className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6 sm:py-20">
+            <h2 className="font-serif text-2xl text-amber-100 sm:text-3xl">
+              What you will walk away with
+            </h2>
+            <div className="mt-8 space-y-4 text-base text-stone-400 max-w-2xl">
+              <p>A living sense of how terms, numbers, and formulas are born.</p>
+              <p>A map of the mind's levels — from instinct to insight.</p>
+              <p>A way to read sacred texts as mirrors of consciousness.</p>
+              <p>A quiet understanding of what &ldquo;enlightenment&rdquo; might actually mean.</p>
+              <p className="text-stone-300">And maybe — just maybe — a different relationship with yourself.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── The Author ── */}
+        <section className="border-b border-stone-800/60 bg-stone-900/40">
+          <div className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6 sm:py-20">
+            <h2 className="font-serif text-2xl text-amber-100 sm:text-3xl">
+              The voice behind it
+            </h2>
+            <div className="mt-6 space-y-3 text-base text-stone-400 max-w-2xl">
+              <p className="text-stone-200 font-medium">Davud Zulumkhanov</p>
+              <p>PhD in Education. Author of two books:</p>
+              <p className="italic text-stone-500">
+                Simple Mathematics for Children and Adults<br />
+                The Theory of Abstraction: Lessons from Scripture
               </p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <div className="text-3xl font-bold">$30</div>
-                  <div className="text-sm text-stone-600">one-time payment</div>
-                </div>
-                <Link
-                  href="/checkout"
-                  className="rounded-md bg-amber-900 px-6 py-3 text-center text-sm font-semibold text-amber-50 hover:bg-amber-800"
-                >
-                  Proceed to Checkout
-                </Link>
-              </div>
+              <p className="mt-4">
+                He has been developing this approach for over 20 years.
+                Not to sell it. To share it.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── CTA ── */}
+        <section className="bg-gradient-to-b from-stone-950 to-stone-900">
+          <div className="mx-auto w-full max-w-3xl px-4 py-20 text-center sm:px-6 sm:py-28">
+            <p className="text-sm text-stone-500 mb-4">This is not a product. It is a path.</p>
+            <h2 className="font-serif text-3xl text-amber-100 sm:text-4xl">
+              Start here
+            </h2>
+            <p className="mx-auto mt-4 max-w-md text-stone-400">
+              One payment. Full access. Lifetime.
+            </p>
+            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+              <Link
+                href="/lessons"
+                className="rounded-lg bg-amber-700 px-8 py-3.5 text-sm font-semibold text-amber-50 hover:bg-amber-600 transition-colors shadow-lg shadow-amber-900/30"
+              >
+                Enter the Ladder
+              </Link>
+              <Link
+                href="/checkout"
+                className="rounded-lg border border-stone-700 px-8 py-3.5 text-sm font-semibold text-stone-300 hover:border-stone-500 hover:text-white transition-colors"
+              >
+                Full Access — $30
+              </Link>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-amber-200 bg-amber-50">
+      {/* ── Footer ── */}
+      <footer className="border-t border-stone-800/60 bg-stone-950">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-stone-600 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p>© 2026 Algorithms of Thinking and Cognition</p>
+          <p>© 2026 Mind Ladder — Davud Zulumkhanov</p>
           <div className="flex gap-5">
-            <Link href="/lessons" className="hover:text-stone-900">
+            <Link href="/lessons" className="hover:text-stone-300 transition-colors">
               Lessons
             </Link>
-            <Link href="/login" className="hover:text-stone-900">
+            <Link href="/login" className="hover:text-stone-300 transition-colors">
               Portal
             </Link>
-            <Link href="/checkout" className="hover:text-stone-900">
+            <Link href="/checkout" className="hover:text-stone-300 transition-colors">
               Enrollment
             </Link>
           </div>
