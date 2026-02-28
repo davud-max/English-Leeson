@@ -1,40 +1,40 @@
 {
   "lessonId": 13,
-  "lessonTitle": "The Sixth Human Level",
-  "generatedAt": "2026-02-22T11:01:31.945Z",
+  "lessonTitle": "The Human Level",
+  "generatedAt": "2026-02-28T22:37:15.971Z",
   "questions": [
     {
       "id": 1,
-      "question": "What is the algorithm of algorithms?",
-      "correct_answer": "A single principle that generates all other thinking algorithms - a meta-algorithm that creates algorithms and is capable of generating itself and all other algorithms.",
+      "question": "According to the lesson, what are the three steps of Jacob's ladder?",
+      "correct_answer": "The first step is earth (body, senses, beast), the second step is man (love, connection, understanding), and the third step is heaven (spirit, direct communion, God).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "According to the lesson, what is the simplest operation that can generate all of thought?",
-      "correct_answer": "The act of distinction itself - the drawing of a boundary. The minimal operation is: Make a distinction, Observe the distinction, See the observer, Repeat.",
+      "question": "What fundamental fact does man encounter on the first step?",
+      "correct_answer": "The world is divided into dualities: subject and object, I and other, light and darkness, good and evil.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What does closure mean in the context of the algorithm of algorithms?",
-      "correct_answer": "Closure means the algorithm can be applied to its own output, the system of operations is complete, and nothing external is required to sustain the process.",
+      "question": "What is the structural principle that connects divided opposites on the second step?",
+      "correct_answer": "Love - not emotion or passion, but a structural principle that connects what was divided.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What makes the algorithm of algorithms universal?",
-      "correct_answer": "It can implement any other algorithm and any other system of thought, and can be embodied across different domains like neural networks, digital computers, social systems, and biological evolution.",
+      "question": "What happens to the previous steps when you ascend to a higher step on Jacob's ladder?",
+      "correct_answer": "Each following step does not cancel the previous one, but includes it within itself, like Russian nesting dolls.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "After exploring all the complexity, what does the lesson say the algorithm of algorithms ultimately is?",
-      "correct_answer": "Make a distinction. Everything else - recursion, self-reference, universality, closure - follows from this single operation applied to itself.",
+      "question": "Why are the three steps described as a cycle rather than a one-time journey?",
+      "correct_answer": "Because every time you encounter something new, you pass through these three steps again - first misunderstanding, then gradual approach and love, and finally unity where boundaries disappear.",
       "difficulty": "easy",
       "points": 5
     }
