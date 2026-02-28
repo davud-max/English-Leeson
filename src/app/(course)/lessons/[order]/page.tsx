@@ -152,14 +152,17 @@ export default function DynamicLessonPage() {
   }, [])
 
   const getAudioCandidates = useCallback((slideIndex: number): string[] => {
+    const slideAudioUrl = slides[slideIndex]?.audioUrl || null
+
     // Always use order-based folders to avoid stale slide-level mappings.
     const candidates = [
+      slideAudioUrl,
       `/audio/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`,
       `${RAW_AUDIO_BASE}/lesson${lessonOrder}/slide${slideIndex + 1}.mp3`,
     ].filter((item): item is string => Boolean(item))
 
     return Array.from(new Set(candidates))
-  }, [lessonOrder])
+  }, [lessonOrder, slides])
 
   const playSlide = useCallback((slideIndex: number, candidateIndex = 0) => {
     const totalSlides = slides.length
