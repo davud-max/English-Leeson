@@ -1,0 +1,42 @@
+{
+  "lessonId": 17,
+  "lessonTitle": "Theory of the Origin of Money",
+  "generatedAt": "2026-03-01T05:35:25.614Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "According to the Synthetic Theory, how many independent social technologies combined to form money?",
+      "correct_answer": "Three independent social technologies combined to form money: debt obligations, status symbols, and commercial tokens.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What was the purpose of Genghis Khan's paiza system?",
+      "correct_answer": "The paiza system guaranteed safe passage through the entire empire, with different metals (gold, silver, bronze) for different types of travelers.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What were the three functions that synthesized to create money?",
+      "correct_answer": "The three functions were: debt records (credit function), distinguishing marks (status and identity function), and commercial tokens (rent for commercial use of territory).",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 4,
+      "question": "According to the lesson, what was the primary purpose of early city walls?",
+      "correct_answer": "Early city walls had a control function rather than a defensive function, controlling access to markets through gates with different tolls.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "Why was the round form with the imprint of authority important for early money?",
+      "correct_answer": "The round form with the imprint of authority ensured the reliability of all three functions (debt, status, and commerce) simultaneously.",
+      "difficulty": "easy",
+      "points": 5
+    }
+  ]
+}
