@@ -1,0 +1,42 @@
+{
+  "lessonId": 19,
+  "lessonTitle": "Deontological Foundations of the Market",
+  "generatedAt": "2026-03-01T05:38:15.809Z",
+  "questions": [
+    {
+      "id": 1,
+      "question": "According to the lesson, what are the two possible strategies for overcoming individual limitations when there are many actor-subjects?",
+      "correct_answer": "Cooperation (voluntary exchange) and violence (appropriation by force).",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 2,
+      "question": "What is the deontological imperative described in the lesson?",
+      "correct_answer": "The categorical prohibition on the initiation of violence as a transcendental condition for complex, sustainable cooperation.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 3,
+      "question": "What are the three functions of coined money according to the lesson?",
+      "correct_answer": "Commercial (certification of rights), Status (authentication of power), and Credit (medium of circulation and accounting).",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 4,
+      "question": "How does the lesson describe inflation in relation to central banks?",
+      "correct_answer": "Inflation is systematic, disguised expropriation - when a Central Bank prints money, it performs hidden violence against all currency holders, redistributing wealth to first recipients.",
+      "difficulty": "easy",
+      "points": 5
+    },
+    {
+      "id": 5,
+      "question": "According to the lesson's conclusion, what does the market begin with?",
+      "correct_answer": "The market begins not with exchange, but with the prohibition of robbery.",
+      "difficulty": "easy",
+      "points": 5
+    }
+  ]
+}
