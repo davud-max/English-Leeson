@@ -38,6 +38,8 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const { id, title, description, price, currency, published } = body
 
+    const safePrice = typeof price === 'string' ? parseFloat(price) : (typeof price === 'number' ? price : 30)
+
     let course
     
     if (id) {
@@ -46,23 +48,37 @@ export async function PUT(request: NextRequest) {
         data: {
           title,
           description,
-          price,
+          price: safePrice,
           currency,
           published,
         },
       })
     } else {
-      // Create new course if doesn't exist
-      course = await prisma.course.create({
-        data: {
-          id: 'main-course',
-          title,
-          description,
-          price,
-          currency,
-          published,
-        },
-      })
+      // Try to find existing course first
+      const existing = await prisma.course.findFirst()
+      if (existing) {
+        course = await prisma.course.update({
+          where: { id: existing.id },
+          data: {
+            title,
+            description,
+            price: safePrice,
+            currency,
+            published,
+          },
+        })
+      } else {
+        course = await prisma.course.create({
+          data: {
+            id: 'main-course',
+            title,
+            description,
+            price: safePrice,
+            currency,
+            published,
+          },
+        })
+      }
     }
 
     return NextResponse.json(course)
