@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
+const noStoreHeaders = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+  Pragma: 'no-cache',
+  Expires: '0',
+}
+
 export async function GET() {
   try {
     let course = await prisma.course.findFirst({
+      orderBy: { updatedAt: 'desc' },
       select: {
         id: true,
         title: true,
@@ -23,13 +32,13 @@ export async function GET() {
         price: 30,
         currency: 'USD',
         published: true,
-      })
+      }, { headers: noStoreHeaders })
     }
 
-    return NextResponse.json(course)
+    return NextResponse.json(course, { headers: noStoreHeaders })
   } catch (error) {
     console.error('Error fetching course:', error)
-    return NextResponse.json({ error: 'Failed to fetch course' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch course' }, { status: 500, headers: noStoreHeaders })
   }
 }
 
@@ -55,7 +64,9 @@ async function upsertCourse(request: NextRequest) {
       })
     } else {
       // Try to find existing course first
-      const existing = await prisma.course.findFirst()
+      const existing = await prisma.course.findFirst({
+        orderBy: { updatedAt: 'desc' },
+      })
       if (existing) {
         course = await prisma.course.update({
           where: { id: existing.id },
@@ -81,10 +92,25 @@ async function upsertCourse(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(course)
+    // Keep all course rows in sync for pricing/currency to avoid cross-browser mismatch
+    // when legacy duplicate Course rows exist in the database.
+    await prisma.course.updateMany({
+      data: {
+        title: course.title,
+        description: course.description,
+        price: course.price,
+        currency: course.currency,
+        published: course.published,
+      },
+    })
+
+    return NextResponse.json(course, { headers: noStoreHeaders })
   } catch (error: any) {
     console.error('Error updating course:', error)
-    return NextResponse.json({ error: 'Failed to update course', detail: error?.message || String(error) }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to update course', detail: error?.message || String(error) },
+      { status: 500, headers: noStoreHeaders },
+    )
   }
 }
 

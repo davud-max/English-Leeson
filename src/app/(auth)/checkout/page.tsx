@@ -20,10 +20,11 @@ export default function CheckoutPage() {
   const [agreed, setAgreed] = useState(false)
 
   useEffect(() => {
-    fetch('/api/admin/course')
+    fetch(`/api/admin/course?t=${Date.now()}`, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
-        if (typeof data?.price === 'number') setCoursePrice(data.price)
+        const parsedPrice = typeof data?.price === 'number' ? data.price : Number(data?.price)
+        if (Number.isFinite(parsedPrice)) setCoursePrice(parsedPrice)
         if (typeof data?.currency === 'string' && data.currency.trim()) setCourseCurrency(data.currency)
       })
       .catch(() => {})
