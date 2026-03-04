@@ -44,7 +44,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (session) {
       fetchDashboardData()
-      fetch(`/api/admin/course?t=${Date.now()}`, { cache: 'no-store' })
+      fetch(`/api/course?t=${Date.now()}`, { cache: 'no-store' })
         .then((res) => res.json())
         .then((data) => {
           const parsedPrice = typeof data?.price === 'number' ? data.price : Number(data?.price)

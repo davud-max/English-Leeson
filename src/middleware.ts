@@ -24,6 +24,7 @@ export default withAuth(
       pathname.startsWith("/checkout") ||
       pathname.startsWith("/api/auth") ||
       pathname.startsWith("/api/checkout") ||
+      pathname.startsWith("/api/course") ||
       pathname.startsWith("/api/webhooks") ||
       pathname.startsWith("/api/quiz") ||
       pathname.startsWith("/api/questions") ||
