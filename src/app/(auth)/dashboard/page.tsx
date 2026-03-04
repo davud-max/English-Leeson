@@ -32,6 +32,8 @@ export default function DashboardPage() {
   const [progress, setProgress] = useState<Progress[]>([])
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null)
   const [loading, setLoading] = useState(true)
+  const [coursePrice, setCoursePrice] = useState(30)
+  const [courseCurrency, setCourseCurrency] = useState('USD')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -42,6 +44,13 @@ export default function DashboardPage() {
   useEffect(() => {
     if (session) {
       fetchDashboardData()
+      fetch('/api/admin/course')
+        .then((res) => res.json())
+        .then((data) => {
+          if (typeof data?.price === 'number') setCoursePrice(data.price)
+          if (typeof data?.currency === 'string' && data.currency.trim()) setCourseCurrency(data.currency)
+        })
+        .catch(() => {})
     }
   }, [session])
 
@@ -126,7 +135,7 @@ export default function DashboardPage() {
                 href="/checkout"
                 className="rounded-md bg-amber-900 px-5 py-3 text-center text-sm font-semibold text-amber-50 hover:bg-amber-800"
               >
-                Enroll Now - $30
+                Enroll Now - {coursePrice} {courseCurrency}
               </Link>
             </div>
           </section>

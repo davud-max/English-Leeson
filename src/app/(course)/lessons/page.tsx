@@ -21,9 +21,18 @@ export default function LessonsPage() {
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({ total: 0, available: 0 })
   const [unauthorized, setUnauthorized] = useState(false)
+  const [coursePrice, setCoursePrice] = useState(30)
+  const [courseCurrency, setCourseCurrency] = useState('USD')
 
   useEffect(() => {
     fetchLessons()
+    fetch('/api/admin/course')
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data?.price === 'number') setCoursePrice(data.price)
+        if (typeof data?.currency === 'string' && data.currency.trim()) setCourseCurrency(data.currency)
+      })
+      .catch(() => {})
   }, [])
 
   const fetchLessons = async () => {
@@ -168,7 +177,7 @@ export default function LessonsPage() {
             href="/checkout" 
             className="inline-block bg-amber-700 text-white hover:bg-amber-800 px-10 py-4 font-bold text-lg transition"
           >
-            Enroll Now - $30
+            Enroll Now - {coursePrice} {courseCurrency}
           </Link>
         </div>
       </div>

@@ -14,6 +14,8 @@ interface Lesson {
 export default function HomePage() {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [loading, setLoading] = useState(true)
+  const [coursePrice, setCoursePrice] = useState(30)
+  const [courseCurrency, setCourseCurrency] = useState('USD')
 
   useEffect(() => {
     fetch('/api/lessons')
@@ -23,6 +25,14 @@ export default function HomePage() {
         setLoading(false)
       })
       .catch(() => setLoading(false))
+
+    fetch('/api/admin/course')
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data?.price === 'number') setCoursePrice(data.price)
+        if (typeof data?.currency === 'string' && data.currency.trim()) setCourseCurrency(data.currency)
+      })
+      .catch(() => {})
   }, [])
 
   const availableLessons = lessons.filter((l: any) => l.available !== false)
@@ -95,7 +105,7 @@ export default function HomePage() {
                 href="/checkout"
                 className="rounded-lg border border-stone-700 px-8 py-3.5 text-sm font-semibold text-stone-300 hover:border-stone-500 hover:text-white transition-colors"
               >
-                Full Access — $30
+                Full Access — {coursePrice} {courseCurrency}
               </Link>
             </div>
           </div>
@@ -262,7 +272,7 @@ export default function HomePage() {
                 href="/checkout"
                 className="rounded-lg border border-stone-700 px-8 py-3.5 text-sm font-semibold text-stone-300 hover:border-stone-500 hover:text-white transition-colors"
               >
-                Full Access — $30
+                Full Access — {coursePrice} {courseCurrency}
               </Link>
             </div>
           </div>

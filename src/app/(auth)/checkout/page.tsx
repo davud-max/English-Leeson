@@ -1,11 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 export default function CheckoutPage() {
   const { data: session } = useSession()
+  const [coursePrice, setCoursePrice] = useState(30)
+  const [courseCurrency, setCourseCurrency] = useState('USD')
   
   const [formData, setFormData] = useState({
     name: '',
@@ -15,6 +18,16 @@ export default function CheckoutPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [agreed, setAgreed] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/admin/course')
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data?.price === 'number') setCoursePrice(data.price)
+        if (typeof data?.currency === 'string' && data.currency.trim()) setCourseCurrency(data.currency)
+      })
+      .catch(() => {})
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -73,6 +86,8 @@ export default function CheckoutPage() {
     }
   }
 
+  const formattedTotal = `${coursePrice.toFixed(2)} ${courseCurrency}`
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
@@ -125,11 +140,11 @@ export default function CheckoutPage() {
                 <div className="border-t border-gray-200 pt-6">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="text-gray-900">$30.00</span>
+                    <span className="text-gray-900">{formattedTotal}</span>
                   </div>
                   <div className="flex justify-between items-center text-xl font-bold">
                     <span className="text-gray-900">Total</span>
-                    <span className="text-blue-600">$30.00 USD</span>
+                    <span className="text-blue-600">{formattedTotal}</span>
                   </div>
                 </div>
 
@@ -249,7 +264,7 @@ export default function CheckoutPage() {
                       </>
                     ) : (
                       <>
-                        🔒 Pay $30.00 with Stripe
+                        🔒 Pay {formattedTotal} with Stripe
                       </>
                     )}
                   </button>
