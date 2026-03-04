@@ -124,6 +124,14 @@ export async function GET(
       );
     }
 
+    // Check if lesson is available (admins bypass this check)
+    if (!isAdmin && lesson && !lesson.available) {
+      return NextResponse.json(
+        { error: 'This lesson is not yet available.' },
+        { status: 403 }
+      );
+    }
+
     // All lessons now served from DB. Legacy fallback only if DB has no data.
     const shouldForceLegacy = false;
 

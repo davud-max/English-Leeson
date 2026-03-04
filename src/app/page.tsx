@@ -25,7 +25,8 @@ export default function HomePage() {
       .catch(() => setLoading(false))
   }, [])
 
-  const lessonsCount = lessons.length || 21
+  const availableLessons = lessons.filter((l: any) => l.available !== false)
+  const lessonsCount = availableLessons.length || 21
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-200">
@@ -181,7 +182,7 @@ export default function HomePage() {
               </div>
             ) : (
               <div className="space-y-1">
-                {lessons.map((lesson) => (
+                {lessons.filter((l: any) => l.available !== false).map((lesson) => (
                   <div
                     key={lesson.order}
                     className="flex items-center gap-4 rounded-md px-4 py-3 hover:bg-stone-800/40 transition-colors group"
