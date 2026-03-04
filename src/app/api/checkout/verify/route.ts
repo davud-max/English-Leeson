@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getStripe } from '@/lib/stripe'
 
 export const dynamic = 'force-dynamic'
-
-const getStripe = async () => {
-  const { stripe } = await import('@/lib/stripe')
-  return stripe
-}
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,7 +15,7 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const stripe = await getStripe()
+    const stripe = getStripe()
     const session = await stripe.checkout.sessions.retrieve(sessionId)
 
     if (session.payment_status === 'paid') {

@@ -3,15 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
-
-// Lazy load stripe to avoid build errors
-const getStripe = async () => {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    throw new Error('STRIPE_SECRET_KEY not configured')
-  }
-  const { stripe } = await import('@/lib/stripe')
-  return stripe
-}
+import { getStripe } from '@/lib/stripe'
 
 export async function POST(req: NextRequest) {
   try {
@@ -72,6 +64,7 @@ export async function POST(req: NextRequest) {
     // Get the course
     const course = await prisma.course.findFirst({
       where: { published: true },
+      orderBy: { updatedAt: 'desc' },
     })
 
     if (!course) {
@@ -100,7 +93,7 @@ export async function POST(req: NextRequest) {
     // Create Stripe checkout session
     let stripe
     try {
-      stripe = await getStripe()
+      stripe = getStripe()
     } catch (stripeError: any) {
       return NextResponse.json(
         { error: 'Stripe initialization failed', details: stripeError.message },
@@ -137,7 +130,12 @@ export async function POST(req: NextRequest) {
     } catch (stripeError: any) {
       console.error('Stripe session creation error:', stripeError)
       return NextResponse.json(
-        { error: 'Stripe error', details: stripeError.message },
+        {
+          error: 'Stripe error',
+          details: stripeError?.message || 'Unknown Stripe error',
+          stripeType: stripeError?.type || null,
+          stripeCode: stripeError?.code || null,
+        },
         { status: 500 }
       )
     }
