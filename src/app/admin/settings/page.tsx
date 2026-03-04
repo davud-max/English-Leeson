@@ -49,9 +49,12 @@ export default function SettingsPage() {
       })
 
       if (res.ok) {
+        const updated = await res.json()
+        setCourse(updated)
         setMessage('Settings saved successfully!')
       } else {
-        setMessage('Error saving settings')
+        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+        setMessage(`Error: ${err.error || err.detail || res.status}`)
       }
     } catch (error) {
       setMessage('Error saving settings')

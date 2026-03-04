@@ -82,8 +82,8 @@ export async function PUT(request: NextRequest) {
     }
 
     return NextResponse.json(course)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating course:', error)
-    return NextResponse.json({ error: 'Failed to update course' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to update course', detail: error?.message || String(error) }, { status: 500 })
   }
 }
