@@ -1,4 +1,5 @@
 import Stripe from 'stripe'
+import https from 'https'
 
 let stripeClient: Stripe | null = null
 
@@ -10,11 +11,17 @@ export function getStripe(): Stripe {
 
   if (stripeClient) return stripeClient
 
+  const httpsAgent = new https.Agent({
+    keepAlive: true,
+    family: 4,
+  })
+
   stripeClient = new Stripe(stripeSecretKey, {
     apiVersion: '2023-10-16',
     typescript: true,
     maxNetworkRetries: 2,
     timeout: 20_000,
+    httpAgent: httpsAgent,
   })
 
   return stripeClient
