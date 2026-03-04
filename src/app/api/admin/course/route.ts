@@ -33,7 +33,7 @@ export async function GET() {
   }
 }
 
-export async function PUT(request: NextRequest) {
+async function upsertCourse(request: NextRequest) {
   try {
     const body = await request.json()
     const { id, title, description, price, currency, published } = body
@@ -86,4 +86,16 @@ export async function PUT(request: NextRequest) {
     console.error('Error updating course:', error)
     return NextResponse.json({ error: 'Failed to update course', detail: error?.message || String(error) }, { status: 500 })
   }
+}
+
+export async function PUT(request: NextRequest) {
+  return upsertCourse(request)
+}
+
+export async function POST(request: NextRequest) {
+  return upsertCourse(request)
+}
+
+export async function PATCH(request: NextRequest) {
+  return upsertCourse(request)
 }
