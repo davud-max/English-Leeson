@@ -5,6 +5,20 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { getStripe } from '@/lib/stripe'
 
+export const runtime = 'nodejs'
+export const preferredRegion = ['iad1']
+
+function getAppBaseUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://www.davudx.com'
+  const cleaned = raw.trim().replace(/^"+|"+$/g, '').replace(/[\r\n\t]/g, '')
+  try {
+    const url = new URL(cleaned)
+    return url.origin
+  } catch {
+    return 'https://www.davudx.com'
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Check Stripe key first
@@ -103,6 +117,7 @@ export async function POST(req: NextRequest) {
 
     let stripeSession
     try {
+      const appBaseUrl = getAppBaseUrl()
       stripeSession = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
@@ -119,8 +134,8 @@ export async function POST(req: NextRequest) {
           },
         ],
         mode: 'payment',
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://davudx.com'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://davudx.com'}/checkout`,
+        success_url: `${appBaseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${appBaseUrl}/checkout`,
         customer_email: user.email,
         metadata: {
           userId: user.id,
@@ -135,6 +150,7 @@ export async function POST(req: NextRequest) {
           details: stripeError?.message || 'Unknown Stripe error',
           stripeType: stripeError?.type || null,
           stripeCode: stripeError?.code || null,
+          proxyConfigured: Boolean(process.env.HTTPS_PROXY || process.env.HTTP_PROXY || process.env.ALL_PROXY),
         },
         { status: 500 }
       )
