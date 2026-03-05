@@ -3,10 +3,22 @@ import https from 'https'
 
 let stripeClient: Stripe | null = null
 
+function normalizeStripeKey(raw: string | undefined): string {
+  if (!raw) return ''
+  // Handle values copied with quotes/newlines/spaces from dashboards or .env files.
+  return raw
+    .trim()
+    .replace(/^"+|"+$/g, '')
+    .replace(/[\r\n\t]/g, '')
+}
+
 export function getStripe(): Stripe {
-  const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+  const stripeSecretKey = normalizeStripeKey(process.env.STRIPE_SECRET_KEY)
   if (!stripeSecretKey) {
     throw new Error('STRIPE_SECRET_KEY not configured')
+  }
+  if (!stripeSecretKey.startsWith('sk_')) {
+    throw new Error('STRIPE_SECRET_KEY has invalid format')
   }
 
   if (stripeClient) return stripeClient
