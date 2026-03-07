@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 // GET course settings
 export async function GET() {
   try {
-    const course = await prisma.course.findFirst()
+    const course = await prisma.course.findFirst({
+      orderBy: { updatedAt: 'desc' },
+    })
     
     if (!course) {
       return NextResponse.json({
@@ -36,7 +40,9 @@ export async function PUT(request: NextRequest) {
     const { title, description, price, currency, published } = body
     
     // Find existing course or create one
-    let course = await prisma.course.findFirst()
+    let course = await prisma.course.findFirst({
+      orderBy: { updatedAt: 'desc' },
+    })
     
     if (course) {
       course = await prisma.course.update({

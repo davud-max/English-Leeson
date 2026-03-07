@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { getStripe } from '@/lib/stripe'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+export const preferredRegion = ['iad1']
 
 export async function GET(req: NextRequest) {
   try {

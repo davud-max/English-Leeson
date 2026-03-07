@@ -9,6 +9,9 @@ interface Lesson {
   description: string
   duration: number
   emoji?: string
+  locked?: boolean
+  free?: boolean
+  available?: boolean
 }
 
 export default function HomePage() {
@@ -193,23 +196,37 @@ export default function HomePage() {
               </div>
             ) : (
               <div className="space-y-1">
-                {lessons.filter((l: any) => l.available !== false).map((lesson) => (
-                  <div
-                    key={lesson.order}
-                    className="flex items-center gap-4 rounded-md px-4 py-3 hover:bg-stone-800/40 transition-colors group"
-                  >
-                    <span className="w-7 text-right text-sm font-mono text-stone-600 group-hover:text-stone-400 transition-colors">
-                      {lesson.order}
-                    </span>
-                    <span className="text-lg" aria-hidden>{lesson.emoji || '📖'}</span>
-                    <span className="flex-1 text-stone-300 group-hover:text-stone-100 transition-colors">
-                      {lesson.title}
-                    </span>
-                    <span className="text-xs text-stone-600">
-                      {lesson.duration} min
-                    </span>
-                  </div>
-                ))}
+                {lessons.filter((l) => l.available !== false).map((lesson) => {
+                  const isLocked = lesson.locked && !lesson.free
+                  return (
+                    <Link
+                      key={lesson.order}
+                      href={isLocked ? '/checkout' : `/lessons/${lesson.order}`}
+                      className={`flex items-center gap-4 rounded-md px-4 py-3 transition-colors group ${
+                        isLocked ? 'opacity-60 hover:bg-stone-800/20' : 'hover:bg-stone-800/40'
+                      }`}
+                    >
+                      <span className="w-7 text-right text-sm font-mono text-stone-600 group-hover:text-stone-400 transition-colors">
+                        {lesson.order}
+                      </span>
+                      <span className="text-lg" aria-hidden>{lesson.emoji || '📖'}</span>
+                      <span className={`flex-1 transition-colors ${
+                        isLocked ? 'text-stone-500' : 'text-stone-300 group-hover:text-stone-100'
+                      }`}>
+                        {lesson.title}
+                      </span>
+                      {isLocked ? (
+                        <span className="text-xs text-stone-600">🔒</span>
+                      ) : lesson.free ? (
+                        <span className="text-xs text-green-600">free</span>
+                      ) : (
+                        <span className="text-xs text-stone-600">
+                          {lesson.duration} min
+                        </span>
+                      )}
+                    </Link>
+                  )
+                })}
               </div>
             )}
           </div>
