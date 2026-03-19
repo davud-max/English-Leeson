@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || 'sk_24708aff82ec3e2fe533c19311a9a159326917faabf53274'
-const VOICE_ID = 'erDx71FK2teMZ7g6khzw' // New Voice (forced)
+const VOICE_ID = '4rDtO45RFoYrGTCxcHDW' // Voice 5 (main)
 const PROXY_URL = 'https://elevenlabs-proxy-two.vercel.app/api/elevenlabs'
 
 interface Question {
