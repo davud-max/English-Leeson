@@ -21,6 +21,7 @@ interface Voice {
 }
 
 const VOICES: Voice[] = [
+  { id: '4rDtO45RFoYrGTCxcHDW', name: 'Voice 5', type: 'custom', description: '🔥 New' },
   { id: 'kFVUJfjBCiv9orAbWhZN', name: 'Custom Voice', type: 'custom', description: '⭐ Recommended' },
   { id: '8Hdxm8QJKOFknq47BhTz', name: 'dZulu', type: 'custom', description: 'Custom 1' },
   { id: 'ma4IY0Z4IUybdEpvYzBW', name: 'dZulu2', type: 'custom', description: 'Custom 2' },
@@ -89,7 +90,7 @@ export default function LessonEditorComplete() {
   const [loading, setLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState('')
   const [activeTab, setActiveTab] = useState<'content' | 'slides' | 'audio' | 'quiz'>('slides')
-  const [selectedVoice, setSelectedVoice] = useState('erDx71FK2teMZ7g6khzw')
+  const [selectedVoice, setSelectedVoice] = useState('4rDtO45RFoYrGTCxcHDW')
   const [audioProgress, setAudioProgress] = useState<AudioGenerationProgress[]>([])
   const [isGeneratingAll, setIsGeneratingAll] = useState(false)
   const [focusTarget, setFocusTarget] = useState<CursorFocusTarget | null>(null)
