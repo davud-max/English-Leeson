@@ -6,13 +6,13 @@ import { getLegacyLessonContent } from '@/lib/legacy-lesson-content';
 import { getFreeLessons } from '@/lib/free-lessons';
 
 export const dynamic = 'force-dynamic';
-const MAX_PUBLIC_LESSON_ORDER = 21;
+const MAX_PUBLIC_LESSON_ORDER = 22;
 
 // Статический конфиг количества слайдов (из /public/data/slides-config.json)
 const SLIDES_CONFIG: Record<number, number> = {
   1: 20,
   2: 11,
-  3: 11,
+  3: 11, // Steps of Number Abstraction
   4: 11,
   5: 21,
   6: 12,
