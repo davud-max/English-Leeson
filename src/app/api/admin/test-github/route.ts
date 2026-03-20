@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { getGitHubAuthHeaders, getGitHubToken } from '@/lib/github';
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -9,25 +10,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+  const githubToken = getGitHubToken();
   
   const results = {
     timestamp: new Date().toISOString(),
     environment: {
-      GITHUB_TOKEN_EXISTS: !!GITHUB_TOKEN,
+      GITHUB_TOKEN_EXISTS: !!githubToken,
       ADMIN_SECRET_KEY_EXISTS: !!process.env.ADMIN_SECRET_KEY,
     },
     githubTest: null as null | { success: boolean; user?: string; scopes?: string; error?: string },
   };
   
   // Test GitHub API
-  if (GITHUB_TOKEN) {
+  if (githubToken) {
     try {
       const response = await fetch('https://api.github.com/user', {
-        headers: {
-          'Authorization': `Bearer ${GITHUB_TOKEN}`,
-          'Accept': 'application/vnd.github.v3+json',
-        },
+        headers: getGitHubAuthHeaders(),
       });
       
       if (response.ok) {

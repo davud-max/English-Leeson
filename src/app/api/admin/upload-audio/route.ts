@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getGitHubAuthHeaders, getGitHubToken } from '@/lib/github';
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = 'davud-max/English-Leeson';
 const GITHUB_BRANCH = 'main';
 
@@ -15,7 +15,9 @@ interface UploadRequest {
 
 export async function POST(request: Request) {
   try {
-    if (!GITHUB_TOKEN) {
+    const githubToken = getGitHubToken();
+
+    if (!githubToken) {
       return NextResponse.json(
         { error: 'GitHub token not configured. Add GITHUB_TOKEN to environment variables.' },
         { status: 500 }
@@ -73,11 +75,12 @@ export async function POST(request: Request) {
 
 // GET - проверка статуса API
 export async function GET() {
+  const githubToken = getGitHubToken();
   return NextResponse.json({
     status: 'ok',
-    hasGitHubToken: !!GITHUB_TOKEN,
-    tokenLength: GITHUB_TOKEN?.length || 0,
-    tokenPrefix: GITHUB_TOKEN ? GITHUB_TOKEN.substring(0, 10) + '...' : 'not set',
+    hasGitHubToken: !!githubToken,
+    tokenLength: githubToken.length,
+    tokenPrefix: githubToken ? githubToken.substring(0, 10) + '...' : 'not set',
     repo: GITHUB_REPO,
     branch: GITHUB_BRANCH,
   });
@@ -88,8 +91,7 @@ async function getExistingSha(filePath: string): Promise<string | null> {
     `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`,
     {
       headers: {
-        'Authorization': `Bearer ${GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json',
+        ...getGitHubAuthHeaders(),
       },
     }
   );
@@ -123,8 +125,7 @@ async function uploadWithRetry(
       {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${GITHUB_TOKEN}`,
-          'Accept': 'application/vnd.github.v3+json',
+          ...getGitHubAuthHeaders(),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(uploadBody),
