@@ -54,12 +54,13 @@ export default function LessonCreatorPage() {
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
   const [publishProgress, setPublishProgress] = useState('')
-  const [selectedVoice, setSelectedVoice] = useState('TxGEqnHWrfWFTfGW9XjX')
+  const [selectedVoice, setSelectedVoice] = useState('dvlvChDGquF1SgaKcL95')
   const [translatingSlide, setTranslatingSlide] = useState<number | null>(null)
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
 
   // ElevenLabs voices
   const voiceOptions = [
+    { id: 'dvlvChDGquF1SgaKcL95', name: 'DavudZ10' },
     { id: 'TxGEqnHWrfWFTfGW9XjX', name: 'Josh (Male, Young)' },
     { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam (Male, Deep)' },
     { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel (Female)' },

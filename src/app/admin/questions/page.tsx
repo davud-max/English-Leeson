@@ -42,7 +42,7 @@ export default function AdminQuestionsPage() {
   const [count, setCount] = useState(5)
   const [difficulty, setDifficulty] = useState('mixed')
   const [adminKey, setAdminKey] = useState('')
-  const [voiceId] = useState('erDx71FK2teMZ7g6khzw') // New Voice (fixed)
+  const [voiceId] = useState('dvlvChDGquF1SgaKcL95') // DavudZ10 (fixed)
   const [isGenerating, setIsGenerating] = useState(false)
   const [result, setResult] = useState<{ success: boolean; message: string; questions?: Question[] } | null>(null)
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
@@ -401,7 +401,7 @@ export default function AdminQuestionsPage() {
                     disabled
                     className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                   >
-                    <option value="erDx71FK2teMZ7g6khzw">New Voice (default)</option>
+                    <option value="dvlvChDGquF1SgaKcL95">DavudZ10 (default)</option>
                   </select>
                 </div>
 

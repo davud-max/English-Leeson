@@ -8,6 +8,7 @@ const ELEVENLABS_VOICES: Record<string, { name: string; type: string }> = {
   'kFVUJfjBCiv9orAbWhZN': { name: 'Custom Voice ⭐', type: 'custom' },
   '8Hdxm8QJKOFknq47BhTz': { name: 'dZulu', type: 'custom' },
   'ma4IY0Z4IUybdEpvYzBW': { name: 'dZulu2', type: 'custom' },
+  'dvlvChDGquF1SgaKcL95': { name: 'DavudZ10', type: 'custom' },
   'erDx71FK2teMZ7g6khzw': { name: 'New Voice', type: 'custom' },
   // Built-in English voices (male)
   'pNInz6obpgDQGcFmaJgB': { name: 'Adam (Male, Deep)', type: 'builtin' },
@@ -43,7 +44,7 @@ export default function AudioGeneratorPage() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [slides, setSlides] = useState<Slide[]>([]);
-  const [selectedVoice, setSelectedVoice] = useState('erDx71FK2teMZ7g6khzw'); // New Voice by default
+  const [selectedVoice, setSelectedVoice] = useState('dvlvChDGquF1SgaKcL95'); // DavudZ10 by default
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);

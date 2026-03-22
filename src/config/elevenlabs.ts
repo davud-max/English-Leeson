@@ -11,6 +11,7 @@ export const ELEVENLABS_CONFIG = {
     CUSTOM: 'kFVUJfjBCiv9orAbWhZN',  // Your custom voice ⭐
     DZULU: '8Hdxm8QJKOFknq47BhTz',   // dZulu custom voice
     DZULU2: 'ma4IY0Z4IUybdEpvYzBW',  // dZulu2 custom voice
+    DAVUDZ10: 'dvlvChDGquF1SgaKcL95', // DavudZ10 custom voice
     NEW: 'erDx71FK2teMZ7g6khzw',     // New voice
     
     // Built-in voices
@@ -25,7 +26,7 @@ export const ELEVENLABS_CONFIG = {
   },
   
   // Default settings
-  defaultVoice: 'erDx71FK2teMZ7g6khzw', // New Voice - male voice
+  defaultVoice: 'dvlvChDGquF1SgaKcL95', // DavudZ10 - default voice
   model: 'eleven_multilingual_v2',
   
   // Voice settings
@@ -43,6 +44,7 @@ export const VOICE_DESCRIPTIONS = {
   [ELEVENLABS_CONFIG.voices.CUSTOM]: 'Your Custom Voice (Male) ⭐',
   [ELEVENLABS_CONFIG.voices.DZULU]: 'dZulu Custom (Male)',
   [ELEVENLABS_CONFIG.voices.DZULU2]: 'dZulu2 Custom (Male)',
+  [ELEVENLABS_CONFIG.voices.DAVUDZ10]: 'DavudZ10 (Male)',
   [ELEVENLABS_CONFIG.voices.NEW]: 'New Voice (Male)',
   [ELEVENLABS_CONFIG.voices.BELLA]: 'Bella (Female, Russian)',
   [ELEVENLABS_CONFIG.voices.RACHEL]: 'Rachel (Female, Calm)',
