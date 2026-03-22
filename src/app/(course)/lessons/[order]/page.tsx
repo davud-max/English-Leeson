@@ -481,7 +481,7 @@ export default function DynamicLessonPage() {
       {/* Scrollable Content */}
       <main className="max-w-4xl mx-auto px-6 pt-5 pb-28">
 
-        {lessonOrder === 1 && (
+        {lessonOrder === 1 && currentSlide === 0 && (
         <section className="mb-6 rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-stone-50 px-8 py-7 shadow-sm">
           <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">{LESSON_ONE_INTRO.title}</div>
           <p className="mb-5 text-lg leading-relaxed text-stone-700">{LESSON_ONE_INTRO.lead}</p>
