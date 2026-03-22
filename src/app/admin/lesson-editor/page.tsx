@@ -11,6 +11,7 @@ interface Slide {
   emoji: string
   duration: number
   audioUrl?: string
+  previewAudioUrl?: string
 }
 
 interface Voice {
@@ -991,14 +992,14 @@ export default function LessonEditorComplete() {
   const generateAudio = async (
     slideIndex: number,
     lessonOverride?: Lesson
-  ): Promise<{ audioUrl: string | null; error: string | null }> => {
+  ): Promise<{ audioUrl: string | null; previewAudioUrl: string | null; error: string | null }> => {
     const lesson = lessonOverride || selectedLesson
-    if (!lesson) return { audioUrl: null, error: 'Lesson is not selected' }
+    if (!lesson) return { audioUrl: null, previewAudioUrl: null, error: 'Lesson is not selected' }
     
     const slide = lesson.slides[slideIndex]
     if (!slide.content) {
       setSaveStatus('❌ Нет текста')
-      return { audioUrl: null, error: 'Empty slide content' }
+      return { audioUrl: null, previewAudioUrl: null, error: 'Empty slide content' }
     }
 
     setAudioProgress((prev) => {
@@ -1077,7 +1078,7 @@ export default function LessonEditorComplete() {
 
       setSaveStatus(`✅ Слайд ${slideIndex + 1} готов!`)
       setTimeout(() => setSaveStatus(''), 3000)
-      return { audioUrl: githubRawUrl, error: null }
+      return { audioUrl: githubRawUrl, previewAudioUrl: genData.audioUrl || null, error: null }
 
     } catch (error) {
       const message = (error as Error).message
@@ -1093,7 +1094,7 @@ export default function LessonEditorComplete() {
       
       setSaveStatus(`❌ ${slideIndex + 1}: ${message}`)
       setTimeout(() => setSaveStatus(''), 5000)
-      return { audioUrl: null, error: message }
+      return { audioUrl: null, previewAudioUrl: null, error: message }
     }
   }
 
@@ -1101,14 +1102,14 @@ export default function LessonEditorComplete() {
     const lesson = lessonOverride || selectedLesson
     if (!lesson) return
 
-    const { audioUrl } = await generateAudio(slideIndex, lesson)
+    const { audioUrl, previewAudioUrl } = await generateAudio(slideIndex, lesson)
     if (!audioUrl) return
 
     setSelectedLesson((prev) => {
       if (!prev || prev.id !== lesson.id) return prev
       if (!prev.slides || !prev.slides[slideIndex]) return prev
       const updatedSlides = [...prev.slides]
-      updatedSlides[slideIndex] = { ...updatedSlides[slideIndex], audioUrl }
+      updatedSlides[slideIndex] = { ...updatedSlides[slideIndex], audioUrl, previewAudioUrl: previewAudioUrl || undefined }
       return { ...prev, slides: updatedSlides }
     })
   }
@@ -1133,9 +1134,9 @@ export default function LessonEditorComplete() {
     let failedCount = 0
 
     for (let i = 0; i < lesson.slides.length; i++) {
-      const { audioUrl, error } = await generateAudio(i, lesson)
+      const { audioUrl, previewAudioUrl, error } = await generateAudio(i, lesson)
       if (audioUrl) {
-        updatedSlides[i] = { ...updatedSlides[i], audioUrl }
+        updatedSlides[i] = { ...updatedSlides[i], audioUrl, previewAudioUrl: previewAudioUrl || undefined }
         successCount++
       } else {
         failedCount++
@@ -1613,8 +1614,8 @@ export default function LessonEditorComplete() {
                               </div>
                               <audio
                                 controls
-                                key={slide.audioUrl || `slide-${index}`}
-                                src={slide.audioUrl || `/audio/lesson-${selectedLesson.id}/slide${index + 1}.mp3`}
+                                key={slide.previewAudioUrl || slide.audioUrl || `slide-${index}`}
+                                src={slide.previewAudioUrl || slide.audioUrl || `/audio/lesson-${selectedLesson.id}/slide${index + 1}.mp3`}
                                 className="w-full h-8 mt-3"
                               />
                             </div>
