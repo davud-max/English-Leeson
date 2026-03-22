@@ -40,24 +40,21 @@ const RAW_AUDIO_BASE = 'https://raw.githubusercontent.com/davud-max/English-Lees
 const BACKGROUND_MUSIC_URL = '/audio/background/lesson-bg-v3.mp3'
 
 
-const LESSON_ONE_INTRO = {
-  title: 'Course Introduction',
-  lead: 'This first lesson introduces not only one topic, but the logic of the whole course. We begin with terms and definitions because clear thinking begins when we learn to distinguish carefully, describe accurately, and use words with precision.',
-  sections: [
-    {
-      title: 'What you will study',
-      body: 'The course moves from terms and definitions to counting, numerals, formulas, parameters, abstraction, rules, human action, economics, money, the mechanism of thought, consciousness, and the search for truth.'
-    },
-    {
-      title: 'How the course is built',
-      body: 'Philosophy, mathematics, logic, pedagogy, economics, and metaphysics are treated here not as separate subjects, but as parts of one path of understanding.'
-    },
-    {
-      title: 'What this course helps develop',
-      body: 'It helps develop precise speech, disciplined thought, a deeper understanding of quantity and formula, and a clearer sense of how ideas, action, meaning, and consciousness are connected.'
-    }
-  ]
-}
+const LESSON_ONE_INTRO_MARKDOWN = `## Course Introduction
+
+This first lesson introduces not only one topic, but the logic of the whole course. We begin with terms and definitions because clear thinking begins when we learn to distinguish carefully, describe accurately, and use words with precision.
+
+### What you will study
+
+The course moves from terms and definitions to counting, numerals, formulas, parameters, abstraction, rules, human action, economics, money, the mechanism of thought, consciousness, and the search for truth.
+
+### How the course is built
+
+Philosophy, mathematics, logic, pedagogy, economics, and metaphysics are treated here not as separate subjects, but as parts of one path of understanding.
+
+### What this course helps develop
+
+It helps develop precise speech, disciplined thought, a deeper understanding of quantity and formula, and a clearer sense of how ideas, action, meaning, and consciousness are connected.`
 
 export default function DynamicLessonPage() {
   const params = useParams()
@@ -481,21 +478,6 @@ export default function DynamicLessonPage() {
       {/* Scrollable Content */}
       <main className="max-w-4xl mx-auto px-6 pt-5 pb-28">
 
-        {lessonOrder === 1 && currentSlide === 0 && (
-        <section className="mb-6 rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-stone-50 px-8 py-7 shadow-sm">
-          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">{LESSON_ONE_INTRO.title}</div>
-          <p className="mb-5 text-lg leading-relaxed text-stone-700">{LESSON_ONE_INTRO.lead}</p>
-          <div className="space-y-5 text-stone-700">
-            {LESSON_ONE_INTRO.sections.map((section) => (
-              <div key={section.title}>
-                <h2 className="mb-2 text-lg font-bold text-stone-900">{section.title}</h2>
-                <p className="text-lg leading-relaxed">{section.body}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* Content Card */}
         <article className="bg-white rounded-lg shadow-lg border border-stone-200 pt-4 md:pt-6 px-8 md:px-12 pb-8 md:pb-12 mb-8">
           <div className="prose prose-stone prose-lg max-w-none">
@@ -517,7 +499,13 @@ export default function DynamicLessonPage() {
                 h3: ({children}) => <h3 className="text-lg font-bold text-stone-900 mt-4 mb-2">{children}</h3>,
               }}
             >
-              {currentSlideData?.content || lesson.content}
+              {lessonOrder === 1 && currentSlide === 0
+                ? `${LESSON_ONE_INTRO_MARKDOWN}
+
+---
+
+${currentSlideData?.content || lesson.content}`
+                : (currentSlideData?.content || lesson.content)}
             </ReactMarkdown>
           </div>
         </article>
