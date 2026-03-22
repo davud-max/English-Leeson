@@ -301,8 +301,8 @@ Money is one of humanity's greatest inventions — it enables cooperation among 
   },
   {
     order: 8,
-    title: 'Theory of Cognitive Resonance',
-    description: 'How does thought arise? Two circuits of consciousness and the mechanism of resonance.',
+    title: 'Cognitive Resonance I: How Thought Arises',
+    description: 'An introduction to the two circuits of consciousness and the mechanism by which thought becomes intelligible.',
     duration: 25,
     content: `# Theory of Cognitive Resonance
 
@@ -355,8 +355,8 @@ Good teacher helps student become capable of receiving insights directly.
   },
   {
     order: 9,
-    title: 'The Creation of the World: Biblical Cosmogony',
-    description: 'Heaven and earth, water and light — a philosophical analysis of the first chapter of Genesis.',
+    title: 'Creation and the World: A Philosophical Reading of Genesis',
+    description: 'Heaven, earth, water, and light as stages in a philosophical reading of the opening chapter of Genesis.',
     duration: 20,
     content: `# The Creation of the World: Biblical Cosmogony
 
@@ -406,8 +406,8 @@ Genesis describes not historical event but eternal structure:
   },
   {
     order: 10,
-    title: 'Cognitive Resonance II',
-    description: 'How we think. Continuation of the topic.',
+    title: 'Cognitive Resonance II: The Conditions of Understanding',
+    description: 'A continuation of cognitive resonance: resonance, misunderstanding, questions, and the tuning of thought.',
     duration: 25,
     content: `# Cognitive Resonance II
 
@@ -460,8 +460,8 @@ This is why fundamentals matter — they enable all subsequent resonances.`
   },
   {
     order: 11,
-    title: 'The Number 666',
-    description: 'A philosophical interpretation of the number of the Beast through the theory of abstraction.',
+    title: 'The Number 666: A Philosophical Interpretation',
+    description: 'A reading of the number 666 through abstraction, incompleteness, and the problem of the human level.',
     duration: 20,
     content: `# The Number 666
 
@@ -511,8 +511,8 @@ Being "fully human" at material level is still "beastly" — below true human po
   },
   {
     order: 12,
-    title: 'Three Steps to Heaven: 666',
-    description: 'The number 666 as a formula of ascent.',
+    title: 'Three Steps to Heaven: Reading 666 as Ascent',
+    description: 'A reinterpretation of 666 as a sequence of ascent, development, and movement toward a higher level.',
     duration: 22,
     content: `# Three Steps to Heaven: 666
 
@@ -572,8 +572,8 @@ The path to heaven passes through complete earthly development.`
   },
   {
     order: 13,
-    title: 'The Sixth Human Level',
-    description: 'The transition from external law to internal law.',
+    title: 'The Sixth Human Level: From External Law to Inner Law',
+    description: 'The transition from obedience to external law toward the formation of inner law and responsibility.',
     duration: 25,
     content: `# The Sixth Human Level
 
@@ -633,7 +633,7 @@ The answer reveals your level.`
   {
     order: 14,
     title: 'How Consciousness Creates the World',
-    description: 'The act of primary distinction. The triad: Being, Consciousness, and the Act of Distinction.',
+    description: 'Primary distinction, the triad of being and consciousness, and the idea that the world appears through acts of distinction.',
     duration: 20,
     content: `# How Consciousness Creates the World
 
@@ -687,8 +687,8 @@ Where you look is what exists for you.`
   },
   {
     order: 15,
-    title: 'A Theory of Everything',
-    description: 'A philosophical hypothesis about the fundamental nature of reality beyond space.',
+    title: 'Toward a Theory of Everything',
+    description: 'A philosophical attempt to think reality beyond ordinary space and to search for a deeper unity behind the visible world.',
     duration: 25,
     content: `# A Theory of Everything
 
@@ -744,8 +744,8 @@ Everything else is how it appears to itself.`
   },
   {
     order: 16,
-    title: 'Minus-Space',
-    description: 'Abstraction as the substance of the world.',
+    title: 'Minus-Space: Abstraction as Substance',
+    description: 'An exploration of abstraction as substance and of minus-space as a way of thinking beyond ordinary spatial categories.',
     duration: 20,
     content: `# Minus-Space
 
@@ -800,8 +800,8 @@ Learn to dwell in minus-space through mathematical and philosophical contemplati
   },
   {
     order: 17,
-    title: 'The Human Path Through Abstraction',
-    description: 'A synthesis of all lessons: from the capacity to distinguish to the comprehension of unity.',
+    title: 'The Human Path Through Abstraction to Truth',
+    description: 'A synthesis of the course: from distinction and abstraction to unity, truth, and the human task of understanding.',
     duration: 30,
     content: `# The Human Path Through Abstraction
 

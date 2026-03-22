@@ -8,6 +8,50 @@ import { getFreeLessons } from '@/lib/free-lessons';
 export const dynamic = 'force-dynamic';
 const MAX_PUBLIC_LESSON_ORDER = 22;
 
+
+const LESSON_METADATA_OVERRIDES: Record<number, { title: string; description: string }> = {
+  8: {
+    title: 'Cognitive Resonance I: How Thought Arises',
+    description: 'An introduction to the two circuits of consciousness and the mechanism by which thought becomes intelligible.',
+  },
+  9: {
+    title: 'Creation and the World: A Philosophical Reading of Genesis',
+    description: 'Heaven, earth, water, and light as stages in a philosophical reading of the opening chapter of Genesis.',
+  },
+  10: {
+    title: 'Cognitive Resonance II: The Conditions of Understanding',
+    description: 'A continuation of cognitive resonance: resonance, misunderstanding, questions, and the tuning of thought.',
+  },
+  11: {
+    title: 'The Number 666: A Philosophical Interpretation',
+    description: 'A reading of the number 666 through abstraction, incompleteness, and the problem of the human level.',
+  },
+  12: {
+    title: 'Three Steps to Heaven: Reading 666 as Ascent',
+    description: 'A reinterpretation of 666 as a sequence of ascent, development, and movement toward a higher level.',
+  },
+  13: {
+    title: 'The Sixth Human Level: From External Law to Inner Law',
+    description: 'The transition from obedience to external law toward the formation of inner law and responsibility.',
+  },
+  14: {
+    title: 'How Consciousness Creates the World',
+    description: 'Primary distinction, the triad of being and consciousness, and the idea that the world appears through acts of distinction.',
+  },
+  15: {
+    title: 'Toward a Theory of Everything',
+    description: 'A philosophical attempt to think reality beyond ordinary space and to search for a deeper unity behind the visible world.',
+  },
+  16: {
+    title: 'Minus-Space: Abstraction as Substance',
+    description: 'An exploration of abstraction as substance and of minus-space as a way of thinking beyond ordinary spatial categories.',
+  },
+  17: {
+    title: 'The Human Path Through Abstraction to Truth',
+    description: 'A synthesis of the course: from distinction and abstraction to unity, truth, and the human task of understanding.',
+  },
+};
+
 // Статический конфиг количества слайдов (из /public/data/slides-config.json)
 const SLIDES_CONFIG: Record<number, number> = {
   1: 20,
@@ -146,6 +190,8 @@ export async function GET(
         }
       : null;
 
+    const lessonMetadataOverride = LESSON_METADATA_OVERRIDES[orderNum];
+
     if ((!lessonWithSlides || shouldForceLegacy) && legacyLesson) {
       lessonWithSlides = {
         id: lesson?.id || `legacy-${orderNum}`,
@@ -176,6 +222,11 @@ export async function GET(
       if (!hasValidDbContent && legacyLesson) {
         lessonWithSlides.content = legacyLesson.slides.map(slide => slide.content).join('\n\n---\n\n');
       }
+    }
+
+    if (lessonWithSlides && lessonMetadataOverride) {
+      lessonWithSlides.title = lessonMetadataOverride.title;
+      lessonWithSlides.description = lessonMetadataOverride.description;
     }
 
     // Use audioUrl from DB slides as-is (set by admin editor or SQL migration).
@@ -220,12 +271,19 @@ export async function GET(
       where: { published: true, order: { lte: MAX_PUBLIC_LESSON_ORDER } },
     });
 
+    const prevLessonWithOverride = prevLesson
+      ? { ...prevLesson, ...(LESSON_METADATA_OVERRIDES[prevLesson.order] || {}) }
+      : null;
+    const nextLessonWithOverride = nextLesson
+      ? { ...nextLesson, ...(LESSON_METADATA_OVERRIDES[nextLesson.order] || {}) }
+      : null;
+
     return NextResponse.json({
       success: true,
       lesson: lessonWithSlides,
       navigation: {
-        prev: prevLesson,
-        next: nextLesson,
+        prev: prevLessonWithOverride,
+        next: nextLessonWithOverride,
         total: totalLessons,
       },
     });
