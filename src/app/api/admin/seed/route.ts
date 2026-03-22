@@ -12,13 +12,13 @@ const LESSONS_FULL_CONTENT = [
 
 ## Course Introduction
 
-This first lesson opens not only one topic, but the whole path of the course. We begin with terms and definitions because all further movement of thought depends on the precision with which we distinguish, describe, and name what we encounter.
+This first lesson introduces not only one topic, but the logic of the whole course. We begin with terms and definitions because clear thinking begins when we learn to distinguish carefully, describe accurately, and use words with precision.
 
-In the lessons ahead we move from terms and definitions to counting, numerals, formulas, parameters, abstraction, rules, literacy, human action, economics, money, the mechanism of thought, consciousness, creation, and the human path toward truth.
+In the lessons ahead we move from terms and definitions to counting, numerals, formulas, parameters, abstraction, rules, human action, economics, money, the mechanism of thought, consciousness, and the search for truth.
 
-This course brings several disciplines into one line of understanding: philosophy of language, mathematics, logic, pedagogy, economics, praxeology, phenomenology of thinking, biblical cosmogony, and metaphysics.
+Philosophy, mathematics, logic, pedagogy, economics, and metaphysics are treated here not as separate subjects, but as parts of one path of understanding.
 
-What can this course open? It can sharpen speech, make thought more exact, reveal how quantity and formula are born, show how action is guided by goals and rules, and gradually lead from the visible world of objects to the invisible structures of meaning, law, consciousness, and abstraction.
+This course helps develop precise speech, disciplined thought, a deeper understanding of quantity and formula, and a clearer sense of how ideas, action, meaning, and consciousness are connected.
 
 ## How Knowledge is Born
 
