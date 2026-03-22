@@ -485,11 +485,11 @@ export default function DynamicLessonPage() {
         <section className="mb-6 rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-stone-50 px-8 py-7 shadow-sm">
           <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">{LESSON_ONE_INTRO.title}</div>
           <p className="mb-5 text-lg leading-relaxed text-stone-700">{LESSON_ONE_INTRO.lead}</p>
-          <div className="space-y-4">
+          <div className="space-y-5 text-stone-700">
             {LESSON_ONE_INTRO.sections.map((section) => (
-              <div key={section.title} className="rounded-lg border border-stone-200 bg-white/80 px-5 py-4">
-                <h2 className="mb-2 text-base font-bold text-stone-900">{section.title}</h2>
-                <p className="text-base leading-relaxed text-stone-600">{section.body}</p>
+              <div key={section.title}>
+                <h2 className="mb-2 text-lg font-bold text-stone-900">{section.title}</h2>
+                <p className="text-lg leading-relaxed">{section.body}</p>
               </div>
             ))}
           </div>
