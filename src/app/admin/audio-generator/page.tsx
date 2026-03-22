@@ -35,9 +35,19 @@ interface Slide {
   text: string;
   status: 'pending' | 'generating' | 'done' | 'error' | 'uploading' | 'uploaded';
   audioUrl?: string;
+  previewAudioUrl?: string;
   audioBase64?: string;
   error?: string;
 }
+
+function audioBase64ToObjectUrl(audioBase64: string): string {
+  const binary = atob(audioBase64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  const blob = new Blob([bytes], { type: 'audio/mpeg' })
+  return URL.createObjectURL(blob)
+}
+
 
 export default function AudioGeneratorPage() {
   // State
@@ -195,6 +205,7 @@ export default function AudioGeneratorPage() {
           ...s, 
           status: 'done' as const, 
           audioUrl: data.audioUrl,
+          previewAudioUrl: audioBase64ToObjectUrl(data.audioBase64),
           audioBase64: data.audioBase64,
         } : s
       ));
@@ -696,7 +707,7 @@ export default function AudioGeneratorPage() {
                           {(slide.status === 'done' || slide.status === 'uploaded') && slide.audioUrl && (
                             <>
                               <audio
-                                src={slide.audioUrl}
+                                src={slide.previewAudioUrl || slide.audioUrl}
                                 controls
                                 className="w-36 h-8"
                               />

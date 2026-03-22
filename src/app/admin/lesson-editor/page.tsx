@@ -35,6 +35,14 @@ const VOICES: Voice[] = [
   { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel', type: 'builtin', description: 'Female, Calm' },
 ]
 
+function audioBase64ToObjectUrl(audioBase64: string): string {
+  const binary = atob(audioBase64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  const blob = new Blob([bytes], { type: "audio/mpeg" })
+  return URL.createObjectURL(blob)
+}
+
 interface GeneratedQuestion {
   id: number
   question: string
@@ -1078,7 +1086,7 @@ export default function LessonEditorComplete() {
 
       setSaveStatus(`✅ Слайд ${slideIndex + 1} готов!`)
       setTimeout(() => setSaveStatus(''), 3000)
-      return { audioUrl: githubRawUrl, previewAudioUrl: genData.audioUrl || null, error: null }
+      return { audioUrl: githubRawUrl, previewAudioUrl: audioBase64ToObjectUrl(genData.audioBase64), error: null }
 
     } catch (error) {
       const message = (error as Error).message
