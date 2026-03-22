@@ -39,6 +39,26 @@ interface Navigation {
 const RAW_AUDIO_BASE = 'https://raw.githubusercontent.com/davud-max/English-Leeson/main/public/audio'
 const BACKGROUND_MUSIC_URL = '/audio/background/lesson-bg-v3.mp3'
 
+
+const LESSON_ONE_INTRO = {
+  title: 'Course Introduction',
+  lead: 'This first lesson opens not only one topic, but the whole path of the course. We begin with terms and definitions because all further movement of thought depends on the precision with which we distinguish, describe, and name what we encounter.',
+  sections: [
+    {
+      title: 'What lies ahead',
+      body: 'In the next lessons we move from terms and definitions to counting, numerals, formulas, parameters, abstraction, rules, literacy, human action, economics, money, the mechanism of thought, consciousness, creation, and the human path toward truth.'
+    },
+    {
+      title: 'The disciplines within the course',
+      body: 'This course touches several domains at once: philosophy of language, mathematics, logic, pedagogy, economics, praxeology, phenomenology of thinking, biblical cosmogony, and metaphysics. They are not presented as separate islands, but as one ascending line of understanding.'
+    },
+    {
+      title: 'What this course can open',
+      body: 'It can sharpen speech, make thought more exact, reveal how quantity and formula are born, show how action is guided by goals and rules, and gradually lead from the visible world of objects to the invisible structures of meaning, law, consciousness, and abstraction.'
+    }
+  ]
+}
+
 export default function DynamicLessonPage() {
   const params = useParams()
   const router = useRouter()
@@ -461,7 +481,22 @@ export default function DynamicLessonPage() {
       {/* Scrollable Content */}
       <main className="max-w-4xl mx-auto px-6 pt-5 pb-28">
 
-        {/* Content Card */}
+        {lessonOrder === 1 && (
+        <section className="mb-6 rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-stone-50 px-8 py-7 shadow-sm">
+          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">{LESSON_ONE_INTRO.title}</div>
+          <p className="mb-5 text-lg leading-relaxed text-stone-700">{LESSON_ONE_INTRO.lead}</p>
+          <div className="grid gap-4 md:grid-cols-3">
+            {LESSON_ONE_INTRO.sections.map((section) => (
+              <div key={section.title} className="rounded-lg border border-stone-200 bg-white/80 px-5 py-4">
+                <h2 className="mb-2 text-base font-bold text-stone-900">{section.title}</h2>
+                <p className="text-sm leading-relaxed text-stone-600">{section.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Content Card */}
         <article className="bg-white rounded-lg shadow-lg border border-stone-200 pt-4 md:pt-6 px-8 md:px-12 pb-8 md:pb-12 mb-8">
           <div className="prose prose-stone prose-lg max-w-none">
             <ReactMarkdown
