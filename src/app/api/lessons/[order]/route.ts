@@ -192,6 +192,11 @@ export async function GET(
 
     const lessonMetadataOverride = LESSON_METADATA_OVERRIDES[orderNum];
 
+    const shouldApplyMetadataOverrides =
+      Boolean(lessonMetadataOverride) &&
+      Boolean(legacyLesson) &&
+      (!lesson || shouldForceLegacy || !hasValidDbSlides || !hasValidDbContent);
+
     if ((!lessonWithSlides || shouldForceLegacy) && legacyLesson) {
       lessonWithSlides = {
         id: lesson?.id || `legacy-${orderNum}`,
@@ -224,7 +229,7 @@ export async function GET(
       }
     }
 
-    if (lessonWithSlides && lessonMetadataOverride) {
+    if (lessonWithSlides && lessonMetadataOverride && shouldApplyMetadataOverrides) {
       lessonWithSlides.title = lessonMetadataOverride.title;
       lessonWithSlides.description = lessonMetadataOverride.description;
     }
