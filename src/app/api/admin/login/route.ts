@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { normalizeAdminKey } from '@/lib/admin-key';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const adminSecretKey =
-      typeof body?.adminSecretKey === 'string' ? body.adminSecretKey.trim() : '';
+    const adminSecretKey = normalizeAdminKey(body?.adminSecretKey);
 
     if (!adminSecretKey) {
       return NextResponse.json(
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     }
 
     // Проверяем секретный ключ администратора
-    if (adminSecretKey !== process.env.ADMIN_SECRET_KEY) {
+    if (adminSecretKey !== normalizeAdminKey(process.env.ADMIN_SECRET_KEY)) {
       return NextResponse.json(
         { error: 'Invalid admin secret key' },
         { status: 401 }
