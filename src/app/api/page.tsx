@@ -1,26 +1,42 @@
 import Link from 'next/link'
+import { prisma } from '@/lib/prisma'
+import { getFreeLessons } from '@/lib/free-lessons'
 
-const LESSONS = [
-  { order: 1, title: 'Terms and Definitions', description: 'How knowledge is born. Fundamental terms: point, line, plane, space. Two opposing movements of thought.', duration: 40, available: true },
-  { order: 2, title: 'What Is Counting?', description: 'The origin of counting. Group, numeral, digit. Counting on fingers: dozen, score, gross. Natural numbers.', duration: 30 },
-  { order: 3, title: 'What Is a Formula?', description: 'The emergence of the concept of a parameter. Relationships between quantities and formulae. The number π.', duration: 30 },
-  { order: 4, title: 'Abstraction and Rules', description: 'Human beings and thinking. Abstraction and knowledge. Literacy as rule-based action.', duration: 25 },
-  { order: 5, title: 'Human Activity: Praxeology, Economics, and Imitation', description: 'What kind of activity is worthy of a human being? How can creation be distinguished from imitation?', duration: 25 },
-  { order: 6, title: 'Human Activity and Economics', description: 'From communication to law. Levels of civilization. Goals and goods. Ethics and experience.', duration: 25 },
-  { order: 7, title: 'The Fair and the Coin: The Birth of Money', description: 'How money, markets, and banks emerged from the exchange of gifts between tribes.', duration: 25 },
-  { order: 8, title: 'Cognitive Resonance I: How Thought Arises', description: 'An introduction to the two circuits of consciousness and the mechanism by which thought becomes intelligible.', duration: 25 },
-  { order: 9, title: 'Creation and the World: A Philosophical Reading of Genesis', description: 'Heaven, earth, water, and light as stages in a philosophical reading of the opening chapter of Genesis.', duration: 20 },
-  { order: 10, title: 'Cognitive Resonance II: The Conditions of Understanding', description: 'A continuation of cognitive resonance: resonance, misunderstanding, questions, and the tuning of thought.', duration: 25 },
-  { order: 11, title: 'The Number 666: A Philosophical Interpretation', description: 'A reading of the number 666 through abstraction, incompleteness, and the problem of the human level.', duration: 20 },
-  { order: 12, title: 'Three Steps to Heaven: Reading 666 as Ascent', description: 'A reinterpretation of 666 as a sequence of ascent, development, and movement toward a higher level.', duration: 22 },
-  { order: 13, title: 'The Sixth Human Level: From External Law to Inner Law', description: 'The transition from obedience to external law toward the formation of inner law and responsibility.', duration: 25 },
-  { order: 14, title: 'How Consciousness Creates the World', description: 'Primary distinction, the triad of being and consciousness, and the idea that the world appears through acts of distinction.', duration: 20 },
-  { order: 15, title: 'Toward a Theory of Everything', description: 'A philosophical attempt to think reality beyond ordinary space and to search for a deeper unity behind the visible world.', duration: 25 },
-  { order: 16, title: 'Minus-Space: Abstraction as Substance', description: 'An exploration of abstraction as substance and of minus-space as a way of thinking beyond ordinary spatial categories.', duration: 20 },
-  { order: 17, title: 'The Human Path Through Abstraction to Truth', description: 'A synthesis of the course: from distinction and abstraction to unity, truth, and the human task of understanding.', duration: 30 },
-]
+export const dynamic = 'force-dynamic'
 
-export default function HomePage() {
+const MAX_PUBLIC_LESSON_ORDER = 23
+
+type LessonCard = {
+  id: string
+  order: number
+  title: string
+  description: string
+  duration: number
+  available: boolean
+}
+
+export default async function HomePage() {
+  const [lessons, freeLessons] = await Promise.all([
+    prisma.lesson.findMany({
+      where: {
+        published: true,
+        order: { lte: MAX_PUBLIC_LESSON_ORDER },
+      },
+      select: {
+        id: true,
+        order: true,
+        title: true,
+        description: true,
+        duration: true,
+        available: true,
+      },
+      orderBy: { order: 'asc' },
+    }) as Promise<LessonCard[]>,
+    getFreeLessons(),
+  ])
+
+  const lessonCount = lessons.length || MAX_PUBLIC_LESSON_ORDER
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
@@ -51,34 +67,43 @@ export default function HomePage() {
       <section className="bg-slate-50 py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-4 text-gray-900">Course Program</h2>
-          <p className="text-center text-gray-600 mb-12">17 comprehensive lessons</p>
+          <p className="text-center text-gray-600 mb-12">{lessonCount} comprehensive lessons</p>
           <div className="max-w-4xl mx-auto space-y-4">
-            {LESSONS.map((lesson) => (
-              <div key={lesson.order} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center mb-2 gap-3">
-                      <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
-                        Lesson {lesson.order}
-                      </span>
-                      <span className="text-sm text-gray-500">⏱️ {lesson.duration} minutes</span>
-                      {lesson.available && (
-                        <Link 
-                          href={`/lessons/${lesson.order}`}
-                          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                        >
-                          Preview Free →
-                        </Link>
-                      )}
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      {lesson.title}
-                    </h3>
-                    <p className="text-gray-600">{lesson.description}</p>
-                  </div>
-                </div>
+            {lessons.length === 0 ? (
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-gray-600">
+                No lessons found. Sync the course first.
               </div>
-            ))}
+            ) : (
+              lessons.map((lesson) => {
+                const isFree = freeLessons.includes(lesson.order)
+                return (
+                  <div key={lesson.id} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center mb-2 gap-3">
+                          <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
+                            Lesson {lesson.order}
+                          </span>
+                          <span className="text-sm text-gray-500">⏱️ {lesson.duration} minutes</span>
+                          {lesson.available && (
+                            <Link 
+                              href={`/lessons/${lesson.order}`}
+                              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                            >
+                              Preview →
+                            </Link>
+                          )}
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                          {lesson.title}
+                        </h3>
+                        <p className="text-gray-600">{lesson.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })
+            )}
           </div>
         </div>
       </section>
@@ -96,7 +121,7 @@ export default function HomePage() {
             </div>
             <ul className="space-y-3 mb-8">
               {[
-                '17 interactive lessons',
+                `${lessonCount} interactive lessons`,
                 'Full course content',
                 'Lifetime access',
                 'Certificate included',

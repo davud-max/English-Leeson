@@ -6,7 +6,7 @@ import { getLegacyLessonContent } from '@/lib/legacy-lesson-content';
 import { getFreeLessons } from '@/lib/free-lessons';
 
 export const dynamic = 'force-dynamic';
-const MAX_PUBLIC_LESSON_ORDER = 22;
+const MAX_PUBLIC_LESSON_ORDER = 23;
 
 
 const LESSON_METADATA_OVERRIDES: Record<number, { title: string; description: string }> = {
@@ -74,7 +74,9 @@ const SLIDES_CONFIG: Record<number, number> = {
   18: 27,
   19: 31,
   20: 10,
-  21: 18
+  21: 18,
+  22: 26,
+  23: 19
 };
 
 // GET /api/lessons/[order] - получить урок по номеру

@@ -1,42 +1,42 @@
 {
   "lessonId": 10,
-  "lessonTitle": "WATER IN WORLD TRADITIONS",
-  "generatedAt": "2026-02-28T22:14:03.517Z",
+  "lessonTitle": "Sacred Text and Reality",
+  "generatedAt": "2026-01-25T12:00:00.000Z",
   "questions": [
     {
       "id": 1,
-      "question": "According to the lesson, what does water represent in most creation myths around the world?",
-      "correct_answer": "Water represents the primordial undifferentiated foundation that existed before everything else was created.",
+      "question": "What do 'heaven' and 'earth' represent as abstract concepts in the Book of Genesis?",
+      "correct_answer": "Heaven represents the unobservable (Nothing) and earth represents the observable (the World).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "In Hindu cosmology, what is Karana-jala?",
-      "correct_answer": "Karana-jala is the 'causal ocean' - a boundless aquatic space in which Mahavishnu rests, and from his breathing, universes arise.",
+      "question": "What does 'water' symbolize in the biblical creation narrative?",
+      "correct_answer": "Water symbolizes Being - boundless, formless, and indistinguishable primordial existence before any distinctions were made.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What are the four common characteristics of water found across different creation traditions?",
-      "correct_answer": "Water appears as: 1) primordial foundation, 2) bearer of life, 3) bearer of wisdom, and 4) boundary between worlds.",
-      "difficulty": "easy",
-      "points": 5
+      "question": "What is the significance of 'light' in the context of cognitive theory?",
+      "correct_answer": "Light represents the ability to abstract - the capacity to distinguish boundaries between the observable and the unobservable, enabling observation and cognition.",
+      "difficulty": "hard",
+      "points": 15
     },
     {
       "id": 4,
-      "question": "In the ancient Chinese text 'Taiyi sheng shui,' how does water participate in creation?",
-      "correct_answer": "Water is not simply created but co-creates - it returns to the Great Unity and assists it in forming heaven and earth.",
-      "difficulty": "easy",
-      "points": 5
+      "question": "How does the 'firmament' relate to the concept of abstraction?",
+      "correct_answer": "The firmament is the boundary that divided the World and Nothing after light appeared - it represents the first distinction that becomes visible through the ability to abstract.",
+      "difficulty": "hard",
+      "points": 15
     },
     {
       "id": 5,
-      "question": "According to the lesson, what does the universal presence of water in creation myths suggest about human consciousness?",
-      "correct_answer": "It suggests that human consciousness is structured identically everywhere, as independent cultures arrive at the same image of undifferentiated, fluid beginnings.",
-      "difficulty": "easy",
-      "points": 5
+      "question": "Why does the text suggest that 'many different Worlds' can potentially exist within the same Being?",
+      "correct_answer": "Because different beings with different metrics of distinction can split the same Being in completely different boundaries, creating different observable realities.",
+      "difficulty": "hard",
+      "points": 15
     }
   ]
 }

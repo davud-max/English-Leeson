@@ -10,19 +10,22 @@ const LESSONS_DATA = [
   { order: 5, title: '🎭 Human Activity: Praxeology', description: 'What kind of activity is worthy of a human being?', duration: 25, emoji: '🎭', color: 'from-orange-500 to-red-600', available: true },
   { order: 6, title: '💼 Human Activity and Economics', description: 'From communication to law. Levels of civilization.', duration: 25, emoji: '💼', color: 'from-teal-500 to-cyan-600', available: true },
   { order: 7, title: '💰 The Fair and the Coin', description: 'How money, markets, and banks emerged.', duration: 25, emoji: '💰', color: 'from-yellow-500 to-amber-600', available: true },
-  { order: 8, title: '🧠 Theory of Cognitive Resonance', description: 'How does thought arise?', duration: 25, emoji: '🧠', color: 'from-emerald-500 to-teal-600', available: true },
-  { order: 9, title: '📖 Sacred Text and Reality', description: 'Heaven and earth, water and light.', duration: 25, emoji: '📖', color: 'from-sky-500 to-blue-600', available: true },
-  { order: 10, title: '📻 How Thought Finds Us', description: 'The radio receiver model of consciousness.', duration: 30, emoji: '📻', color: 'from-fuchsia-500 to-pink-600', available: true },
-  { order: 11, title: '🔢 The Number 666', description: 'A philosophical interpretation of the number of the Beast.', duration: 25, emoji: '🔢', color: 'from-red-500 to-rose-600', available: true },
-  { order: 12, title: '⬆️ Three Steps to Heaven', description: 'The number 666 as a formula of ascent.', duration: 28, emoji: '⬆️', color: 'from-violet-500 to-purple-600', available: true },
-  { order: 13, title: '🌍 The Sixth Human Level', description: 'The transition from external law to internal law.', duration: 30, emoji: '🌍', color: 'from-emerald-500 to-teal-600', available: true },
-  { order: 14, title: '🌌 How Consciousness Creates', description: 'The act of primary distinction.', duration: 30, emoji: '🌌', color: 'from-indigo-500 to-blue-600', available: true },
-  { order: 15, title: '🌐 A Theory of Everything', description: 'A philosophical hypothesis about reality.', duration: 25, emoji: '🌐', color: 'from-cyan-500 to-teal-600', available: true },
-  { order: 16, title: '➖ Minus-Space', description: 'Abstraction as the substance of the world.', duration: 20, emoji: '➖', color: 'from-gray-500 to-slate-600', available: true },
-  { order: 17, title: '🎯 The Human Path', description: 'A synthesis of all lessons.', duration: 30, emoji: '🎯', color: 'from-amber-500 to-orange-600', available: true },
-  { order: 18, title: '🔄 Cycles of Understanding', description: 'How knowledge spirals upward.', duration: 25, emoji: '🔄', color: 'from-rose-500 to-pink-600', available: true },
-  { order: 19, title: '🌊 Waves of Consciousness', description: 'The rhythm of thought.', duration: 25, emoji: '🌊', color: 'from-sky-500 to-cyan-600', available: true },
-  { order: 20, title: '⚡ The Spark of Insight', description: 'Moments of clarity.', duration: 25, emoji: '⚡', color: 'from-yellow-500 to-orange-600', available: true },
+  { order: 8, title: '📜 Contract Sovereignty', description: 'Anthropological and economic foundations of freedom.', duration: 30, emoji: '📜', color: 'from-blue-500 to-indigo-600', available: true },
+  { order: 9, title: '🧠 Theory of Cognitive Resonance', description: 'How does thought arise?', duration: 25, emoji: '🧠', color: 'from-emerald-500 to-teal-600', available: true },
+  { order: 10, title: '📖 Sacred Text and Reality', description: 'Heaven and earth, water and light.', duration: 25, emoji: '📖', color: 'from-sky-500 to-blue-600', available: true },
+  { order: 11, title: '📻 How Thought Finds Us', description: 'The radio receiver model of consciousness.', duration: 30, emoji: '📻', color: 'from-fuchsia-500 to-pink-600', available: true },
+  { order: 12, title: '🔢 The Number 666', description: 'A philosophical interpretation of the number of the Beast.', duration: 25, emoji: '🔢', color: 'from-red-500 to-rose-600', available: true },
+  { order: 13, title: '⬆️ Three Steps to Heaven', description: 'The number 666 as a formula of ascent.', duration: 28, emoji: '⬆️', color: 'from-violet-500 to-purple-600', available: true },
+  { order: 14, title: '🌍 The Sixth Human Level', description: 'The transition from external law to internal law.', duration: 30, emoji: '🌍', color: 'from-emerald-500 to-teal-600', available: true },
+  { order: 15, title: '🌌 How Consciousness Creates', description: 'The act of primary distinction.', duration: 30, emoji: '🌌', color: 'from-indigo-500 to-blue-600', available: true },
+  { order: 16, title: '🌐 A Theory of Everything', description: 'A philosophical hypothesis about reality.', duration: 25, emoji: '🌐', color: 'from-cyan-500 to-teal-600', available: true },
+  { order: 17, title: '➖ Minus-Space', description: 'Abstraction as the substance of the world.', duration: 20, emoji: '➖', color: 'from-gray-500 to-slate-600', available: true },
+  { order: 18, title: '🎯 The Human Path', description: 'A synthesis of all lessons.', duration: 30, emoji: '🎯', color: 'from-amber-500 to-orange-600', available: true },
+  { order: 19, title: '🔄 Cycles of Understanding', description: 'How knowledge spirals upward.', duration: 25, emoji: '🔄', color: 'from-rose-500 to-pink-600', available: true },
+  { order: 20, title: '🌊 Waves of Consciousness', description: 'The rhythm of thought.', duration: 25, emoji: '🌊', color: 'from-sky-500 to-cyan-600', available: true },
+  { order: 21, title: '⚡ The Spark of Insight', description: 'Moments of clarity.', duration: 25, emoji: '⚡', color: 'from-yellow-500 to-orange-600', available: true },
+  { order: 22, title: '📚 Advanced Lesson 21', description: 'Advanced concepts continuation.', duration: 25, emoji: '📚', color: 'from-blue-500 to-indigo-600', available: true },
+  { order: 23, title: '🧩 Advanced Lesson 22', description: 'Deep dive into advanced topics.', duration: 30, emoji: '🧩', color: 'from-indigo-500 to-purple-600', available: true },
 ];
 
 // POST - Полная синхронизация уроков
@@ -44,12 +47,15 @@ export async function POST() {
 
     let created = 0;
     let updated = 0;
-    const MAX_ORDER = 20;
+    const MAX_ORDER = 23;
 
-    // Remove lessons beyond the current program boundary.
-    const removed = await prisma.lesson.deleteMany({
+    // Keep future lessons, but unpublish them so they don't leak into the public program.
+    const unpublished = await prisma.lesson.updateMany({
       where: {
         order: { gt: MAX_ORDER },
+      },
+      data: {
+        published: false,
       },
     });
 
@@ -96,8 +102,8 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: `Synced! Removed >${MAX_ORDER}: ${removed.count}, Created: ${created}, Updated: ${updated}. Total: ${total}`,
-      removed: removed.count,
+      message: `Synced! Unpublished >${MAX_ORDER}: ${unpublished.count}, Created: ${created}, Updated: ${updated}. Total: ${total}`,
+      unpublished: unpublished.count,
       created,
       updated,
       total,
@@ -114,7 +120,7 @@ export async function POST() {
 // GET - Проверка статуса
 export async function GET() {
   try {
-    const MAX_ORDER = 20;
+    const MAX_ORDER = 23;
     const lessons = await prisma.lesson.findMany({
       where: { order: { lte: MAX_ORDER } },
       select: { order: true, title: true, emoji: true, color: true, available: true },

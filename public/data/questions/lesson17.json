@@ -1,40 +1,40 @@
 {
   "lessonId": 17,
-  "lessonTitle": "Theory of the Origin of Money",
-  "generatedAt": "2026-03-01T05:35:25.614Z",
+  "lessonTitle": "Minus-Space",
+  "generatedAt": "2026-02-22T15:19:03.787Z",
   "questions": [
     {
       "id": 1,
-      "question": "According to the Synthetic Theory, how many independent social technologies combined to form money?",
-      "correct_answer": "Three independent social technologies combined to form money: debt obligations, status symbols, and commercial tokens.",
+      "question": "According to the lesson, what is Minus-space?",
+      "correct_answer": "Minus-space is that which possesses neither extension nor position. It is not emptiness, but the absence of the container itself, the cancellation of the act of distinguishing 'here' and 'there.'",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What was the purpose of Genghis Khan's paiza system?",
-      "correct_answer": "The paiza system guaranteed safe passage through the entire empire, with different metals (gold, silver, bronze) for different types of travelers.",
+      "question": "What are the three types of spatial concepts described in the lesson?",
+      "correct_answer": "Space (which possesses extension and metric), Point or zero-space (which possesses position but not extension), and Minus-space (which possesses neither extension nor position).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What were the three functions that synthesized to create money?",
-      "correct_answer": "The three functions were: debt records (credit function), distinguishing marks (status and identity function), and commercial tokens (rent for commercial use of territory).",
+      "question": "How does movement work in Minus-space according to the hypothesis?",
+      "correct_answer": "In Minus-space there is no distance, so transition is instantaneous. A particle can disappear and appear thousands of light-years away because distance was not overcome - it simply did not exist.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "According to the lesson, what was the primary purpose of early city walls?",
-      "correct_answer": "Early city walls had a control function rather than a defensive function, controlling access to markets through gates with different tolls.",
+      "question": "What does the lesson suggest black holes might actually be?",
+      "correct_answer": "The lesson suggests that black holes might be portals or doors where matter breaks through the barrier of our reality and goes into Minus-space, rather than compressing into a singularity.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "Why was the round form with the imprint of authority important for early money?",
-      "correct_answer": "The round form with the imprint of authority ensured the reliability of all three functions (debt, status, and commerce) simultaneously.",
+      "question": "What is the main limitation of the Minus-space hypothesis mentioned in the lesson?",
+      "correct_answer": "The hypothesis remains a philosophical concept with poetic metaphors rather than a scientific theory, because it lacks mathematical rigor and precise equations that can be verified.",
       "difficulty": "easy",
       "points": 5
     }

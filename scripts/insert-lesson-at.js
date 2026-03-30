@@ -8,7 +8,8 @@
  * 2) Create a new placeholder lesson at target order.
  * 3) Shift filesystem audio folders: public/audio/lessonN -> lessonN+1
  * 4) Shift question audio folders: public/audio/questions/lessonN -> lessonN+1
- * 5) Create empty folders for the new lesson.
+ * 5) Shift question JSON files: public/data/questions/lessonN.json -> lessonN+1.json
+ * 6) Create empty folders/files for the new lesson.
  *
  * Usage:
  *   node scripts/insert-lesson-at.js <order>
@@ -147,6 +148,58 @@ async function shiftDbAndCreateLesson(courseId, order, dryRun) {
   console.log(`DB: created placeholder lesson at order #${order}`);
 }
 
+function shiftQuestionJson(rootDir, targetOrder, dryRun) {
+  if (!exists(rootDir)) return;
+  const names = fs.readdirSync(rootDir);
+  let max = 0;
+  for (const name of names) {
+    const m = /^lesson(\d+)\.json$/.exec(name);
+    if (!m) continue;
+    const n = Number(m[1]);
+    if (Number.isInteger(n) && n > max) max = n;
+  }
+  if (max < targetOrder) return;
+
+  for (let n = max; n >= targetOrder; n--) {
+    const from = path.join(rootDir, `lesson${n}.json`);
+    const to = path.join(rootDir, `lesson${n + 1}.json`);
+    if (!exists(from)) continue;
+    renameSafe(from, to, dryRun);
+  }
+
+  const createdPath = path.join(rootDir, `lesson${targetOrder}.json`);
+  if (dryRun) {
+    console.log(`[DRY] write ${createdPath}`);
+    return;
+  }
+
+  if (!exists(createdPath)) {
+    fs.writeFileSync(
+      createdPath,
+      JSON.stringify({ lessonId: targetOrder, lessonTitle: '', generatedAt: '', questions: [] }, null, 2) + '\n',
+      'utf8'
+    );
+  }
+
+  // Update lessonId fields for shifted files >= targetOrder+1.
+  const afterNames = fs.readdirSync(rootDir);
+  for (const name of afterNames) {
+    const m = /^lesson(\d+)\.json$/.exec(name);
+    if (!m) continue;
+    const n = Number(m[1]);
+    if (!Number.isInteger(n) || n < targetOrder + 1) continue;
+    const filePath = path.join(rootDir, name);
+    try {
+      const raw = fs.readFileSync(filePath, 'utf8');
+      const data = JSON.parse(raw);
+      data.lessonId = n;
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf8');
+    } catch (e) {
+      console.warn(`WARN: failed to update ${filePath}: ${e.message || e}`);
+    }
+  }
+}
+
 async function main() {
   const { order, dryRun, noDb, courseId } = parseArgs(process.argv);
 
@@ -154,6 +207,7 @@ async function main() {
   const audioRoot = path.join(root, 'public', 'audio');
   const lessonAudioRoot = audioRoot;
   const questionAudioRoot = path.join(audioRoot, 'questions');
+  const questionJsonRoot = path.join(root, 'public', 'data', 'questions');
 
   console.log(`Insert lesson at order #${order}`);
   console.log(`Mode: ${dryRun ? 'DRY-RUN' : 'APPLY'}`);
@@ -172,6 +226,9 @@ async function main() {
   // Shift question audio folders.
   shiftOrderFolders(questionAudioRoot, order, dryRun);
   ensureDir(path.join(questionAudioRoot, `lesson${order}`), dryRun);
+
+  // Shift question JSON files.
+  shiftQuestionJson(questionJsonRoot, order, dryRun);
 
   console.log('Done.');
   console.log('Next: generate/upload audio for the new lesson folder and verify lesson-to-audio mapping.');

@@ -1,42 +1,6 @@
 {
   "lessonId": 8,
-  "lessonTitle": "Theory of Cognitive Resonance 1",
-  "generatedAt": "2026-02-28T21:43:17.393Z",
-  "questions": [
-    {
-      "id": 1,
-      "question": "What are the two circuits of consciousness described in the Theory of Cognitive Resonance?",
-      "correct_answer": "The analog circuit (world of immediate, bodily, sensory experience) and the digital circuit (world of abstractions, signs, and concepts).",
-      "difficulty": "easy",
-      "points": 5
-    },
-    {
-      "id": 2,
-      "question": "What is cognitive resonance?",
-      "correct_answer": "The moment when an abstract model from the digital circuit finds response in analog experience, causing the signal to be amplified and become a conscious thought or insight.",
-      "difficulty": "easy",
-      "points": 5
-    },
-    {
-      "id": 3,
-      "question": "What three sources form our Internal Resonator?",
-      "correct_answer": "Hereditary foundation (features of our nervous system), cultural code (language, values, concepts from society), and personal sensory experience.",
-      "difficulty": "easy",
-      "points": 5
-    },
-    {
-      "id": 4,
-      "question": "According to the lesson, what is the main difference between the analog and digital circuits in terms of bandwidth?",
-      "correct_answer": "The analog circuit has low bandwidth but deeply rooted, energetically saturated experiences, while the digital circuit has high bandwidth but is empty of meaning without connection.",
-      "difficulty": "easy",
-      "points": 5
-    },
-    {
-      "id": 5,
-      "question": "What is the correct sequence for effective learning according to the pedagogy of resonance?",
-      "correct_answer": "First create analog experience where the student feels the problem, then provide the digital label (name, formula, concept), which creates cognitive resonance and genuine understanding.",
-      "difficulty": "easy",
-      "points": 5
-    }
-  ]
+  "lessonTitle": "Contract Sovereignty",
+  "generatedAt": "",
+  "questions": []
 }

@@ -1,40 +1,40 @@
 {
   "lessonId": 13,
-  "lessonTitle": "The Human Level",
-  "generatedAt": "2026-02-28T22:37:15.971Z",
+  "lessonTitle": "LAW AND CIVILIZATION",
+  "generatedAt": "2026-02-28T22:22:43.436Z",
   "questions": [
     {
       "id": 1,
-      "question": "According to the lesson, what are the three steps of Jacob's ladder?",
-      "correct_answer": "The first step is earth (body, senses, beast), the second step is man (love, connection, understanding), and the third step is heaven (spirit, direct communion, God).",
+      "question": "What is the definition of society according to the lesson?",
+      "correct_answer": "A group of people united by a common information field.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What fundamental fact does man encounter on the first step?",
-      "correct_answer": "The world is divided into dualities: subject and object, I and other, light and darkness, good and evil.",
+      "question": "What is law as defined in this lesson?",
+      "correct_answer": "A formal prohibition on the use of violence against a person.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What is the structural principle that connects divided opposites on the second step?",
-      "correct_answer": "Love - not emotion or passion, but a structural principle that connects what was divided.",
+      "question": "What three things does violence take away from a person?",
+      "correct_answer": "Freedom (the right to choose), rights (the ability to act), and property (the results of labor).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What happens to the previous steps when you ascend to a higher step on Jacob's ladder?",
-      "correct_answer": "Each following step does not cancel the previous one, but includes it within itself, like Russian nesting dolls.",
+      "question": "What is the difference between defense and violence according to the lesson?",
+      "correct_answer": "Violence is prohibited force against a person, while defense is the application of force against violence, which is allowed.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "Why are the three steps described as a cycle rather than a one-time journey?",
-      "correct_answer": "Because every time you encounter something new, you pass through these three steps again - first misunderstanding, then gradual approach and love, and finally unity where boundaries disappear.",
+      "question": "What are the four levels of development that humanity passes through, and what defines 'our people' at each level?",
+      "correct_answer": "Level 1 (Family) - only family members; Level 2 (Clan/tribe) - the whole tribe; Level 3 (People/nation) - those who share language and culture; Level 4 (Civil society) - any person who has renounced violence.",
       "difficulty": "easy",
       "points": 5
     }

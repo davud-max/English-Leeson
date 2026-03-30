@@ -1,42 +1,42 @@
 {
   "lessonId": 9,
-  "lessonTitle": "Sacred Text and Reality",
-  "generatedAt": "2026-01-25T12:00:00.000Z",
+  "lessonTitle": "Theory of Cognitive Resonance 1",
+  "generatedAt": "2026-02-28T21:43:17.393Z",
   "questions": [
     {
       "id": 1,
-      "question": "What do 'heaven' and 'earth' represent as abstract concepts in the Book of Genesis?",
-      "correct_answer": "Heaven represents the unobservable (Nothing) and earth represents the observable (the World).",
+      "question": "What are the two circuits of consciousness described in the Theory of Cognitive Resonance?",
+      "correct_answer": "The analog circuit (world of immediate, bodily, sensory experience) and the digital circuit (world of abstractions, signs, and concepts).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What does 'water' symbolize in the biblical creation narrative?",
-      "correct_answer": "Water symbolizes Being - boundless, formless, and indistinguishable primordial existence before any distinctions were made.",
+      "question": "What is cognitive resonance?",
+      "correct_answer": "The moment when an abstract model from the digital circuit finds response in analog experience, causing the signal to be amplified and become a conscious thought or insight.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What is the significance of 'light' in the context of cognitive theory?",
-      "correct_answer": "Light represents the ability to abstract - the capacity to distinguish boundaries between the observable and the unobservable, enabling observation and cognition.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "What three sources form our Internal Resonator?",
+      "correct_answer": "Hereditary foundation (features of our nervous system), cultural code (language, values, concepts from society), and personal sensory experience.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 4,
-      "question": "How does the 'firmament' relate to the concept of abstraction?",
-      "correct_answer": "The firmament is the boundary that divided the World and Nothing after light appeared - it represents the first distinction that becomes visible through the ability to abstract.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "According to the lesson, what is the main difference between the analog and digital circuits in terms of bandwidth?",
+      "correct_answer": "The analog circuit has low bandwidth but deeply rooted, energetically saturated experiences, while the digital circuit has high bandwidth but is empty of meaning without connection.",
+      "difficulty": "easy",
+      "points": 5
     },
     {
       "id": 5,
-      "question": "Why does the text suggest that 'many different Worlds' can potentially exist within the same Being?",
-      "correct_answer": "Because different beings with different metrics of distinction can split the same Being in completely different boundaries, creating different observable realities.",
-      "difficulty": "hard",
-      "points": 15
+      "question": "What is the correct sequence for effective learning according to the pedagogy of resonance?",
+      "correct_answer": "First create analog experience where the student feels the problem, then provide the digital label (name, formula, concept), which creates cognitive resonance and genuine understanding.",
+      "difficulty": "easy",
+      "points": 5
     }
   ]
 }

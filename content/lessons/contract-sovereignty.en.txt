@@ -1,0 +1,185 @@
+Contract Sovereignty:
+
+Anthropological and Economic Foundations of Freedom
+
+Davud Zulumkhanov • davud58@gmail.com
+
+Independent researcher, Makhachkala, Russian Federation
+
+JEL codes: K12 • B53 • P14 • D23 • K42
+
+Keywords: voluntary contract • agency and entrepreneurship • private arbitration • negative rights • restorative justice • spontaneous order
+
+Abstract
+
+This paper proposes a conceptual model of freedom, exchange, and law built on an operational distinction between two modes of human activity. “Labor” is defined as activity in which an individual retains authorship of purpose and success criteria; “work” is defined as activity with an externally set purpose and external acceptance of completion, irrespective of payment. On this basis the paper frames voluntary contract as a coordination technology linking commissioned work to purpose-sovereign labor. It further argues that enforceability can be supported by non-monopolistic mechanisms (escrow, collateral, insurance, and reputation-based exclusion) combined with a minimal legal core of negative rights (prohibitions of aggression, fraud, and provable harm). The model is stress-tested against standard objections concerning public goods, vulnerable agents, information asymmetry, violence, and externalities, and clarifies the conditions under which the framework should be treated as positive institutional analysis versus normative minimalism. The paper thereby offers an agency-centered criterion for evaluating institutional designs in constitutional political economy.
+
+1. Introduction
+
+Debates in constitutional political economy frequently stall because core terms are used inconsistently. “Right to labor,” “labor markets,” “justice,” and “exploitation” are invoked as if they were self-evident, while participants rely on incompatible definitions. This paper starts from a minimal anthropological premise: humans are agents capable of forming purposes, choosing means, and bearing responsibility. If agency is taken seriously, economic coordination, legal order, and normative claims must be aligned rather than treated as separate domains.
+
+In CPE terms, the argument is framed at the constitutional level: it asks which general rules governing coercion, contract enforcement, and exit preserve meaningful consent and agency, and which rules predictably substitute external purposes for self-authored purposes. The paper therefore contributes a criterion for institutional choice under constraint, close to the constitutional-economics focus on rules rather than outcomes (Brennan & Buchanan, 1980; Buchanan & Tullock, 1962), and to polycentric governance perspectives on rule selection and enforcement (Ostrom, 1990).
+
+The contribution is a compact institutional compatibility test: which arrangements preserve agency and meaningful consent, and which systematically substitute external purposes for self-authored purposes. The analysis connects to CPE work on private ordering and spontaneous institutions (McCannon, 2014; Matson & Klein, 2022) and to broader institutional and governance perspectives (North, 1990; Williamson, 1985).
+
+2. Labor and work: two modes of activity
+
+In everyday language “labor” and “work” are near-synonyms. Here they are technical terms distinguished not by moral valence or remuneration, but by governance of purpose and completion criteria.
+
+2.1. Operational definitions
+
+Labor is activity in which an individual authors (i) the purpose and (ii) the success criteria of the outcome.
+
+Work is activity in which purpose and completion criteria are externally specified and completion is externally accepted (client, employer, role standard, or contract).
+
+Payment may or may not be present in either mode; the distinction is governance, not remuneration.
+
+2.2. Entrepreneurship as purpose origination
+
+Entrepreneurship can be interpreted as the origination of a novel purpose: a project that did not previously exist becomes a goal. To realize that purpose, an entrepreneur typically decomposes it into tasks and commissions parts of implementation through contracts. This connects to the Coasean insight that firms and markets are alternative governance structures for coordinating tasks under transaction costs (Coase, 1937; Williamson, 1985). Under the proposed definitions, the entrepreneur’s core activity is labor, while commissioned tasks constitute work.
+
+The contractor or employee is not assumed to be naïve or altruistic. The commissioned task is accepted because it provides resources (income, skills, network, optionality) for the agent’s own labor projects. The model therefore does not require benevolence; it requires mechanisms that make compliance incentive-compatible in repeated interaction.
+
+2.3. Freedom as purpose sovereignty and meaningful consent
+
+Will can be understood as the capacity to act on instincts and reflexes—a feature shared by any living creature. Freedom, by contrast, is the distinctly human capacity to act consciously toward a self-chosen goal while accepting responsibility for the consequences. A tiger may be released into the wild, but not “into freedom” in this sense. This distinction is crucial for institutional analysis: robbery manifests will rather than freedom, as it realizes an impulse of seizure by suppressing another’s agency. There is thus no genuine conflict between freedoms; what occurs is one agent’s will suppressing another’s freedom. Law does not constrain freedom—it protects freedom from arbitrary will.
+
+Freedom as purpose sovereignty therefore requires minimal conditions: the ability to refuse without violence or coercive threats; informational integrity (constraints against fraud and material nondisclosure); and credible exit options that prevent open-ended dependency (e.g., bankruptcy or restructuring to avoid debt bondage).
+
+3. Contract as a bridge between labor and resources
+
+A voluntary contract is a technology for exchanging resources (time, skills, products, risk, capital) on mutually accepted terms. The framework does not assume altruism. Instead it asks whether the institutional environment makes honest play more advantageous than opportunism in repeated interactions with reputational costs (Hayek, 1945; North, 1990).
+
+3.1. Consent conditions
+
+Meaningful consent requires more than formal signature: it requires the absence of violence, adequate information, and credible exit options. The model therefore highlights pathologies such as monopsony and regulatory barriers that convert nominal contract into de facto compulsion.
+
+3.2. When deception can be locally profitable
+
+In one-shot interactions deception may be profitable. In repeated settings it becomes costly when reputation and network access are salient. This is a central theme of analyses of private ordering (Benson, 1990; Leeson, 2014). The framework treats trust not as a moral given but as an outcome of mechanisms that raise the expected cost of opportunism: screening, certification, escrow, and enforceable disclosure obligations.
+
+4. Enforcement, arbitration, and restorative justice
+
+4.1. Non-monopolistic enforcement mechanisms
+
+Contract enforceability can be supported without assuming a monopoly on coercion by combining escrow and deposits, collateral, insurance (including legal-expense coverage), and reputation-based exclusion governed by procedural safeguards against defamation. The aim is to make compliance a dominant strategy in the relevant institutional environment (Benson, 1990; Friedman, 1989; Hasnas, 2008).
+
+4.2. Two historical illustrations and their limits
+
+Lex Mercatoria (11th–15th centuries). Private ordering among merchants relied heavily on reputation and exclusion, though later scholarship questions the myth of a fully autonomous, unified “law merchant” (Benson, 2025; Kadens, 2012; Milgrom, North & Weingast, 1990).
+
+Scottish free banking (1716–1845). Competitive note issue and clearing discipline illustrate non-state constraints on opportunism; the episode was not fully detached from public legal infrastructure (White, 1984; Selgin, 1988; Rothbard, 1988).
+
+These cases should be read as evidence for partial substitution of monopoly enforcement by private mechanisms under a minimal legal background, not as proof of institutional self-sufficiency in a vacuum.
+
+4.3. Restorative justice
+
+For contract breaches and many harms, the framework privileges restoration over pure punishment: compensation to victims, cost internalization, and structured settlement. This connects naturally to economic analyses of harm and liability (Coase, 1960; Posner, 1973).
+
+5. Redistribution: incentive effects and voluntary alternatives
+
+The model criticizes coerced redistribution primarily on incentive grounds: moral hazard, rent-seeking, and knowledge problems. Voluntary alternatives include mutual aid and insurance-like arrangements. A parallel in the collective-action literature is that communities can sometimes craft workable governance without centralized command (Ostrom, 1990). Coercion, if considered at all, requires a narrow mandate and procedural constraints designed to prevent mission creep; the constitutional-choice literature emphasizes the importance of rules that bind collective decision-making (Buchanan & Tullock, 1962).
+
+6. Law as a negative-rights core
+
+A minimal legal core is defined as prohibitions of aggression, fraud, and provable harm, plus due process and a presumption of innocence. This framing is compatible with rule-of-law concerns about generality and constraint on official discretion (Fuller, 1964; Hart, 1961). Positive commands (“provide,” “serve,” “redistribute”) are treated as normatively heavier because they expand compelled action and administrative discretion.
+
+7. Standards and spontaneous order
+
+Many standards emerge as coordination equilibria rather than as top-down designs. Private arbitration and professional communities often have strong incentives to converge on interoperable rules that lower transaction costs (Matson & Klein, 2022; Hayek, 1945).
+
+8. Objections and replies (stress test)
+
+8.1. Vulnerable agents
+
+If individuals lack capacity for meaningful consent, representation (guardianship) is required, but must be tightly bounded and procedurally reviewable to prevent agency capture.
+
+8.2. Public goods
+
+Not all public goods are the same: club goods and local infrastructure can be financed by contract; “pure” public goods may require hybrids and, if coercion is invoked, narrow mandates and constraints.
+
+8.3. Poverty and nominal consent
+
+Meaningful consent depends on exit options and competitive alternatives. The framework therefore treats monopsony, entry barriers, and debt traps as core threats.
+
+8.4. Violence and delicts
+
+Arbitration primarily addresses contractual disputes. Protection against aggression is a separate layer; the paper’s claim concerns the minimal negative-rights core required for any legitimate order.
+
+8.5. Access to justice
+
+Private dispute resolution can be exclusionary; remedies include standardized low-cost procedures and legal-expense insurance.
+
+8.6. Externalities
+
+Negative rights require operational standards of proof, thresholds, and liability insurance for risk creators (Coase, 1960).
+
+8.7. Information asymmetry
+
+Disclosure duties, escrow, certification, and liability for fraud reduce opportunism without assuming virtue.
+
+9. Conclusion
+
+Contract sovereignty, in the proposed sense, is an operational criterion: institutional arrangements are evaluated by whether they preserve authorship of purpose and meaningful consent. The paper’s central claim is conditional: where reputation, security, and procedural safeguards are strong enough, voluntary contracting and private ordering can perform substantial coordination and enforcement functions. Where those conditions fail, the framework predicts drift toward compulsion and opportunism, and motivates designs that restore exit, informational integrity, and liability for harm.
+
+Statements and Declarations
+
+Funding
+
+The author received no financial support for the research, authorship, or publication of this article.
+
+Competing interests
+
+The author declares no competing financial or non-financial interests relevant to the content of this article.
+
+Data availability
+
+This article contains no empirical dataset. Historical sources are cited in the reference list.
+
+References
+
+Benson, B. L. (1990). The Enterprise of Law: Justice Without the State. San Francisco: Pacific Research Institute.
+
+Benson, B. L. (2025). Lex Mercatoria. In A. Marciano & G. B. Ramello (Eds.), Encyclopedia of Law and Economics. Springer, Cham. https://doi.org/10.1007/978-3-031-76422-6_298
+
+Brennan, G., & Buchanan, J. M. (1980). The Power to Tax: Analytical Foundations of a Fiscal Constitution. Cambridge: Cambridge University Press.
+
+Buchanan, J. M., & Tullock, G. (1962). The Calculus of Consent: Logical Foundations of Constitutional Democracy. Ann Arbor: University of Michigan Press.
+
+Coase, R. H. (1937). The nature of the firm. Economica, 4(16), 386–405. https://doi.org/10.1111/j.1468-0335.1937.tb00002.x
+
+Coase, R. H. (1960). The problem of social cost. Journal of Law and Economics, 3, 1–44. https://doi.org/10.1086/466560
+
+Friedman, D. (1989). The Machinery of Freedom: Guide to a Radical Capitalism. LaSalle, IL: Open Court.
+
+Fuller, L. L. (1964). The Morality of Law. New Haven: Yale University Press.
+
+Hart, H. L. A. (1961). The Concept of Law. Oxford: Oxford University Press.
+
+Hasnas, J. (2008). The obviousness of anarchy. In R. M. Long & T. R. Machan (Eds.), Anarchism/Minarchism. Aldershot: Ashgate.
+
+Hayek, F. A. (1945). The use of knowledge in society. American Economic Review, 35(4), 519–530.
+
+Kadens, E. (2012). The myth of the customary law merchant. Texas Law Review, 90(5), 1153–1206.
+
+Leeson, P. T. (2014). Anarchy Unbound: Why Self-Regulation Works Better Than You Think. Cambridge: Cambridge University Press.
+
+Matson, E. W., & Klein, D. B. (2022). Convention without convening. Constitutional Political Economy, 33(1), 1–24. https://doi.org/10.1007/s10602-021-09347-5
+
+McCannon, B. C. (2014). Arbitration in classical Athens. Constitutional Political Economy, 25(3), 413–423. https://doi.org/10.1007/s10602-013-9155-4
+
+Milgrom, P., North, D. C., & Weingast, B. R. (1990). The role of institutions in the revival of trade: The law merchant, private judges, and the Champagne fairs. Economics & Politics, 2(1), 1–23. https://doi.org/10.1111/j.1468-0335.1990.tb00020.x
+
+North, D. C. (1990). Institutions, Institutional Change and Economic Performance. Cambridge: Cambridge University Press.
+
+Ostrom, E. (1990). Governing the Commons: The Evolution of Institutions for Collective Action. Cambridge: Cambridge University Press.
+
+Posner, R. A. (1973). Economic Analysis of Law. Boston: Little, Brown and Company.
+
+Rothbard, M. N. (1988). The myth of free banking in Scotland. Review of Austrian Economics, 2(1), 229–245. https://doi.org/10.1007/BF01539504
+
+Selgin, G. (1988). The Theory of Free Banking: Money Supply under Competitive Note Issue. Lanham, MD: Rowman & Littlefield.
+
+White, L. H. (1984). Free Banking in Britain: Theory, Experience, and Debate, 1800–1845. Cambridge: Cambridge University Press.
+
+Williamson, O. E. (1985). The Economic Institutions of Capitalism. New York: Free Press.

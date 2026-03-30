@@ -1,42 +1,42 @@
 {
   "lessonId": 16,
-  "lessonTitle": "Minus-Space",
-  "generatedAt": "2026-02-22T15:19:03.787Z",
+  "lessonTitle": "A Theory of Everything",
+  "generatedAt": "2026-01-25T14:00:00.000Z",
   "questions": [
     {
       "id": 1,
-      "question": "According to the lesson, what is Minus-space?",
-      "correct_answer": "Minus-space is that which possesses neither extension nor position. It is not emptiness, but the absence of the container itself, the cancellation of the act of distinguishing 'here' and 'there.'",
+      "question": "What is Minus-Space according to the hypothesis presented in this lecture?",
+      "correct_answer": "Minus-Space is a state beyond zero dimensions where there is no possibility for extension - it is less than zero, the fundamental negation of space itself.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "What are the three types of spatial concepts described in the lesson?",
-      "correct_answer": "Space (which possesses extension and metric), Point or zero-space (which possesses position but not extension), and Minus-space (which possesses neither extension nor position).",
+      "question": "Why would movement be instantaneous in Minus-Space?",
+      "correct_answer": "Because if there is no extension in Minus-Space, there is no distance to overcome. The transition from one position to another requires no time - it is instantaneous.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "How does movement work in Minus-space according to the hypothesis?",
-      "correct_answer": "In Minus-space there is no distance, so transition is instantaneous. A particle can disappear and appear thousands of light-years away because distance was not overcome - it simply did not exist.",
-      "difficulty": "easy",
-      "points": 5
+      "question": "How does the hypothesis explain what exists between the discrete 'pixels' of space at the Planck scale?",
+      "correct_answer": "Between the boundaries of spatial cells exists Minus-Space - the invisible framework and seam of reality that separates them and defines their discreteness, allowing space to be a structure rather than infinite expanse.",
+      "difficulty": "hard",
+      "points": 15
     },
     {
       "id": 4,
-      "question": "What does the lesson suggest black holes might actually be?",
-      "correct_answer": "The lesson suggests that black holes might be portals or doors where matter breaks through the barrier of our reality and goes into Minus-space, rather than compressing into a singularity.",
-      "difficulty": "easy",
-      "points": 5
+      "question": "What are resonance tubes and how do they explain fundamental forces?",
+      "correct_answer": "Resonance tubes are fundamental threads (conditionally called gravitons) connecting particles through Minus-Space. Different types of resonance within these tubes are perceived as different forces: one frequency type as gravity, another as electromagnetism, and complex resonances as strong and weak nuclear interactions.",
+      "difficulty": "hard",
+      "points": 15
     },
     {
       "id": 5,
-      "question": "What is the main limitation of the Minus-space hypothesis mentioned in the lesson?",
-      "correct_answer": "The hypothesis remains a philosophical concept with poetic metaphors rather than a scientific theory, because it lacks mathematical rigor and precise equations that can be verified.",
-      "difficulty": "easy",
-      "points": 5
+      "question": "Why does the lecture describe the Minus-Space hypothesis as a 'philosophical hypothesis' rather than a scientific theory?",
+      "correct_answer": "Because science requires mathematical theories that derive precise numbers which can be compared with measurements. The Minus-Space hypothesis was born from imagery and analogy - its concepts remain poetic metaphors rather than testable mathematical predictions.",
+      "difficulty": "hard",
+      "points": 15
     }
   ]
 }

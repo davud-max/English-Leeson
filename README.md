@@ -8,7 +8,7 @@ A production-ready EdTech course platform built with Next.js, PostgreSQL, and St
 - ✅ Stripe payment integration
 - ✅ User authentication (NextAuth)
 - ✅ PostgreSQL database with Prisma ORM
-- ✅ 17 lessons (Lesson 1 fully seeded with content)
+- ✅ 23 lessons (Lesson 1 fully seeded with content)
 - ✅ Progress tracking
 - ✅ Event analytics system
 - ✅ Admin panel (coming soon)
@@ -74,7 +74,7 @@ npm run db:seed
 
 This will create:
 - Admin user (email: admin@example.com, password: admin123)
-- Main course with all 17 lessons
+- Main course with all 23 lessons
 - Lesson 1 with full English content
 
 7. Run development server:

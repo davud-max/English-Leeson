@@ -5,7 +5,7 @@ import { authOptions } from '@/lib/auth';
 import { getFreeLessons } from '@/lib/free-lessons';
 
 export const dynamic = 'force-dynamic';
-const MAX_PUBLIC_LESSON_ORDER = 22;
+const MAX_PUBLIC_LESSON_ORDER = 23;
 
 // GET /api/lessons - получить список всех опубликованных уроков
 export async function GET() {

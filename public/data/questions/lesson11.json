@@ -1,40 +1,40 @@
 {
   "lessonId": 11,
-  "lessonTitle": "The Number 666",
-  "generatedAt": "2026-02-22T10:27:12.350Z",
+  "lessonTitle": "WATER IN WORLD TRADITIONS",
+  "generatedAt": "2026-02-28T22:14:03.517Z",
   "questions": [
     {
       "id": 1,
-      "question": "What does the lesson say is the key word for understanding 666?",
-      "correct_answer": "Count - not learn or memorize, but calculate, derive, and understand the algorithm.",
+      "question": "According to the lesson, what does water represent in most creation myths around the world?",
+      "correct_answer": "Water represents the primordial undifferentiated foundation that existed before everything else was created.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "How many senses does the lesson describe as making up the number six?",
-      "correct_answer": "Six senses: the five traditional senses (sight, hearing, smell, taste, touch) plus a sixth sense of bodily attraction or instinct.",
+      "question": "In Hindu cosmology, what is Karana-jala?",
+      "correct_answer": "Karana-jala is the 'causal ocean' - a boundless aquatic space in which Mahavishnu rests, and from his breathing, universes arise.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "According to the lesson, what principle unites the six senses at the Human level?",
-      "correct_answer": "Love - it organizes the six senses and directs them outward toward understanding another 'I'.",
+      "question": "What are the four common characteristics of water found across different creation traditions?",
+      "correct_answer": "Water appears as: 1) primordial foundation, 2) bearer of life, 3) bearer of wisdom, and 4) boundary between worlds.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "What are the three levels represented by the three sixes in 666?",
-      "correct_answer": "Beast (senses), Human (love), and God (agape or divine love).",
+      "question": "In the ancient Chinese text 'Taiyi sheng shui,' how does water participate in creation?",
+      "correct_answer": "Water is not simply created but co-creates - it returns to the Great Unity and assists it in forming heaven and earth.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "What does 'The End of Light' represent according to the lesson?",
-      "correct_answer": "Not a catastrophe, but the completion of Light's mission - when the goal is reached and the need for distinction falls away.",
+      "question": "According to the lesson, what does the universal presence of water in creation myths suggest about human consciousness?",
+      "correct_answer": "It suggests that human consciousness is structured identically everywhere, as independent cultures arrive at the same image of undifferentiated, fluid beginnings.",
       "difficulty": "easy",
       "points": 5
     }

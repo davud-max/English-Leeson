@@ -16,6 +16,8 @@ export default withAuth(
       pathname === "/admin/login" ||
       pathname === "/api/admin/login" ||
       pathname === "/api/admin/swap-lesson-slides" ||
+      pathname === "/api/admin/import-lesson-from-file" ||
+      pathname === "/api/admin/insert-lesson-from-file" ||
       pathname === "/api/health" ||
       pathname === "/api/tts" ||
       pathname === "/lessons"
@@ -25,6 +27,8 @@ export default withAuth(
       pathname.startsWith("/api/auth") ||
       pathname.startsWith("/api/checkout") ||
       pathname.startsWith("/api/course") ||
+      pathname.startsWith("/api/admin/import-lesson-from-file") ||
+      pathname.startsWith("/api/admin/insert-lesson-from-file") ||
       pathname.startsWith("/api/webhooks") ||
       pathname.startsWith("/api/quiz") ||
       pathname.startsWith("/api/questions") ||

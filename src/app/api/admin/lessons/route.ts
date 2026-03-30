@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
-const MAX_PUBLIC_LESSON_ORDER = 22;
+const MAX_PUBLIC_LESSON_ORDER = 23;
 
 // GET /api/admin/lessons - получить список всех уроков
 export async function GET() {

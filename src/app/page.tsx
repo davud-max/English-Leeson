@@ -40,7 +40,7 @@ export default function HomePage() {
   }, [])
 
   const availableLessons = lessons.filter((l: any) => l.available !== false)
-  const lessonsCount = availableLessons.length || 21
+  const lessonsCount = availableLessons.length || 23
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-200">

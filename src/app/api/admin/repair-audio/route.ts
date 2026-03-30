@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getGitHubAuthHeaders, getGitHubToken } from '@/lib/github';
+import { normalizeAdminKey } from '@/lib/admin-key';
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_TOKEN = getGitHubToken();
 const GITHUB_REPO = 'davud-max/English-Leeson';
 const GITHUB_BRANCH = 'main';
-const MAX_ORDER = 20;
+const MAX_ORDER = 23;
 
 type RepairRequest = {
   adminKey?: string;
@@ -30,8 +32,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body = (await request.json().catch(() => ({}))) as RepairRequest;
-    const adminKey = typeof body.adminKey === 'string' ? body.adminKey.trim() : '';
-    if (!adminKey || adminKey !== (process.env.ADMIN_SECRET_KEY || '').trim()) {
+    const adminKey = normalizeAdminKey(body.adminKey);
+    if (!adminKey || adminKey !== normalizeAdminKey(process.env.ADMIN_SECRET_KEY)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -180,8 +182,7 @@ async function getFile(path: string): Promise<FilePayload | null> {
     `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,
     {
       headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
-        Accept: 'application/vnd.github.v3+json',
+        ...getGitHubAuthHeaders(),
       },
     }
   );
@@ -206,8 +207,7 @@ async function putFile(path: string, contentBase64: string, message: string) {
   const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
     method: 'PUT',
     headers: {
-      Authorization: `Bearer ${GITHUB_TOKEN}`,
-      Accept: 'application/vnd.github.v3+json',
+      ...getGitHubAuthHeaders(),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),

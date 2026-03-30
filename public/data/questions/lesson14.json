@@ -1,40 +1,40 @@
 {
   "lessonId": 14,
-  "lessonTitle": " LADDERS OF THE WORLD: COMPARATIVE ANALYSIS",
-  "generatedAt": "2026-02-28T23:08:12.317Z",
+  "lessonTitle": "The Human Level",
+  "generatedAt": "2026-02-28T22:37:15.971Z",
   "questions": [
     {
       "id": 1,
-      "question": "What three stages of development were mentioned in previous lessons that appear across different mystical traditions?",
-      "correct_answer": "Beast → human → God. This represents the ascent of consciousness from undifferentiation to unity.",
+      "question": "According to the lesson, what are the three steps of Jacob's ladder?",
+      "correct_answer": "The first step is earth (body, senses, beast), the second step is man (love, connection, understanding), and the third step is heaven (spirit, direct communion, God).",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 2,
-      "question": "In Sufism, what is the difference between 'maqam' and 'hal'?",
-      "correct_answer": "Maqam is a stage that a person reaches through their own effort and work. Hal is a state that is given as a gift, like sudden illumination or ecstasy.",
+      "question": "What fundamental fact does man encounter on the first step?",
+      "correct_answer": "The world is divided into dualities: subject and object, I and other, light and darkness, good and evil.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 3,
-      "question": "What are the three key stages in Buddhism that lead to samadhi?",
-      "correct_answer": "Dharana (concentration of mind on one object), Dhyana (contemplation where mind remains in object naturally), and Samadhi (complete absorption where duality disappears).",
+      "question": "What is the structural principle that connects divided opposites on the second step?",
+      "correct_answer": "Love - not emotion or passion, but a structural principle that connects what was divided.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 4,
-      "question": "According to the lesson, what is Teresa of Ávila's 'Interior Castle' and how does it relate to spiritual development?",
-      "correct_answer": "The Interior Castle represents the human soul as a castle with many rooms. To reach the center where God dwells, one must pass through seven mansions, with each step being purification and approaching unity.",
+      "question": "What happens to the previous steps when you ascend to a higher step on Jacob's ladder?",
+      "correct_answer": "Each following step does not cancel the previous one, but includes it within itself, like Russian nesting dolls.",
       "difficulty": "easy",
       "points": 5
     },
     {
       "id": 5,
-      "question": "What is the main difference in emphasis between Christianity, Buddhism, and Islam regarding the highest stage of spiritual development?",
-      "correct_answer": "Christianity emphasizes relationships and meeting of 'I' and 'Thou'. Buddhism focuses on overcoming the illusion of separate 'I'. Islam emphasizes love and dissolution (fana) of ego in God.",
+      "question": "Why are the three steps described as a cycle rather than a one-time journey?",
+      "correct_answer": "Because every time you encounter something new, you pass through these three steps again - first misunderstanding, then gradual approach and love, and finally unity where boundaries disappear.",
       "difficulty": "easy",
       "points": 5
     }

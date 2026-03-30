@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { normalizeAdminKey } from '@/lib/admin-key';
 
-const MAX_ORDER = 20;
+const MAX_ORDER = 23;
 
 type Finding = {
   lesson: number;
@@ -48,9 +49,9 @@ function getSlidesText(slides: unknown): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
-    const adminKey = typeof body?.adminKey === 'string' ? body.adminKey.trim() : '';
+    const adminKey = normalizeAdminKey(body?.adminKey);
 
-    if (!adminKey || adminKey !== process.env.ADMIN_SECRET_KEY) {
+    if (!adminKey || adminKey !== normalizeAdminKey(process.env.ADMIN_SECRET_KEY)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
