@@ -15,6 +15,8 @@ type ImportRequest = {
   duration?: number
   available?: boolean
   sourceFile?: string
+  sourceUrl?: string
+  sourceText?: string
   delimiter?: '---'
 }
 
@@ -31,6 +33,43 @@ const DEFAULT_SLIDE_DURATION_MS = 30_000
 const DEFAULT_EMOJI = '📖'
 const TARGET_SLIDE_CHARS = 900
 const MAX_SLIDE_CHARS = 1500
+const ALLOWED_SOURCE_URL_HOSTS = new Set(['raw.githubusercontent.com'])
+
+async function loadSourceText(body: ImportRequest) {
+  if (typeof body.sourceText === 'string' && body.sourceText.trim()) {
+    const txt = body.sourceText
+    if (Buffer.byteLength(txt, 'utf8') > MAX_SOURCE_BYTES) {
+      throw new Error('sourceText too large')
+    }
+    return { text: txt, source: { mode: 'inline', bytes: Buffer.byteLength(txt, 'utf8') } as const }
+  }
+
+  if (typeof body.sourceUrl === 'string' && body.sourceUrl.trim()) {
+    const url = new URL(body.sourceUrl.trim())
+    if (url.protocol !== 'https:') throw new Error('sourceUrl must be https')
+    if (!ALLOWED_SOURCE_URL_HOSTS.has(url.hostname)) throw new Error('sourceUrl host not allowed')
+
+    const res = await fetch(url.toString(), { cache: 'no-store' })
+    if (!res.ok) throw new Error(`sourceUrl fetch failed: ${res.status}`)
+
+    const buf = Buffer.from(await res.arrayBuffer())
+    if (buf.byteLength > MAX_SOURCE_BYTES) throw new Error('sourceUrl content too large')
+    const text = buf.toString('utf8')
+    return { text, source: { mode: 'url', url: url.toString(), bytes: buf.byteLength } as const }
+  }
+
+  const sourceFile = typeof body.sourceFile === 'string' ? body.sourceFile.trim() : ''
+  if (!sourceFile) throw new Error('sourceFile is required (or provide sourceUrl/sourceText)')
+
+  const filePath = resolveSourcePath(sourceFile)
+  if (!fs.existsSync(filePath)) throw new Error('sourceFile not found')
+
+  const stat = fs.statSync(filePath)
+  if (stat.size > MAX_SOURCE_BYTES) throw new Error('sourceFile too large')
+
+  const text = fs.readFileSync(filePath, 'utf8')
+  return { text, source: { mode: 'file', sourceFile, filePath, bytes: stat.size } as const }
+}
 
 function resolveSourcePath(sourceFile: string): string {
   const root = path.resolve(process.cwd(), 'content', 'lessons')
@@ -111,25 +150,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'order must be a positive integer' }, { status: 400 })
     }
 
-    const sourceFile = typeof body.sourceFile === 'string' ? body.sourceFile.trim() : ''
-    if (!sourceFile) {
-      return NextResponse.json({ error: 'sourceFile is required' }, { status: 400 })
-    }
-
-    const filePath = resolveSourcePath(sourceFile)
-    if (!fs.existsSync(filePath)) {
-      return NextResponse.json({ error: 'sourceFile not found', filePath }, { status: 404 })
-    }
-
-    const stat = fs.statSync(filePath)
-    if (stat.size > MAX_SOURCE_BYTES) {
-      return NextResponse.json(
-        { error: 'sourceFile too large', maxBytes: MAX_SOURCE_BYTES, size: stat.size },
-        { status: 400 }
-      )
-    }
-
-    const fileText = fs.readFileSync(filePath, 'utf8')
+    const { text: fileText, source } = await loadSourceText(body)
     const slides = splitIntoSlides(fileText, body.delimiter)
     if (slides.length === 0) {
       return NextResponse.json({ error: 'sourceFile is empty' }, { status: 400 })
@@ -188,7 +209,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       lesson: { id: lesson.id, order: lesson.order, title: lesson.title },
-      source: { sourceFile, filePath, bytes: stat.size },
+      source,
       slides: { count: slides.length },
     })
   } catch (err: any) {
