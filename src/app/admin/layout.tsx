@@ -12,6 +12,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const isAdminLoginRoute = pathname === '/admin/login' || pathname.startsWith('/admin/login/');
 
   const navItems = [
     { href: '/admin', label: 'Overview' },
@@ -27,11 +28,20 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     if (status === "loading") return;
     
     if (status === "unauthenticated") {
-      router.push('/admin/login');
+      if (!isAdminLoginRoute) {
+        router.push('/admin/login');
+      }
     } else if (status === "authenticated" && session?.user?.role !== 'ADMIN') {
-      router.push('/');
+      // Allow non-admin users to access the admin login page to elevate via secret key.
+      if (!isAdminLoginRoute) {
+        router.push('/');
+      }
     }
-  }, [session, status, router]);
+  }, [session, status, router, isAdminLoginRoute]);
+
+  if (isAdminLoginRoute) {
+    return <>{children}</>;
+  }
 
   if (status === "loading" || (status === "authenticated" && session?.user?.role !== 'ADMIN')) {
     return (
