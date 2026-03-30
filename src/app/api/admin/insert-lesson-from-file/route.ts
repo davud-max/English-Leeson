@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { assertAdminKey, getAdminKeyFromHeaders } from '@/lib/admin-key'
+import { generateLessonFromText } from '@/lib/article-to-lesson'
 import fs from 'fs'
 import path from 'path'
 
@@ -18,6 +19,8 @@ type InsertRequest = {
   sourceUrl?: string
   sourceText?: string
   delimiter?: '---'
+  transform?: 'raw' | 'lesson'
+  targetSlides?: number
 }
 
 type Slide = {
@@ -204,20 +207,41 @@ export async function POST(req: NextRequest) {
     }
 
     const { text: fileText, source } = await loadSourceText(body)
-    const slides = splitIntoSlides(fileText, body.delimiter)
-    if (slides.length === 0) {
-      return NextResponse.json({ error: 'sourceFile is empty or could not be parsed into slides' }, { status: 400 })
+
+    const transform = body.transform || 'raw'
+    const generated =
+      transform === 'lesson'
+        ? await generateLessonFromText({ text: fileText, targetSlides: body.targetSlides, language: 'en' })
+        : null
+
+    const slides =
+      transform === 'lesson'
+        ? generated!.slides.map((s, idx) => ({
+            id: idx + 1,
+            title: String(s.title || `Part ${idx + 1}`),
+            content: String(s.content || '').trim(),
+            emoji: String(s.emoji || DEFAULT_EMOJI),
+            duration: DEFAULT_SLIDE_DURATION_MS,
+            audioText: typeof s.audioText === 'string' ? s.audioText.trim() : undefined,
+          }))
+        : splitIntoSlides(fileText, body.delimiter)
+
+    if (!slides.length) {
+      return NextResponse.json({ error: 'No slides produced' }, { status: 400 })
     }
 
     const title =
       typeof body.title === 'string' && body.title.trim()
         ? body.title.trim()
-        : 'Contract Sovereignty'
+        : (transform === 'lesson' ? generated!.title : 'Contract Sovereignty')
     const description =
       typeof body.description === 'string' && body.description.trim()
         ? body.description.trim()
-        : slides[0].content.slice(0, 160)
-    const duration = Number.isFinite(Number(body.duration)) ? Math.max(1, Number(body.duration)) : 30
+        : (transform === 'lesson' ? (generated!.description || slides[0].content.slice(0, 160)) : slides[0].content.slice(0, 160))
+    const duration =
+      Number.isFinite(Number(body.duration))
+        ? Math.max(1, Number(body.duration))
+        : (transform === 'lesson' && Number.isFinite(generated!.durationMinutes) ? Math.max(1, Number(generated!.durationMinutes)) : 30)
     const available = body.available !== false
     const fullContent = slides.map((s) => s.content).join('\n\n---\n\n')
 
@@ -282,6 +306,7 @@ export async function POST(req: NextRequest) {
       notes: existingAtTarget ? `Shifted lesson #${targetOrder} → #${targetOrder + 1}: ${existingAtTarget.title}` : null,
       source,
       slides: { count: slides.length },
+      transform,
     })
   } catch (err: any) {
     const message = err instanceof Error ? err.message : 'Unknown error'
