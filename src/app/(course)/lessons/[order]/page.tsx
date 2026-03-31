@@ -15,6 +15,7 @@ interface Slide {
   emoji: string
   duration?: number
   audioUrl?: string
+  audioText?: string
 }
 
 interface Lesson {
@@ -77,6 +78,8 @@ export default function DynamicLessonPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const bgAudioRef = useRef<HTMLAudioElement | null>(null)
   const isBgMusicEnabledRef = useRef(true)
+  const ttsCacheRef = useRef<Map<number, string>>(new Map())
+  const ttsInFlightRef = useRef<Map<number, Promise<string | null>>>(new Map())
 
   useEffect(() => {
     isBgMusicEnabledRef.current = isBgMusicEnabled
@@ -196,6 +199,56 @@ export default function DynamicLessonPage() {
     return candidates
   }, [lesson?.id, slides])
 
+  const stripMarkdown = useCallback((input: string): string => {
+    return (input || '')
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/!\[[^\]]*]\([^)]+\)/g, ' ')
+      .replace(/\[[^\]]*]\([^)]+\)/g, '$1')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/^>\s+/gm, '')
+      .replace(/[*_~]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }, [])
+
+  const getTtsTextForSlide = useCallback((slideIndex: number): string => {
+    const slide = slides[slideIndex]
+    const candidate = slide?.audioText || slide?.content || ''
+    // Keep it within the /api/tts limit (3000 chars), with some safety margin.
+    return stripMarkdown(candidate).slice(0, 2800)
+  }, [slides, stripMarkdown])
+
+  const getOrGenerateTtsAudioUrl = useCallback(async (slideIndex: number): Promise<string | null> => {
+    const cached = ttsCacheRef.current.get(slideIndex)
+    if (cached) return cached
+
+    const existingInFlight = ttsInFlightRef.current.get(slideIndex)
+    if (existingInFlight) return existingInFlight
+
+    const p = (async () => {
+      const text = getTtsTextForSlide(slideIndex)
+      if (!text || text.length < 2) return null
+
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      })
+      const data = await res.json().catch(() => ({}))
+      const audioUrl = typeof data?.audioUrl === 'string' ? data.audioUrl : null
+      if (!res.ok || !audioUrl) return null
+
+      ttsCacheRef.current.set(slideIndex, audioUrl)
+      return audioUrl
+    })().finally(() => {
+      ttsInFlightRef.current.delete(slideIndex)
+    })
+
+    ttsInFlightRef.current.set(slideIndex, p)
+    return p
+  }, [getTtsTextForSlide])
+
   const playSlide = useCallback((slideIndex: number, candidateIndex = 0) => {
     const totalSlides = slides.length
     console.log(`Playing slide ${slideIndex + 1} of ${totalSlides}`)
@@ -209,19 +262,73 @@ export default function DynamicLessonPage() {
     const currentAudioPath = candidates[candidateIndex]
 
     if (!currentAudioPath) {
-      console.log('No audio available, using timer')
-      setTimeout(() => {
-        if (slideIndex < totalSlides - 1) {
-          const nextSlide = slideIndex + 1
-          setCurrentSlide(nextSlide)
-          setProgress(0)
-          playSlide(nextSlide)
-        } else {
-          setIsPlaying(false)
-          stopBackgroundMusic()
-          setProgress(100)
+      console.log('No static audio candidate, trying TTS fallback')
+      getOrGenerateTtsAudioUrl(slideIndex).then((ttsAudioUrl) => {
+        if (!ttsAudioUrl) {
+          console.log('TTS unavailable, using timer')
+          setTimeout(() => {
+            if (slideIndex < totalSlides - 1) {
+              const nextSlide = slideIndex + 1
+              setCurrentSlide(nextSlide)
+              setProgress(0)
+              playSlide(nextSlide)
+            } else {
+              setIsPlaying(false)
+              stopBackgroundMusic()
+              setProgress(100)
+            }
+          }, 20000)
+          return
         }
-      }, 20000)
+
+        const ttsAudio = new Audio(ttsAudioUrl)
+        audioRef.current = ttsAudio
+
+        ttsAudio.ontimeupdate = () => {
+          if (ttsAudio.duration) {
+            setProgress((ttsAudio.currentTime / ttsAudio.duration) * 100)
+          }
+        }
+
+        ttsAudio.onended = () => {
+          if (slideIndex < totalSlides - 1) {
+            const nextSlide = slideIndex + 1
+            setCurrentSlide(nextSlide)
+            setProgress(0)
+            playSlide(nextSlide)
+          } else {
+            setIsPlaying(false)
+            stopBackgroundMusic()
+            setProgress(100)
+          }
+        }
+
+        ttsAudio.onerror = () => {
+          console.log('TTS audio failed, using timer')
+          setTimeout(() => {
+            if (slideIndex < totalSlides - 1) {
+              const nextSlide = slideIndex + 1
+              setCurrentSlide(nextSlide)
+              setProgress(0)
+              playSlide(nextSlide)
+            } else {
+              setIsPlaying(false)
+              stopBackgroundMusic()
+              setProgress(100)
+            }
+          }, 20000)
+        }
+
+        ttsAudio.play().then(() => {
+          if (isBgMusicEnabledRef.current) {
+            startBackgroundMusic()
+          }
+        }).catch((err) => {
+          console.error('TTS play error:', err)
+          stopBackgroundMusic()
+          setIsPlaying(false)
+        })
+      })
       return
     }
 
@@ -258,19 +365,73 @@ export default function DynamicLessonPage() {
         return
       }
 
-      console.log('No audio available, using timer')
-      setTimeout(() => {
-        if (slideIndex < totalSlides - 1) {
-          const nextSlide = slideIndex + 1
-          setCurrentSlide(nextSlide)
-          setProgress(0)
-          playSlide(nextSlide)
-        } else {
-          setIsPlaying(false)
-          stopBackgroundMusic()
-          setProgress(100)
+      console.log('Static audio failed, trying TTS fallback')
+      getOrGenerateTtsAudioUrl(slideIndex).then((ttsAudioUrl) => {
+        if (!ttsAudioUrl) {
+          console.log('TTS unavailable, using timer')
+          setTimeout(() => {
+            if (slideIndex < totalSlides - 1) {
+              const nextSlide = slideIndex + 1
+              setCurrentSlide(nextSlide)
+              setProgress(0)
+              playSlide(nextSlide)
+            } else {
+              setIsPlaying(false)
+              stopBackgroundMusic()
+              setProgress(100)
+            }
+          }, 20000)
+          return
         }
-      }, 20000)
+
+        const ttsAudio = new Audio(ttsAudioUrl)
+        audioRef.current = ttsAudio
+
+        ttsAudio.ontimeupdate = () => {
+          if (ttsAudio.duration) {
+            setProgress((ttsAudio.currentTime / ttsAudio.duration) * 100)
+          }
+        }
+
+        ttsAudio.onended = () => {
+          if (slideIndex < totalSlides - 1) {
+            const nextSlide = slideIndex + 1
+            setCurrentSlide(nextSlide)
+            setProgress(0)
+            playSlide(nextSlide)
+          } else {
+            setIsPlaying(false)
+            stopBackgroundMusic()
+            setProgress(100)
+          }
+        }
+
+        ttsAudio.onerror = () => {
+          console.log('TTS audio failed, using timer')
+          setTimeout(() => {
+            if (slideIndex < totalSlides - 1) {
+              const nextSlide = slideIndex + 1
+              setCurrentSlide(nextSlide)
+              setProgress(0)
+              playSlide(nextSlide)
+            } else {
+              setIsPlaying(false)
+              stopBackgroundMusic()
+              setProgress(100)
+            }
+          }, 20000)
+        }
+
+        ttsAudio.play().then(() => {
+          if (isBgMusicEnabledRef.current) {
+            startBackgroundMusic()
+          }
+        }).catch((err) => {
+          console.error('TTS play error:', err)
+          stopBackgroundMusic()
+          setIsPlaying(false)
+        })
+      })
     }
     
     audio.play().then(() => {
@@ -284,7 +445,7 @@ export default function DynamicLessonPage() {
         stopBackgroundMusic()
       }
     })
-  }, [getAudioCandidates, slides.length, startBackgroundMusic, stopBackgroundMusic])
+  }, [getAudioCandidates, getOrGenerateTtsAudioUrl, slides.length, startBackgroundMusic, stopBackgroundMusic])
 
   const togglePlay = () => {
     if (isPlaying) {
