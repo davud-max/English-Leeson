@@ -45,8 +45,11 @@ export default function LessonsPage() {
           setUnauthorized(true)
           return
         }
-        setLessons(data.lessons || [])
-        setStats({ total: data.total || 0, available: data.available || 0 })
+        const list: Lesson[] = data.lessons || []
+        setLessons(list)
+        const total = typeof data.total === 'number' ? data.total : list.length
+        const unlocked = list.filter((l) => !l.locked && l.available).length
+        setStats({ total, available: unlocked })
       }
     } catch (error) {
       console.error('Failed to fetch lessons:', error)
@@ -82,7 +85,7 @@ export default function LessonsPage() {
         <div className="bg-amber-50 border border-amber-200 p-6 mb-8">
           <div className="flex items-center justify-between">
             <p className="text-stone-700">
-              {stats.available} of {stats.total} lessons available
+              {stats.available} of {stats.total} lessons unlocked
             </p>
             <div className="w-48 bg-stone-200 h-2">
               <div 
