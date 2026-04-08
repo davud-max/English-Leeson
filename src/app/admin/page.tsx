@@ -12,6 +12,8 @@ interface Stats {
   activeUsers: number
   totalLessons: number
   publishedLessons: number
+  logins7d?: number
+  adminLogins7d?: number
 }
 
 export default function AdminDashboard() {
@@ -101,6 +103,12 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div className="rounded-lg border border-amber-200 bg-white p-5">
+          <p className="text-xs uppercase tracking-wide text-stone-500">Logins (7d)</p>
+          <p className="mt-2 text-3xl font-semibold text-stone-900">
+            {loading ? '...' : stats?.logins7d || 0}
+          </p>
+        </div>
+        <div className="rounded-lg border border-amber-200 bg-white p-5">
           <p className="text-xs uppercase tracking-wide text-stone-500">Purchases</p>
           <p className="mt-2 text-3xl font-semibold text-stone-900">
             {loading ? '...' : stats?.totalPurchases || 0}
@@ -110,6 +118,12 @@ export default function AdminDashboard() {
           <p className="text-xs uppercase tracking-wide text-stone-500">Revenue</p>
           <p className="mt-2 text-3xl font-semibold text-amber-900">
             ${loading ? '...' : (stats?.totalRevenue || 0).toFixed(2)}
+          </p>
+        </div>
+        <div className="rounded-lg border border-amber-200 bg-white p-5">
+          <p className="text-xs uppercase tracking-wide text-stone-500">Admin Logins (7d)</p>
+          <p className="mt-2 text-3xl font-semibold text-stone-900">
+            {loading ? '...' : stats?.adminLogins7d || 0}
           </p>
         </div>
         <div className="rounded-lg border border-amber-200 bg-white p-5">

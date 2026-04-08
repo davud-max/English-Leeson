@@ -10,6 +10,7 @@ export async function GET() {
   }
 
   try {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     const [totalUsers, totalPurchases, totalRevenue, totalLessons, publishedLessons] = await Promise.all([
       prisma.user.count({ where: { role: 'USER' } }).catch(() => 0),
       prisma.purchase.count({ where: { status: 'COMPLETED' } }).catch(() => 0),
@@ -29,7 +30,7 @@ export async function GET() {
           events: {
             some: {
               timestamp: {
-                gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                gte: sevenDaysAgo,
               },
             },
           },
@@ -39,6 +40,28 @@ export async function GET() {
       activeUsers = 0
     }
 
+    let logins7d = 0
+    let adminLogins7d = 0
+    try {
+      ;[logins7d, adminLogins7d] = await Promise.all([
+        prisma.event.count({
+          where: {
+            eventType: { in: ['user_login', 'admin_login'] },
+            timestamp: { gte: sevenDaysAgo },
+          },
+        }),
+        prisma.event.count({
+          where: {
+            eventType: 'admin_login',
+            timestamp: { gte: sevenDaysAgo },
+          },
+        }),
+      ])
+    } catch {
+      logins7d = 0
+      adminLogins7d = 0
+    }
+
     return NextResponse.json({
       totalUsers,
       totalPurchases,
@@ -46,6 +69,8 @@ export async function GET() {
       activeUsers,
       totalLessons,
       publishedLessons,
+      logins7d,
+      adminLogins7d,
     })
   } catch (error) {
     console.error('Error fetching stats:', error)
@@ -56,6 +81,8 @@ export async function GET() {
       activeUsers: 0,
       totalLessons: 0,
       publishedLessons: 0,
+      logins7d: 0,
+      adminLogins7d: 0,
     })
   }
 }

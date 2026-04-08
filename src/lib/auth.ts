@@ -42,6 +42,33 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  events: {
+    async signIn({ user, account }) {
+      try {
+        const userId = typeof user?.id === 'string' ? user.id : undefined
+        if (!userId) return
+
+        const dbUser = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { id: true, email: true, role: true },
+        })
+        if (!dbUser) return
+
+        await prisma.event.create({
+          data: {
+            userId: dbUser.id,
+            eventType: dbUser.role === 'ADMIN' ? 'admin_login' : 'user_login',
+            metadata: {
+              email: dbUser.email,
+              provider: account?.provider || 'credentials',
+            },
+          },
+        })
+      } catch (e) {
+        console.error('Failed to track login event:', e)
+      }
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
