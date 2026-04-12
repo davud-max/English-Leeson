@@ -80,6 +80,23 @@ export default function DynamicLessonPage() {
   const isBgMusicEnabledRef = useRef(true)
   const ttsCacheRef = useRef<Map<number, string>>(new Map())
   const ttsInFlightRef = useRef<Map<number, Promise<string | null>>>(new Map())
+  const currentSlideRef = useRef(0)
+  const totalSlidesRef = useRef(0)
+  const swipeRef = useRef<{
+    startX: number
+    startY: number
+    lastX: number
+    lastY: number
+    pointerId: number | null
+    active: boolean
+  }>({
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastY: 0,
+    pointerId: null,
+    active: false,
+  })
 
   useEffect(() => {
     isBgMusicEnabledRef.current = isBgMusicEnabled
@@ -141,6 +158,12 @@ export default function DynamicLessonPage() {
   }] : []), [lesson])
 
   const totalSlides = slides.length
+  useEffect(() => {
+    currentSlideRef.current = currentSlide
+  }, [currentSlide])
+  useEffect(() => {
+    totalSlidesRef.current = totalSlides
+  }, [totalSlides])
 
   const startBackgroundMusic = useCallback((force = false) => {
     if (!force && !isBgMusicEnabledRef.current) return
@@ -490,7 +513,7 @@ export default function DynamicLessonPage() {
     }
   }
 
-  const goToSlide = (index: number) => {
+  const goToSlide = useCallback((index: number) => {
     if (audioRef.current) {
       audioRef.current.pause()
       audioRef.current = null
@@ -502,7 +525,103 @@ export default function DynamicLessonPage() {
     if (isPlaying) {
       playSlide(index)
     }
-  }
+  }, [isPlaying, playSlide])
+
+  const isInteractiveTarget = useCallback((target: EventTarget | null) => {
+    if (!target) return false
+    const el = target as HTMLElement
+    return Boolean(el?.closest?.('a,button,input,textarea,select,label'))
+  }, [])
+
+  const handleSwipeDelta = useCallback((dx: number, dy: number) => {
+    const absX = Math.abs(dx)
+    const absY = Math.abs(dy)
+    const SWIPE_THRESHOLD_PX = 60
+    const MAX_VERTICAL_PX = 120
+
+    if (absX < SWIPE_THRESHOLD_PX) return
+    if (absY > MAX_VERTICAL_PX) return
+    if (absX < absY * 1.2) return
+
+    const current = currentSlideRef.current
+    const total = totalSlidesRef.current
+    if (total <= 1) return
+
+    // dx < 0 means swipe left => next slide; dx > 0 means swipe right => previous slide
+    const nextIndex = dx < 0 ? Math.min(total - 1, current + 1) : Math.max(0, current - 1)
+    if (nextIndex === current) return
+    goToSlide(nextIndex)
+  }, [goToSlide])
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    if (isInteractiveTarget(e.target)) return
+    if (e.touches.length !== 1) return
+    const t = e.touches[0]
+    swipeRef.current = {
+      startX: t.clientX,
+      startY: t.clientY,
+      lastX: t.clientX,
+      lastY: t.clientY,
+      pointerId: null,
+      active: true,
+    }
+  }, [isInteractiveTarget])
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!swipeRef.current.active) return
+    if (e.touches.length !== 1) return
+    const t = e.touches[0]
+    swipeRef.current.lastX = t.clientX
+    swipeRef.current.lastY = t.clientY
+  }, [])
+
+  const onTouchEnd = useCallback(() => {
+    if (!swipeRef.current.active) return
+    const dx = swipeRef.current.lastX - swipeRef.current.startX
+    const dy = swipeRef.current.lastY - swipeRef.current.startY
+    swipeRef.current.active = false
+    handleSwipeDelta(dx, dy)
+  }, [handleSwipeDelta])
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    if (isInteractiveTarget(e.target)) return
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    swipeRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      lastX: e.clientX,
+      lastY: e.clientY,
+      pointerId: e.pointerId,
+      active: true,
+    }
+    try {
+      ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    } catch {
+      // ignore
+    }
+  }, [isInteractiveTarget])
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!swipeRef.current.active) return
+    if (swipeRef.current.pointerId !== e.pointerId) return
+    swipeRef.current.lastX = e.clientX
+    swipeRef.current.lastY = e.clientY
+  }, [])
+
+  const onPointerUp = useCallback((e: React.PointerEvent) => {
+    if (!swipeRef.current.active) return
+    if (swipeRef.current.pointerId !== e.pointerId) return
+    const dx = swipeRef.current.lastX - swipeRef.current.startX
+    const dy = swipeRef.current.lastY - swipeRef.current.startY
+    swipeRef.current.active = false
+    swipeRef.current.pointerId = null
+    handleSwipeDelta(dx, dy)
+  }, [handleSwipeDelta])
+
+  const onPointerCancel = useCallback(() => {
+    swipeRef.current.active = false
+    swipeRef.current.pointerId = null
+  }, [])
 
   useEffect(() => {
     return () => {
@@ -637,7 +756,18 @@ export default function DynamicLessonPage() {
       </div>
             
       {/* Scrollable Content */}
-      <main className="max-w-4xl mx-auto px-6 pt-5 pb-28">
+      <main
+        className="max-w-4xl mx-auto px-6 pt-5 pb-28"
+        style={{ touchAction: 'pan-y' }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onTouchCancel={onTouchEnd}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
+      >
 
       {/* Content Card */}
         <article className="bg-white rounded-lg shadow-lg border border-stone-200 pt-4 md:pt-6 px-8 md:px-12 pb-8 md:pb-12 mb-8">
